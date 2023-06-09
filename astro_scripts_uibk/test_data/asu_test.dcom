@@ -1,0 +1,26 @@
+cat > enddat << 'EOI'
+ABUNDANCE   H  0.90  HE  0.10                               0
+ABUNDANCE   C -4.15   N -3.31   O -3.09   F -7.48  NE -3.96 0
+ABUNDANCE  NA -5.71  MG -4.40  AL -5.57  SI -4.49   P -6.59 0
+ABUNDANCE   S -4.71  CL -6.54  AR -5.64   K -6.92  CA -5.68 0
+ABUNDANCE  SC -8.87  TI -7.02   V -8.04  CR -6.37  MN -6.65 0
+ABUNDANCE  FE -4.34  CO -7.12  NI -5.79  CU -7.83  ZN -7.44 0
+TURBULENCE 0.9
+BABS
+OPACITY RAYLGH HMINUS LINLIS END 
+PRINT 0 0 0 0
+GO
+PRINT 0 0
+ALI 60 0                  
+PRINT 3 1
+ALI 1 0
+SCRIBE
+QUIT
+EOI
+cp /mnt/c/Users/Public/Documents/master/stellar_models/atlas/output_struct/T4995G1.40X0.9P00HE.10.struct fort.8
+/mnt/c/Users/Public/Documents/master/ds/comp/conv_atlas_to_detail
+mv fort.9 model
+cp /mnt/c/Users/Public/Documents/master/ds/atoms/C/c_1_det_vCEP1.31 indat
+cat indat model enddat > input
+/mnt/c/Users/Public/Documents/master/ds/detailos_f90/detail <input > /mnt/c/Users/Public/Documents/master/stellar_models/detail/output_control/T4995G1.40X0.9P00HE.100C7.89.dout
+grep -a -v WINDSCALE fort.7 > /mnt/c/Users/Public/Documents/master/stellar_models/detail/output_pops/T4995G1.40X0.9P00HE.100C7.89.pops

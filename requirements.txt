@@ -1,0 +1,19 @@
+# List required packages in this file, one per line.
+wheel
+numpy
+scipy
+PyAstronomy
+astropy
+setuptools
+matplotlib
+pandas
+astroquery
+openpyxl
+scikit-learn
+pathlib
+corner
+emcee
+python-dateutil
+future
+lmfit
+tqdm

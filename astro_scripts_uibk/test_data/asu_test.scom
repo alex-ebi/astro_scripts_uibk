@@ -1,0 +1,19 @@
+cat > enddat << 'EOI'
+ABUNDANCE H 0.900  HE 0.100  C -4.15  MG -3.86 0
+TURBULENCE 0.9
+OPACITY RAYLGH HMINUS END
+TABLE
+ROSS
+PRINT 0 0 0 3
+GO
+QUIT
+EOI
+cp /mnt/c/Users/Public/Documents/master/stellar_models/atlas/output_struct/T4995G1.40X0.9P00HE.10.struct fort.8
+/mnt/c/Users/Public/Documents/master/ds/comp/conv_atlas_to_detail
+mv fort.9 model
+cp /mnt/c/Users/Public/Documents/master/ds/atoms/C_MG/c_mg_1_2_srf_v4.3 srf
+cp /mnt/c/Users/Public/Documents/master/stellar_models/detail/output_pops/T4995G1.40X0.9P00HE.100C7.89.pops cpops
+cp /mnt/c/Users/Public/Documents/master/stellar_models/detail/output_pops/T4995G1.40X0.9P00HE.100MG8.18.pops mgpops
+cat srf model cpops mgpops enddat > input
+/mnt/c/Users/Public/Documents/master/ds/surfaceos_f90/surface <input > /mnt/c/Users/Public/Documents/master/stellar_models/surface/output_control/T4995G1.40X0.9P00HE.100MG8.18C7.89.sout
+cp fort.70 /mnt/c/Users/Public/Documents/master/stellar_models/surface/output_flux/T4995G1.40X0.9P00HE.100MG8.18C7.89.flux
