@@ -8,18 +8,19 @@ import versioneer
 # to ensure that we error out properly for people with outdated setuptools
 # and/or pip.
 min_version = (3, 8)
+sys_version = sys.version_info[:2]
 if sys.version_info < min_version:
-    error = """
-astro_scripts_uibk does not support Python {0}.{1}.
-Python {2}.{3} and above is required. Check your Python version like so:
+    error = f"""
+astro_scripts_uibk does not support Python {sys_version[0]}.{sys_version[1]}.
+Python {min_version[0]}.{min_version[1]} and above is required. Check your Python version like so:
 
-python3 --version
+python3 -V
 
 This may be due to an out-of-date pip. Make sure you have pip >= 9.0.1.
 Upgrade pip like so:
 
 pip install --upgrade pip
-""".format(*(sys.version_info[:2] + min_version))
+"""
     sys.exit(error)
 
 here = path.abspath(path.dirname(__file__))
