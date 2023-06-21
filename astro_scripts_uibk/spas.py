@@ -115,7 +115,7 @@ def is_valid_input(wave: np.array, flux_array: list,
 def create_binary(wave: np.array, flux_array: list, temperature_array: np.array, logg_array: np.array,
                   abundance: float, file_name: str):
     """
-    Function to create SPAS binaries
+    Function to create SPAS binaries.
 
     Parameters
     ----------
@@ -130,7 +130,7 @@ def create_binary(wave: np.array, flux_array: list, temperature_array: np.array,
     abundance: float
         abundance value, same for all flux arrays
     file_name: str | Path
-        name of the output file (usually *.bin)
+        name of the output file (usually *.bin*)
     """
     is_valid_input(wave, flux_array, temperature_array, logg_array)
 
