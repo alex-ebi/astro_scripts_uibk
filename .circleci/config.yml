@@ -29,16 +29,9 @@ jobs:
     # CircleCI will report the results back to your VCS provider.
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
-          # app-dir: ~/project/package-directory/  # If your requirements.txt isn't in the root directory.
-          # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
-          pip-dependency-file: requirements.txt
-      - python/install-packages:
-          pkg-manager: pip
-          # app-dir: ~/project/package-directory/  # If your requirements.txt isn't in the root directory.
-          # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
-          pip-dependency-file: requirements-dev.txt
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt && pip install -r requirements-dev.txt
       - run:
           name: Run tests
           command: coverage run -m pytest && coverage report -m
@@ -46,6 +39,37 @@ jobs:
           name: Run flake8
           command: flake8 -v astro_scripts_uibk/
 
+  docs-build: # Building the documentation
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements-dev.txt
+      - run:
+          name: Build docs
+          command: cd docs/ && make html
+      - persist_to_workspace:
+          root: docs/_build
+          paths: html
+
+  docs-deploy: # Deploy the generated documentation on github pages.
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: docs/_build
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "alexander@ebenbichler.net"
+            git config user.name "alex-ebi"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dist docs/_build/html
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
@@ -54,3 +78,11 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
+      - docs-build
+      - docs-deploy:
+          requires:
+            - test
+            - docs-build
+          filters:
+            branches:
+              only: main
