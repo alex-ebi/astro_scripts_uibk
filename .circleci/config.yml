@@ -58,9 +58,6 @@ jobs:
     docker:
       - image: node:8.10.0
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "3a:0e:c6:b6:ed:a1:1c:82:02:75:10:0a:70:e5:d7:88"
       - checkout
       - attach_workspace:
           at: docs/_build
@@ -73,6 +70,9 @@ jobs:
             npm install -g --silent gh-pages@2.0.1
             git config user.email "alexander@ebenbichler.net"
             git config user.name "alex-ebi"
+      - add_ssh_keys:
+          fingerprints:
+            - "3a:0e:c6:b6:ed:a1:1c:82:02:75:10:0a:70:e5:d7:88"
       - run:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/_build/html
