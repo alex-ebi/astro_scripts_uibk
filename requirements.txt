@@ -17,4 +17,4 @@ python-dateutil
 future
 lmfit
 tqdm
-versioneer
+# versioneer

@@ -41,8 +41,8 @@ setup(
     description="Python package for doing science.",
     long_description=readme,
     author="Astrophysics UIBK",
-    author_email='alexander.ebenbichler@student.uibk.ac.at',
-    url='https://github.com/csap5791/astro_scripts_uibk',
+    author_email='alexander@ebenbichler.net',
+    url='https://github.com/alex-ebi/astro_scripts_uibk',
     python_requires='>={}'.format('.'.join(str(n) for n in min_version)),
     packages=find_packages(exclude=['docs', 'tests']),
     entry_points={
