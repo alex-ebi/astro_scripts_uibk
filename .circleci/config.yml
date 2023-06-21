@@ -51,7 +51,7 @@ jobs:
           name: Build docs
           command: cd docs/ && make html
       - persist_to_workspace:
-          root: docs/build
+          root: docs/_build
           paths: html
 
   docs-deploy: # Deploy the generated documentation on github pages.
@@ -63,7 +63,10 @@ jobs:
             - "3a:0e:c6:b6:ed:a1:1c:82:02:75:10:0a:70:e5:d7:88"
       - checkout
       - attach_workspace:
-          at: docs/build
+          at: docs/_build
+      - run:
+          name: Disable jekyll builds
+          command: touch docs/_build/html/.nojekyll
       - run:
           name: Install and configure dependencies
           command: |
@@ -72,7 +75,7 @@ jobs:
             git config user.name "alex-ebi"
       - run:
           name: Deploy docs to gh-pages branch
-          command: gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/build/html
+          command: gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/_build/html
 
 
 # Invoke jobs via workflows
