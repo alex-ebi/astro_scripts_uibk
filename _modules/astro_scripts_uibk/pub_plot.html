@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>astro_scripts_uibk.pub_plot &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            astro_scripts_uibk
+          </a>
+              <div class="version">
+                0.post27+gdcb808d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">astro_scripts_uibk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">astro_scripts_uibk.pub_plot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for astro_scripts_uibk.pub_plot</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">font_manager</span>
+
+
+<div class="viewcode-block" id="pub_style_fig"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.pub_plot.pub_style_fig">[docs]</a><span class="k">def</span> <span class="nf">pub_style_fig</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set the matplotlib plot style for publication plots.</span>
+<span class="sd">    Reads the style sheet in &quot;config_files/pub_plot.mplstyle&quot;.</span>
+<span class="sd">    Setup for one x axis - unit and one y axis unit.</span>
+<span class="sd">    E.g. if you want to use a second x axis on top, use:</span>
+
+<span class="sd">    mpl.rcParams[&#39;xtick.top&#39;] = False</span>
+
+<span class="sd">    f, ax = plt.subplots()</span>
+
+<span class="sd">    sec_ax = ax.secondary_xaxis(&#39;top&#39;, functions=(rv_to_wavenumber, wavenumber_to_rv))</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># filename of matplotlib style sheet</span>
+    <span class="n">style_path</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s2">&quot;astro_scripts_uibk&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;config_files/pub_plot.mplstyle&quot;</span>
+
+    <span class="c1"># path of font file</span>
+    <span class="n">font_path</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s2">&quot;astro_scripts_uibk&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;config_files/NimbusRomNo9L-Reg.otf&quot;</span>
+
+    <span class="c1"># add font to matplotlib</span>
+    <span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">font_path</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">style_path</span><span class="p">)</span>  <span class="c1"># load style sheet</span></div>
+
+
+<div class="viewcode-block" id="pub_ticks"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.pub_plot.pub_ticks">[docs]</a><span class="k">def</span> <span class="nf">pub_ticks</span><span class="p">(</span><span class="n">_ax</span><span class="p">,</span> <span class="n">xticks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">yticks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set major tick separation. Minor ticks will have a fifth of the major separation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    _ax : matplotlib.axes._axes.Axes</span>
+<span class="sd">        Axis of modified ticks.</span>
+<span class="sd">    xticks : float</span>
+<span class="sd">        x tick separation</span>
+<span class="sd">    yticks : float</span>
+<span class="sd">        x tick separation</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">xticks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="n">xticks</span><span class="p">))</span>
+        <span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="n">xticks</span> <span class="o">/</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">yticks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="n">yticks</span><span class="p">))</span>
+        <span class="n">_ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">mpl</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="n">yticks</span> <span class="o">/</span> <span class="mi">5</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="dark_style_fig"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.pub_plot.dark_style_fig">[docs]</a><span class="k">def</span> <span class="nf">dark_style_fig</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cooler black background plot style.</span>
+<span class="sd">    Set the matplotlib plot style for publication plots.</span>
+<span class="sd">    Reads the style sheet in &quot;config_files/dark_plot.mplstyle&quot;.</span>
+<span class="sd">    Setup for one x axis - unit and one y axis unit.</span>
+<span class="sd">    E.g. if you want to use a second x axis on top, use:</span>
+
+<span class="sd">    mpl.rcParams[&#39;xtick.top&#39;] = False</span>
+
+<span class="sd">    f, ax = plt.subplots()</span>
+
+<span class="sd">    sec_ax = ax.secondary_xaxis(&#39;top&#39;, functions=(rv_to_wavenumber, wavenumber_to_rv))</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># filename of matplotlib style sheet</span>
+    <span class="n">style_path</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s2">&quot;astro_scripts_uibk&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;config_files/dark_plot.mplstyle&quot;</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">style_path</span><span class="p">)</span>  <span class="c1"># load dark style sheet</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Astrophysics UIBK.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

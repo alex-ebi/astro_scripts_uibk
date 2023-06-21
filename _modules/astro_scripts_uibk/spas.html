@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>astro_scripts_uibk.spas &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            astro_scripts_uibk
+          </a>
+              <div class="version">
+                0.post27+gdcb808d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">astro_scripts_uibk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">astro_scripts_uibk.spas</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for astro_scripts_uibk.spas</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">astro_scripts_uibk.convolve</span> <span class="kn">import</span> <span class="n">find_nearest_index</span>
+
+
+<div class="viewcode-block" id="float_to_single_precision"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spas.float_to_single_precision">[docs]</a><span class="k">def</span> <span class="nf">float_to_single_precision</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert float to 4 byte representaion</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value: float</span>
+<span class="sd">        float value to convert</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    byte representation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;&lt;f&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="float_to_double_precision"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spas.float_to_double_precision">[docs]</a><span class="k">def</span> <span class="nf">float_to_double_precision</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert float to 8 byte representaion</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value: float</span>
+<span class="sd">        float value to convert</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    byte representation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;&lt;d&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="crop_spectrum"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spas.crop_spectrum">[docs]</a><span class="k">def</span> <span class="nf">crop_spectrum</span><span class="p">(</span><span class="n">wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                  <span class="n">lower_bound</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a part of a spectrum, specified by wavelength bounds.</span>
+<span class="sd">    It makes sure that the number of points is even (necessary for SPAS)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wave: np.array</span>
+<span class="sd">        wavelength points, sorted</span>
+<span class="sd">    flux: np.array</span>
+<span class="sd">        flux points</span>
+<span class="sd">    lower_bound: float</span>
+<span class="sd">        lower wavelength bound of new spectrum</span>
+<span class="sd">    upper_bound: float</span>
+<span class="sd">        upper wavelength bound of new spectrum</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    first array: new wavelength array</span>
+<span class="sd">    second array: new flux array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx0</span> <span class="o">=</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">lower_bound</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">idx0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">idx0</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">idx1</span> <span class="o">=</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">idx1</span> <span class="o">+=</span> <span class="p">((</span><span class="n">idx1</span><span class="o">-</span><span class="n">idx0</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">],</span> <span class="n">flux</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]])</span></div>
+
+
+<div class="viewcode-block" id="is_valid_input"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spas.is_valid_input">[docs]</a><span class="k">def</span> <span class="nf">is_valid_input</span><span class="p">(</span><span class="n">wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux_array</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                   <span class="n">temperature_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">logg_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test if given parameters for a spas binary are valid.</span>
+<span class="sd">    It is possible that this function is not complete.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wave: np.array</span>
+<span class="sd">        wavelength points, sorted</span>
+<span class="sd">    flux_array: list</span>
+<span class="sd">        list that contains numpy flux arrays</span>
+<span class="sd">    temperature_array: np.array</span>
+<span class="sd">        array of temperature value for each flux</span>
+<span class="sd">    logg_array: np.array</span>
+<span class="sd">        array of log(g) value for each flux</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">number_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
+    <span class="n">number_fluxes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">flux_array</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">number_points</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of flux points is not even.&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">flux</span> <span class="ow">in</span> <span class="n">flux_array</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">flux</span><span class="p">)</span> <span class="o">!=</span> <span class="n">number_points</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The length of a flux array is not the same length as the wave array.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">temperature_array</span><span class="p">)</span> <span class="o">!=</span> <span class="n">number_fluxes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The temperature array has a different length than the flux grid.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">logg_array</span><span class="p">)</span> <span class="o">!=</span> <span class="n">number_fluxes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The log_g array has a different length than the flux grid.&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_fluxes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">temperature_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">temperature_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The temperature grid is not in increasing monotonically.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">temperature_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">temperature_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">logg_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">logg_array</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The log_g grid is not increasing while the temperature is constant.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;t_eff_grid: </span><span class="si">{</span><span class="n">temperature_array</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;log_g_grid: </span><span class="si">{</span><span class="n">logg_array</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_binary"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spas.create_binary">[docs]</a><span class="k">def</span> <span class="nf">create_binary</span><span class="p">(</span><span class="n">wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux_array</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">temperature_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">logg_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                  <span class="n">abundance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to create SPAS binaries.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wave: np.array</span>
+<span class="sd">        wavelength points, sorted</span>
+<span class="sd">    flux_array: list | np.array</span>
+<span class="sd">        list that contains numpy flux arrays</span>
+<span class="sd">    temperature_array: np.array</span>
+<span class="sd">        array of temperature value for each flux array</span>
+<span class="sd">    logg_array: np.array</span>
+<span class="sd">        array of log(g) value for each flux array</span>
+<span class="sd">    abundance: float</span>
+<span class="sd">        abundance value, same for all flux arrays</span>
+<span class="sd">    file_name: str | Path</span>
+<span class="sd">        name of the output file (usually *.bin*)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">is_valid_input</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">flux_array</span><span class="p">,</span> <span class="n">temperature_array</span><span class="p">,</span> <span class="n">logg_array</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_flux</span><span class="p">(</span><span class="n">file_descriptor</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">abun</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="n">file_descriptor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">float_to_double_precision</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="n">file_descriptor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">float_to_double_precision</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+        <span class="n">file_descriptor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">float_to_double_precision</span><span class="p">(</span><span class="n">abun</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">flux_point</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">file_descriptor</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">float_to_single_precision</span><span class="p">(</span><span class="n">flux_point</span><span class="p">))</span>
+
+    <span class="n">number_fluxes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">flux_array</span><span class="p">)</span>
+    <span class="n">number_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
+
+    <span class="n">out_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+
+    <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">number_points</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">))</span>
+    <span class="n">zero</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">zero</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">wave_point</span> <span class="ow">in</span> <span class="n">wave</span><span class="p">:</span>
+        <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">float_to_double_precision</span><span class="p">(</span><span class="n">wave_point</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_fluxes</span><span class="p">):</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">logg</span> <span class="o">=</span> <span class="n">logg_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">flux</span> <span class="o">=</span> <span class="n">flux_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">write_flux</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">logg</span><span class="p">,</span> <span class="n">abundance</span><span class="p">,</span> <span class="n">flux</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">number_fluxes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">logg</span> <span class="o">=</span> <span class="n">logg_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">flux</span> <span class="o">=</span> <span class="n">flux_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">write_flux</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">logg</span><span class="o">+</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">abundance</span><span class="p">,</span> <span class="n">flux</span><span class="p">)</span>
+        <span class="n">write_flux</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">temperature</span><span class="o">+</span><span class="mi">100</span><span class="p">,</span> <span class="n">logg</span><span class="p">,</span> <span class="n">abundance</span><span class="p">,</span> <span class="n">flux</span><span class="p">)</span>
+        <span class="n">write_flux</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">temperature</span><span class="o">+</span><span class="mi">100</span><span class="p">,</span> <span class="n">logg</span><span class="o">+</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">abundance</span><span class="p">,</span> <span class="n">flux</span><span class="p">)</span>
+
+    <span class="n">out_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="load_binary_file"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spas.load_binary_file">[docs]</a><span class="k">def</span> <span class="nf">load_binary_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load the content of a spas binary file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name: str</span>
+<span class="sd">        File name of the spas binary</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple:</span>
+<span class="sd">        float: abundance</span>
+<span class="sd">        np.array(): Temperature values</span>
+<span class="sd">        np.array(): Surface gravity values</span>
+<span class="sd">        np.array(): Wavelength points</span>
+<span class="sd">        np.array(): Array of fluxes, for each T/logg pair</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>  <span class="c1"># file size in bytes</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+
+    <span class="n">len_wave</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># leading zeros</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">flux</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">abun</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;d&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+                     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len_wave</span><span class="p">)])</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">file_size</span><span class="o">-</span><span class="mi">8</span><span class="o">-</span><span class="n">len_wave</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">24</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="n">len_wave</span><span class="p">))):</span>
+        <span class="n">T</span> <span class="o">+=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;d&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))[</span><span class="mi">0</span><span class="p">]]</span>  <span class="c1"># read temperature</span>
+        <span class="n">G</span> <span class="o">+=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;d&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))[</span><span class="mi">0</span><span class="p">]]</span>  <span class="c1"># read logg</span>
+        <span class="n">abun</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;d&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">8</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># read abundance</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;f&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len_wave</span><span class="p">)]</span>  <span class="c1"># read flux</span>
+        <span class="n">flux</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">)]</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">abun</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">wave</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">flux</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="microgrid"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spas.microgrid">[docs]</a><span class="k">def</span> <span class="nf">microgrid</span><span class="p">(</span><span class="n">t_eff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">logg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">abundance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a microgrid binary file for spas.</span>
+<span class="sd">    A microgrid model only has one Teff and logg, but tricks spas into thinking that there are 2 values each,</span>
+<span class="sd">    so it accepts the model as a grid.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    t_eff : float</span>
+<span class="sd">        Efficetive temperature</span>
+<span class="sd">    logg : float</span>
+<span class="sd">        Surface gravity</span>
+<span class="sd">    abundance : float</span>
+<span class="sd">        Elemental abundance (add normalization factor, e.g, 12)</span>
+<span class="sd">    spec : np.array</span>
+<span class="sd">        Input spectrum (*np.array([wave, flux])*)</span>
+<span class="sd">    file_name : str | Path</span>
+<span class="sd">        Path of output binary file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># extract wavelength array</span>
+    <span class="n">flux_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">([</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="mi">4</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># expand fluxes in microgrid</span>
+    <span class="c1"># construct Teff and logg microgrids</span>
+    <span class="n">t_eff_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">([</span><span class="n">t_eff</span><span class="p">,</span> <span class="n">t_eff</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">logg_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">([</span><span class="n">logg</span><span class="p">,</span> <span class="n">logg</span> <span class="o">+</span> <span class="mf">.01</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">create_binary</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">flux_array</span><span class="p">,</span> <span class="n">t_eff_array</span><span class="p">,</span> <span class="n">logg_array</span><span class="p">,</span> <span class="n">abundance</span> <span class="o">+</span> <span class="mf">12.04</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Astrophysics UIBK.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

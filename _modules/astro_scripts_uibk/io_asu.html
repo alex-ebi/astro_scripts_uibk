@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>astro_scripts_uibk.io_asu &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            astro_scripts_uibk
+          </a>
+              <div class="version">
+                0.post27+gdcb808d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">astro_scripts_uibk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">astro_scripts_uibk.io_asu</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for astro_scripts_uibk.io_asu</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
+
+
+<div class="viewcode-block" id="wave_from_dispersion"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.wave_from_dispersion">[docs]</a><span class="k">def</span> <span class="nf">wave_from_dispersion</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">start_wave</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a wavelength array as a equidistant grid.</span>
+<span class="sd">    Starts from &#39;star_wave&#39; and makes further points with a constant separation &#39;dispersion&#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flux : np.array</span>
+<span class="sd">        Flux array. Needed to know length of spectrum.</span>
+<span class="sd">    start_wave : float</span>
+<span class="sd">        Starting wavelength.</span>
+<span class="sd">    dispersion : float</span>
+<span class="sd">        Wavelength step.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array</span>
+<span class="sd">        Wavelength array matching to flux array in length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flux</span><span class="p">):</span>
+        <span class="n">wave_i</span> <span class="o">=</span> <span class="n">start_wave</span> <span class="o">+</span> <span class="n">dispersion</span> <span class="o">*</span> <span class="n">i</span>
+        <span class="n">wave</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wave_i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wave</span></div>
+
+
+<div class="viewcode-block" id="read_surface_spectrum"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_surface_spectrum">[docs]</a><span class="k">def</span> <span class="nf">read_surface_spectrum</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads the spectrum of a surface output-file (e.g. &quot;T9000G1.50X7.0M02HE.100C8.41_flux&quot;).</span>
+
+<span class="sd">    It first looks for the line in the output, which starts with &quot; SURFACE&quot;.</span>
+<span class="sd">    If no such line is found, the function reads all lines starting at line 100 as spectrum points.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name : str</span>
+<span class="sd">        Name of the surface file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array([wave, flux])</span>
+<span class="sd">        Surface spectrum in this format: *np.array([wave (Angstrom), normalized flux])*</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="c1"># search for the starting line of the flux columns</span>
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39; SURFACE&#39;</span><span class="p">:</span>
+            <span class="n">start_ind</span> <span class="o">=</span> <span class="n">ind</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">ind_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_ind</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind_range</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ind_range</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">dat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">dat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">dat</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">dat</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">spec</span></div>
+
+
+<div class="viewcode-block" id="read_atlas9_flux"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_atlas9_flux">[docs]</a><span class="k">def</span> <span class="nf">read_atlas9_flux</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load the radiation flux from an ATLAS9 output file (\*_struct).</span>
+<span class="sd">    The ATLAS9 Eddington flux gets converted to the Astrophysical flux.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atlas9_file: str</span>
+<span class="sd">        Name of the file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array([wave, flux])</span>
+<span class="sd">        wavelength [A], Astrophysical flux [erg/cm^2/s/A]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="n">flux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;FLUX &quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">([</span><span class="n">line</span><span class="p">],</span> <span class="n">delimiter</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">flux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">wave</span> <span class="o">*=</span> <span class="mi">10</span>  <span class="c1"># Convert nm to Angstrom</span>
+    <span class="c1"># (erg/cm^2/s/A); Convert from Eddington to Astrophysical flux</span>
+    <span class="n">flux</span> <span class="o">*=</span> <span class="mf">2.9979e18</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">/</span> <span class="n">wave</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">flux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave</span><span class="p">,</span> <span class="n">flux</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="read_atlas9_struct"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_atlas9_struct">[docs]</a><span class="k">def</span> <span class="nf">read_atlas9_struct</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load the atmosphere structure from an ATLAS9 output file (\*_struct).</span>
+
+<span class="sd">    Columns:</span>
+<span class="sd">        RHOX : column mass density [g*cm/s^2]</span>
+
+<span class="sd">        T : Kinetic Temperature [K]</span>
+
+<span class="sd">        P : Total gas pressure [dyn/cm^2]</span>
+
+<span class="sd">        XNE : Free electron number density [cm^-3]</span>
+
+<span class="sd">        ABROSS : Rosseland mean mass extinction [cm^2/g]</span>
+
+<span class="sd">        ACCRAD : Radiative acceleration [cm/s^2]</span>
+
+<span class="sd">        VTURB : Turbulent velocity [cm/s]</span>
+
+<span class="sd">        FLXCNV : Convective flux</span>
+
+<span class="sd">        VCOMV : Velocity of convective cells [cm/s]</span>
+
+<span class="sd">        VELSND : Local sound speed [cm/s]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atlas9_file: str</span>
+<span class="sd">        Name of the file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array([RHOX, T, P, XNE, ABROSS, ACCRAD, VTURB, FLXCNV, VCOMV, VELSND])</span>
+<span class="sd">        Atmospheric structure of Atlas9 model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="n">struct_start_index</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Search for header line of structure table</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;READ &#39;</span><span class="p">):</span>
+            <span class="n">struct_start_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">break</span>
+
+    <span class="c1"># If the header is not found, a syntax error gets raised.</span>
+    <span class="k">if</span> <span class="n">struct_start_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="s1">&#39;The input file does not have the expected format.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                          <span class="s1">&#39;The structure table has to begin with the header line:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                          <span class="s1">&#39;READ DECK6 72 RHOX,T,P,XNE,ABROSS,ACCRAD,VTURB, FLXCNV,VCOMV,VELSND&#39;</span><span class="p">)</span>
+
+    <span class="n">struct_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="n">struct_start_index</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">invalid_raise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">struct_array</span></div>
+
+
+<div class="viewcode-block" id="read_molecfit_crires_spec"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_spec">[docs]</a><span class="k">def</span> <span class="nf">read_molecfit_crires_spec</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a molecfit output fits file of oCRIRES with a specified chip number.</span>
+<span class="sd">    Returns a spectrum. Use *read_molecfit_crires_col_names* to get the column names.</span>
+<span class="sd">    Can also be used for most other fits files.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path : str</span>
+<span class="sd">        Name of fits file.</span>
+<span class="sd">    chip : int</span>
+<span class="sd">        Chip number.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array([Spectrum from fits file])</span>
+<span class="sd">        Spectrum without the usual ordering ([wave, flux, additional_columns]).</span>
+<span class="sd">        Order it yourself.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>  <span class="c1"># open fits file</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">hdu</span><span class="p">[</span><span class="n">chip</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># get spectrum data of specified chip</span>
+
+    <span class="c1"># construct output array for spectrum</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">records</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">out_spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>  <span class="c1"># spectrum array in our standard format</span>
+
+    <span class="k">return</span> <span class="n">out_spec</span></div>
+
+
+<div class="viewcode-block" id="read_molecfit_crires_col_names"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_col_names">[docs]</a><span class="k">def</span> <span class="nf">read_molecfit_crires_col_names</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a molecfit output fits file of oCRIRES with a specified chip number.</span>
+<span class="sd">    Returns the column names of the spectrum (*read_molecfit_crires_spec*).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path : str</span>
+<span class="sd">        Name of fits file.</span>
+<span class="sd">    chip : int</span>
+<span class="sd">        Chip number.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array([column_names:str])</span>
+<span class="sd">        1D array of column names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>  <span class="c1"># open fits file</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">hdu</span><span class="p">[</span><span class="n">chip</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># get spectrum data of specified chip</span>
+
+    <span class="c1"># extract column names</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">names</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_molecfit_crires_header"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_header">[docs]</a><span class="k">def</span> <span class="nf">read_molecfit_crires_header</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a molecfit output fits file of oCRIRES with a specified chip number.</span>
+<span class="sd">    Returns the merged Primary header and Header of the specified chip as a dictionary.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path : str</span>
+<span class="sd">        Name of fits file.</span>
+<span class="sd">    chip : int</span>
+<span class="sd">        Chip number.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing header information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>  <span class="c1"># open fits file</span>
+
+    <span class="c1"># merge primary header and header of chip hdu</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="o">**</span><span class="n">hdu</span><span class="p">[</span><span class="n">chip</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">header</span></div>
+
+
+<div class="viewcode-block" id="read_iue_stis"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_iue_stis">[docs]</a><span class="k">def</span> <span class="nf">read_iue_stis</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads an spectrophotometry file (IUE or STIS)</span>
+<span class="sd">    file columns: wavelength [A], flux [erg/cm^2/s/A], flux uncertainty [erg/cm^2/s/A]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename: string</span>
+<span class="sd">        name of the file containing the spectrum</span>
+<span class="sd">    has_error: bool</span>
+<span class="sd">        set it to false if the file has no error column</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    ------</span>
+<span class="sd">    np.array</span>
+<span class="sd">        Spectrum with wavelength, flux, flux_uncertainty (set to 1 if has_error = False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">has_error</span><span class="p">:</span>
+        <span class="n">y_err</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_err</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="read_uves"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_uves">[docs]</a><span class="k">def</span> <span class="nf">read_uves</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads ESO-UVES data.</span>
+<span class="sd">    Calculates the wavelengths from the header keywords &#39;CRVAL1&#39; and &#39;CDELT1&#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        File path.</span>
+<span class="sd">    return_header : bool</span>
+<span class="sd">        If True, the function returns a tuple: spectrum and header. Default: False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array or (np.array, fits.Header)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span>
+    <span class="n">flux</span> <span class="o">=</span> <span class="n">hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">wave_from_dispersion</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;CRVAL1&#39;</span><span class="p">],</span> <span class="n">header</span><span class="p">[</span><span class="s1">&#39;CDELT1&#39;</span><span class="p">])</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave</span><span class="p">,</span> <span class="n">flux</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">return_header</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spec</span><span class="p">,</span> <span class="n">header</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spec</span></div>
+
+
+<span class="k">def</span> <span class="nf">read_carmenes</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">hdu</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">hdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)])</span>
+
+    <span class="k">if</span> <span class="n">return_header</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spec</span><span class="p">,</span> <span class="n">header</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spec</span>
+
+
+<span class="k">def</span> <span class="nf">read_gaia</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">spec_phot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">spec_phot</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Astrophysics UIBK.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

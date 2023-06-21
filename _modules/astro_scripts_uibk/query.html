@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>astro_scripts_uibk.query &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            astro_scripts_uibk
+          </a>
+              <div class="version">
+                0.post27+gdcb808d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">astro_scripts_uibk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">astro_scripts_uibk.query</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for astro_scripts_uibk.query</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">astroquery.vizier</span> <span class="kn">import</span> <span class="n">Vizier</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy</span> <span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">astroquery.utils.commons</span> <span class="kn">import</span> <span class="n">TableList</span>
+<span class="kn">from</span> <span class="nn">astropy.table.table</span> <span class="kn">import</span> <span class="n">Table</span>
+<span class="kn">from</span> <span class="nn">astro_scripts_uibk.transformations</span> <span class="kn">import</span> <span class="n">mag_to_flux</span>
+<span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">files</span>
+
+
+<span class="k">def</span> <span class="nf">multi_row_exception</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">Table</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle exception if multiple targets are found in the search radius.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Exception in asu.query: Multiple values found for search radius!&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Result:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s1">&#39;display.max_rows&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>  <span class="c1"># more options can be specified</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Type the line index, you want to select, or enter &quot;-1&quot; &#39;</span>
+                          <span class="s1">&#39;if you dont want any of those lines.&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[[</span><span class="n">index</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">mask_as_nan</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replaces nan values in a DataFrame with np.nan.</span>
+<span class="sd">    Possible masks of the input DataFrame are defined in map_func.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">map_func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts several nan masks to np.nan.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">map_func</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="apply_flux"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.apply_flux">[docs]</a><span class="k">def</span> <span class="nf">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the asu.transformations.mag_to_flux function to a magnitude DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">app_func</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define applied function for photometry DataFrames.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">mag_to_flux</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">])</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;flux&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">app_func</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="k">def</span> <span class="nf">filter_wave</span><span class="p">(</span><span class="n">filter_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add wavelength to a filter in a row of a DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filter_data_path</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;astro_scripts_uibk&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;filter_profiles/filter_data.csv&#39;</span>
+    <span class="n">filter_data_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filter_data_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filter_data_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">filter_name</span><span class="p">,</span> <span class="s1">&#39;wave&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="apply_wave"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.apply_wave">[docs]</a><span class="k">def</span> <span class="nf">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the asu.query.filter_wave function to a magnitude DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">app_func</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define applied function for photometry DataFrames.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">filter_wave</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;wave&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">app_func</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_ans_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_ans_mags">[docs]</a><span class="k">def</span> <span class="nf">get_ans_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a Vizier query for an object in the ANS catalog.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="s1">&#39;II/97/ans&#39;</span>  <span class="c1"># ANS (Wesselius+ 1982)</span>
+
+    <span class="c1"># Perform a query on the star and save data in query_object</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">TableList</span> <span class="o">=</span> <span class="n">Vizier</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">arcsec</span><span class="p">,</span> <span class="n">catalog</span><span class="o">=</span><span class="p">[</span><span class="n">catalog</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No ANS data found for </span><span class="si">%s</span><span class="s1"> with the search radius r = </span><span class="si">%f</span><span class="s1"> arcsec!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="n">ans</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">catalog</span><span class="p">]</span>  <span class="c1"># Extract ANS result from TableList</span>
+    <span class="n">ans</span> <span class="o">=</span> <span class="n">multi_row_exception</span><span class="p">(</span><span class="n">ans</span><span class="p">)</span>  <span class="c1"># Handle multiple measurements.</span>
+
+    <span class="k">if</span> <span class="n">ans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Write magnitudes to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_15W&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;_15W&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_18&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;_18&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_22&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;_22&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_25&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;_25&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_33&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;_33&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Write magnitude errors to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_15W&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;l_15W&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_18&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;l_18&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_22&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;l_22&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_25&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;l_25&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;ANS_33&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">[</span><span class="s2">&quot;l_33&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add physical fluxes to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add mean filter wavelengths to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">mask_as_nan</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># replace nan values with np.nan</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># drop rows without magnitude values</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_swift_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_swift_mags">[docs]</a><span class="k">def</span> <span class="nf">get_swift_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a Vizier query for an object in the SWIFT catalog.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="s1">&#39;II/339/uvotssc1&#39;</span>  <span class="c1"># SWIFT</span>
+
+    <span class="c1"># Perform a query on the star and save data in query_object</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">arcsec</span><span class="p">,</span> <span class="n">catalog</span><span class="o">=</span><span class="p">[</span><span class="n">catalog</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No SWIFT data found for </span><span class="si">%s</span><span class="s1"> with the search radius r = </span><span class="si">%f</span><span class="s1"> arcsec!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="n">swift</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">catalog</span><span class="p">]</span>  <span class="c1"># Extract ANS result from TableList</span>
+    <span class="n">swift</span> <span class="o">=</span> <span class="n">multi_row_exception</span><span class="p">(</span><span class="n">swift</span><span class="p">)</span>  <span class="c1"># Handle multiple measurements.</span>
+
+    <span class="k">if</span> <span class="n">swift</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Write magnitudes to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Swift_UVW1&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swift</span><span class="p">[</span><span class="s2">&quot;UVW1-AB&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Swift_UVW2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swift</span><span class="p">[</span><span class="s2">&quot;UVW2-AB&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Swift_UVM2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swift</span><span class="p">[</span><span class="s2">&quot;UVM2-AB&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Write magnitude errors to DataFrame by dividing values by S/N</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Swift_UVW1&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swift</span><span class="p">[</span><span class="s2">&quot;UVW1-AB&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">swift</span><span class="p">[</span><span class="s2">&quot;sUVW1&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Swift_UVW2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swift</span><span class="p">[</span><span class="s2">&quot;UVW2-AB&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">swift</span><span class="p">[</span><span class="s2">&quot;sUVW2&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;Swift_UVM2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swift</span><span class="p">[</span><span class="s2">&quot;UVM2-AB&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">swift</span><span class="p">[</span><span class="s2">&quot;sUVM2&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add physical fluxes to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add mean filter wavelengths to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">mask_as_nan</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># replace nan values with np.nan</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># drop rows without magnitude values</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_mermilliod_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_mermilliod_mags">[docs]</a><span class="k">def</span> <span class="nf">get_mermilliod_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a Vizier query for an object in the Mermilliod catalog.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="s1">&#39;II/168/ubvmeans&#39;</span>  <span class="c1"># Mermilliod 1991</span>
+
+    <span class="c1"># Perform a query on the star and save data in query_object</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">arcsec</span><span class="p">,</span> <span class="n">catalog</span><span class="o">=</span><span class="p">[</span><span class="n">catalog</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No Mermilliod (UVB) data found for </span><span class="si">%s</span><span class="s1"> with the search radius r = </span><span class="si">%f</span><span class="s1"> arcsec!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="n">mermilliod</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">catalog</span><span class="p">]</span>  <span class="c1"># Extract ANS result from TableList</span>
+    <span class="n">mermilliod</span> <span class="o">=</span> <span class="n">multi_row_exception</span><span class="p">(</span><span class="n">mermilliod</span><span class="p">)</span>  <span class="c1"># Handle multiple measurements.</span>
+
+    <span class="k">if</span> <span class="n">mermilliod</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># calculate magnitudes</span>
+        <span class="n">v_mag</span> <span class="o">=</span> <span class="n">mermilliod</span><span class="p">[</span><span class="s2">&quot;Vmag&quot;</span><span class="p">]</span>
+        <span class="n">b_mag</span> <span class="o">=</span> <span class="n">v_mag</span> <span class="o">+</span> <span class="n">mermilliod</span><span class="p">[</span><span class="s2">&quot;B-V&quot;</span><span class="p">]</span>
+        <span class="n">u_mag</span> <span class="o">=</span> <span class="n">b_mag</span> <span class="o">+</span> <span class="n">mermilliod</span><span class="p">[</span><span class="s2">&quot;U-B&quot;</span><span class="p">]</span>
+        <span class="c1"># assign magnitudes to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_mag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b_mag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_mag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># calculate magnitude errors</span>
+        <span class="n">e_v_mag</span> <span class="o">=</span> <span class="n">mermilliod</span><span class="p">[</span><span class="s2">&quot;e_Vmag&quot;</span><span class="p">]</span>
+        <span class="n">e_b_mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">e_v_mag</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">mermilliod</span><span class="p">[</span><span class="s2">&quot;e_B-V&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">e_u_mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">e_b_mag</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">mermilliod</span><span class="p">[</span><span class="s2">&quot;e_U-B&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># assign magnitude errors to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_u_mag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_b_mag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_v_mag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add physical fluxes to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add mean filter wavelengths to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">mask_as_nan</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># replace nan values with np.nan</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># drop rows without magnitude values</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_2mass_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_2mass_mags">[docs]</a><span class="k">def</span> <span class="nf">get_2mass_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a Vizier query for an object in the 2MASS catalog.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="s1">&#39;II/246/out&#39;</span>  <span class="c1"># 2MASS (Cutri+ 2003)</span>
+
+    <span class="c1"># Perform a query on the star and save data in query_object</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">arcsec</span><span class="p">,</span> <span class="n">catalog</span><span class="o">=</span><span class="p">[</span><span class="n">catalog</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No 2MASS data found for </span><span class="si">%s</span><span class="s1"> with the search radius r = </span><span class="si">%f</span><span class="s1"> arcsec!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="n">two_mass</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">catalog</span><span class="p">]</span>  <span class="c1"># Extract ANS result from TableList</span>
+    <span class="n">two_mass</span> <span class="o">=</span> <span class="n">multi_row_exception</span><span class="p">(</span><span class="n">two_mass</span><span class="p">)</span>  <span class="c1"># Handle multiple measurements.</span>
+
+    <span class="k">if</span> <span class="n">two_mass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># assign magnitudes to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;2MASS_J&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">two_mass</span><span class="p">[</span><span class="s2">&quot;Jmag&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;2MASS_H&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">two_mass</span><span class="p">[</span><span class="s2">&quot;Hmag&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;2MASS_K&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">two_mass</span><span class="p">[</span><span class="s2">&quot;Kmag&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># assign magnitude errors to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;2MASS_J&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">two_mass</span><span class="p">[</span><span class="s2">&quot;e_Jmag&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;2MASS_H&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">two_mass</span><span class="p">[</span><span class="s2">&quot;e_Hmag&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;2MASS_K&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">two_mass</span><span class="p">[</span><span class="s2">&quot;e_Kmag&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add physical fluxes to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add mean filter wavelengths to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">mask_as_nan</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># replace nan values with np.nan</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># drop rows without magnitude values</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_allwise_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_allwise_mags">[docs]</a><span class="k">def</span> <span class="nf">get_allwise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a Vizier query for an object in the AllWISE Source Catalog.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="s1">&#39;II/328/allwise&#39;</span>  <span class="c1"># AllWISE (Cutri+ 2013)</span>
+
+    <span class="c1"># Perform a query on the star and save data in query_object</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">arcsec</span><span class="p">,</span> <span class="n">catalog</span><span class="o">=</span><span class="p">[</span><span class="n">catalog</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No AllWISE data found for </span><span class="si">%s</span><span class="s1"> with the search radius r = </span><span class="si">%f</span><span class="s1"> arcsec!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="n">all_wise</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">catalog</span><span class="p">]</span>  <span class="c1"># Extract ANS result from TableList</span>
+    <span class="n">all_wise</span> <span class="o">=</span> <span class="n">multi_row_exception</span><span class="p">(</span><span class="n">all_wise</span><span class="p">)</span>  <span class="c1"># Handle multiple measurements.</span>
+
+    <span class="k">if</span> <span class="n">all_wise</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># assign magnitudes to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;W1mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;W2mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W3&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;W3mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W4&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;W4mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># assign magnitude errors to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;e_W1mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;e_W2mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W3&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;e_W3mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W4&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_wise</span><span class="p">[</span><span class="s1">&#39;e_W4mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add physical fluxes to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add mean filter wavelengths to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">mask_as_nan</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># replace nan values with np.nan</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># drop rows without magnitude values</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_wise_all_sky_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_wise_all_sky_mags">[docs]</a><span class="k">def</span> <span class="nf">get_wise_all_sky_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a Vizier query for an object in the WISE All-Sky Source Catalog.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="s1">&#39;II/311/wise&#39;</span>  <span class="c1"># AllWISE (Cutri+ 2013)</span>
+
+    <span class="c1"># Perform a query on the star and save data in query_object</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">arcsec</span><span class="p">,</span> <span class="n">catalog</span><span class="o">=</span><span class="p">[</span><span class="n">catalog</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No WISE All-sky data found for </span><span class="si">%s</span><span class="s1"> with the search radius r = </span><span class="si">%f</span><span class="s1"> arcsec!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="n">wise_all_sky</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">catalog</span><span class="p">]</span>  <span class="c1"># Extract ANS result from TableList</span>
+    <span class="n">wise_all_sky</span> <span class="o">=</span> <span class="n">multi_row_exception</span><span class="p">(</span><span class="n">wise_all_sky</span><span class="p">)</span>  <span class="c1"># Handle multiple measurements.</span>
+
+    <span class="k">if</span> <span class="n">wise_all_sky</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># assign magnitudes to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;W1mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;W2mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W3&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;W3mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W4&quot;</span><span class="p">,</span> <span class="s1">&#39;mag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;W4mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># assign magnitude errors to DataFrame</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;e_W1mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;e_W2mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W3&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;e_W3mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">&quot;W4&quot;</span><span class="p">,</span> <span class="s1">&#39;mag_error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wise_all_sky</span><span class="p">[</span><span class="s1">&#39;e_W4mag&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add physical fluxes to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># add mean filter wavelengths to DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">mask_as_nan</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># replace nan values with np.nan</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mag&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># drop rows without magnitude values</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_wise_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_wise_mags">[docs]</a><span class="k">def</span> <span class="nf">get_wise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query for one target!</span>
+<span class="sd">    Makes a Vizier query for an object in the AllWISE Source Catalog and WISE All-Sky Source Catalog.</span>
+<span class="sd">    If no targets are found in AllWISE, the WISE All-Sky Source Catalog is searched.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">get_allwise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No values found in AllWISE Source Catalog. Now searching in WISE All-Sky Source Catalog.&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">get_wise_all_sky_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="sed_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.sed_mags">[docs]</a><span class="k">def</span> <span class="nf">sed_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a Vizier query for an object in the catalogs used for SED fitting.</span>
+
+<span class="sd">    Surveys: ANS, SWIFT, Mermilliod, 2MASS, WISE (AllWISE, WISE All-Sky)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj_name : str</span>
+<span class="sd">        Simbad object name.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        search radius in arc-seconds.</span>
+<span class="sd">    file_path: str or Path</span>
+<span class="sd">        Specify a file path if you want to save the data directly to a xlsx file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame(columns=[&#39;mag&#39;, &#39;mag_error&#39;, &#39;flux&#39;, &#39;wave&#39;])</span>
+<span class="sd">        DataFrame with filter names as index with Magnitudes, magnitude errors, physical flux calculated from</span>
+<span class="sd">        magnitude and effective filter wavelength.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df_ans</span> <span class="o">=</span> <span class="n">get_ans_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>  <span class="c1"># create DataFrame with ANS magnitudes</span>
+    <span class="n">df_swift</span> <span class="o">=</span> <span class="n">get_swift_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>  <span class="c1"># create DataFrame with SWIFT magnitudes</span>
+    <span class="n">df_mermilliod</span> <span class="o">=</span> <span class="n">get_mermilliod_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>  <span class="c1"># create DataFrame with Mermilliod magnitudes</span>
+    <span class="n">df_2mass</span> <span class="o">=</span> <span class="n">get_2mass_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>  <span class="c1"># create DataFrame with 2MASS magnitudes</span>
+    <span class="n">df_wise</span> <span class="o">=</span> <span class="n">get_wise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>  <span class="c1"># create DataFrame with AllWISE magnitudes</span>
+
+    <span class="n">out_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_ans</span><span class="p">,</span> <span class="n">df_swift</span><span class="p">,</span> <span class="n">df_mermilliod</span><span class="p">,</span> <span class="n">df_2mass</span><span class="p">,</span> <span class="n">df_wise</span><span class="p">])</span>  <span class="c1"># concatenate DataFrame</span>
+
+    <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out_df</span>  <span class="c1"># return concatenated dataframe</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Astrophysics UIBK.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

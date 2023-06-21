@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>astro_scripts_uibk.widgets &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            astro_scripts_uibk
+          </a>
+              <div class="version">
+                0.post27+gdcb808d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">astro_scripts_uibk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">astro_scripts_uibk.widgets</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for astro_scripts_uibk.widgets</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">SpanSelector</span>
+<span class="kn">from</span> <span class="nn">astro_scripts_uibk</span> <span class="kn">import</span> <span class="n">spectrum_reduction</span>
+
+
+<div class="viewcode-block" id="EWContainer"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.widgets.EWContainer">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">EWContainer</span><span class="p">:</span>
+    <span class="n">ew</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">ew_error</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+<div class="viewcode-block" id="ew_measurement"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.widgets.ew_measurement">[docs]</a><span class="k">def</span> <span class="nf">ew_measurement</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">cont_range</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Widget for measuring the equivalent width of spectra.</span>
+<span class="sd">    A linear continuum is calculated by selecting two continuum ranges of width cont_range.</span>
+<span class="sd">    Then, an equivalent width is calculated using this linear continuum by direct integration over the spectrum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spectrum : np.array</span>
+<span class="sd">        Input spectrum.</span>
+<span class="sd">    resolution : float</span>
+<span class="sd">        Resolution of the spectrograph.</span>
+<span class="sd">    cont_range : float</span>
+<span class="sd">        Width of the continuum ranges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (float, float)</span>
+<span class="sd">        Equivalent width and error of equivalent width.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ew_set</span> <span class="o">=</span> <span class="n">EWContainer</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+
+    <span class="n">span1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span>
+                        <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+    <span class="n">span2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span>
+                        <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">onselect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">s1min</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">s1max</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">span1</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">s1min</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">[</span><span class="n">s1max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">span1</span><span class="o">.</span><span class="n">xy</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">s2min</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">s2max</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">span2</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">s2min</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">[</span><span class="n">s2max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">span2</span><span class="o">.</span><span class="n">xy</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="c1"># calculate normalized spectrum and weights of continuum regions (which is (S/N))</span>
+        <span class="n">norm_spec</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">normalize_mean_flux</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cont_range</span><span class="o">=</span><span class="n">cont_range</span><span class="p">,</span> <span class="n">return_weight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># crop spectrum to integrated area</span>
+        <span class="n">int_spec</span> <span class="o">=</span> <span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">crop_spectrum</span><span class="p">(</span><span class="n">norm_spec</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="c1"># EW</span>
+        <span class="n">ew_set</span><span class="o">.</span><span class="n">ew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">int_spec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="o">=</span><span class="n">int_spec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># EW error</span>
+        <span class="n">spec_disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span> <span class="o">/</span> <span class="n">resolution</span>  <span class="c1"># calculate spectral dispersion</span>
+        <span class="n">ew_range</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span>
+        <span class="n">ew_set</span><span class="o">.</span><span class="n">ew_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ew_range</span> <span class="o">*</span> <span class="n">spec_disp</span><span class="p">)</span> <span class="o">/</span> <span class="n">w</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spectrum</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">SpanSelector</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">onselect</span><span class="p">,</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">props</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">))</span>
+    <span class="n">rs</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ew_set</span><span class="o">.</span><span class="n">ew</span><span class="p">,</span> <span class="n">ew_set</span><span class="o">.</span><span class="n">ew_error</span></div>
+
+
+<div class="viewcode-block" id="SpectrumContainer"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.widgets.SpectrumContainer">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">SpectrumContainer</span><span class="p">:</span>
+    <span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span>
+    <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.widgets.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cont_range</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_weight</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Widget for normalizing spectra.</span>
+<span class="sd">    A linear continuum is calculated by selecting two continuum ranges of width cont_range.</span>
+<span class="sd">    On quitting the normalization window, the normalized spectrum, and optionally a weight, i.e. S/N ratio is returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spectrum : np.array</span>
+<span class="sd">        Input spectrum.</span>
+<span class="sd">    cont_range : float</span>
+<span class="sd">        Width of the continuum ranges.</span>
+<span class="sd">    return_weight : bool</span>
+<span class="sd">        If True, the function additionally returns the S/N ratio calculated in the continuum ranges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array or (np.array, float)</span>
+<span class="sd">        Normalized spectrum or (Normalized spectrum, S/N)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out_spec</span> <span class="o">=</span> <span class="n">SpectrumContainer</span>
+    <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+
+    <span class="n">span1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span>
+                        <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+    <span class="n">span2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span><span class="p">,</span>
+                        <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+
+    <span class="n">spec_plot</span><span class="p">,</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spectrum</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">onselect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">s1min</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">s1max</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">span1</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">s1min</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">[</span><span class="n">s1max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">span1</span><span class="o">.</span><span class="n">xy</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="n">s2min</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">s2max</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">cont_range</span> <span class="o">*</span> <span class="mf">.5</span>
+        <span class="n">span2</span><span class="o">.</span><span class="n">set_xy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">s2min</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">[</span><span class="n">s2max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">span2</span><span class="o">.</span><span class="n">xy</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="c1"># calculate normalized spectrum and weights of continuum regions (which is (S/N))</span>
+        <span class="k">if</span> <span class="n">return_weight</span><span class="p">:</span>
+            <span class="n">norm_spec</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">normalize_mean_flux</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cont_range</span><span class="o">=</span><span class="n">cont_range</span><span class="p">,</span>
+                                                                  <span class="n">return_weight</span><span class="o">=</span><span class="n">return_weight</span><span class="p">)</span>
+            <span class="n">out_spec</span><span class="o">.</span><span class="n">spectrum</span> <span class="o">=</span> <span class="n">norm_spec</span>
+            <span class="n">out_spec</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">norm_spec</span> <span class="o">=</span> <span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">normalize_mean_flux</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cont_range</span><span class="o">=</span><span class="n">cont_range</span><span class="p">,</span>
+                                                               <span class="n">return_weight</span><span class="o">=</span><span class="n">return_weight</span><span class="p">)</span>
+            <span class="n">out_spec</span><span class="o">.</span><span class="n">spectrum</span> <span class="o">=</span> <span class="n">norm_spec</span>
+        <span class="n">spec_plot</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">norm_spec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">SpanSelector</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">onselect</span><span class="p">,</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">props</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">))</span>
+    <span class="n">rs</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">return_weight</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">out_spec</span><span class="o">.</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">out_spec</span><span class="o">.</span><span class="n">weight</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">out_spec</span><span class="o">.</span><span class="n">spectrum</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Astrophysics UIBK.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

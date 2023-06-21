@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>astro_scripts_uibk.photometry &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            astro_scripts_uibk
+          </a>
+              <div class="version">
+                0.post27+gdcb808d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../min_versions.html">Minimum Version of Python and NumPy</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">astro_scripts_uibk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">astro_scripts_uibk.photometry</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for astro_scripts_uibk.photometry</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">Slider</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">CheckButtons</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">import</span> <span class="nn">scipy.integrate</span> <span class="k">as</span> <span class="nn">integrate</span>
+<span class="kn">from</span> <span class="nn">astro_scripts_uibk.convolve</span> <span class="kn">import</span> <span class="n">find_nearest_index</span>
+<span class="kn">from</span> <span class="nn">astro_scripts_uibk</span> <span class="kn">import</span> <span class="n">pub_plot</span>
+<span class="kn">from</span> <span class="nn">astro_scripts_uibk.query</span> <span class="kn">import</span> <span class="n">apply_wave</span><span class="p">,</span> <span class="n">apply_flux</span>
+<span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">files</span>
+
+<span class="n">transmission_file_location</span> <span class="o">=</span> <span class="s2">&quot;filter_profiles&quot;</span>
+<span class="c1"># location of transmission-profile files is relative to this file</span>
+<span class="n">package_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">#solar_magnitude_correction = \</span>
+<span class="sd">-2.5*np.log10(np.pi*R_sun**2/AU**2)-5*np.log10(AU_in_pc/10)</span>
+<span class="sd">solar_magnitude_correction = -2.5 * \</span>
+<span class="sd">    np.log10(np.pi*696340**2/149597870.7**2) + \</span>
+<span class="sd">    31.5721  # 31.5721 = distance modulus sun&quot;&quot;&quot;</span>
+<span class="n">solar_magnitude_correction</span> <span class="o">=</span> <span class="mf">41.989746</span>
+
+<span class="c1"># New filters can be added by adding a new entry to the following list</span>
+<span class="c1"># (name, transmission-profile file, zero point magnitude)</span>
+<span class="c1"># Bessel U Filter, mean = 3600A</span>
+<span class="n">filter_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="s2">&quot;U.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">4.02747e-9</span><span class="p">)),</span>
+               <span class="c1"># Bessel B Filter, mean = 4400A</span>
+               <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;B.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">6.13268e-9</span><span class="p">)),</span>
+               <span class="c1"># Bessel V Filter, mean = 5500A</span>
+               <span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;V.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">3.61871e-9</span><span class="p">)),</span>
+               <span class="c1"># 2Mass J Filter, mean = 12350A</span>
+               <span class="p">(</span><span class="s2">&quot;J&quot;</span><span class="p">,</span> <span class="s2">&quot;2MASS_J.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">3.129e-10</span><span class="p">)),</span>
+               <span class="c1"># 2Mass H Filter, mean = 16620A</span>
+               <span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;2MASS_H.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1.133e-10</span><span class="p">)),</span>
+               <span class="c1"># 2Mass K Filter, mean = 21590A</span>
+               <span class="p">(</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;2MASS_K.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">4.283e-11</span><span class="p">)),</span>
+               <span class="c1"># Wise W1 Filter, mean = 33526A</span>
+               <span class="p">(</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="s2">&quot;W1.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">27.7183</span><span class="p">),</span>
+               <span class="c1"># Wise W2 Filter, mean = 46028A</span>
+               <span class="p">(</span><span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="s2">&quot;W2.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">29.0427</span><span class="p">),</span>
+               <span class="c1"># Wise W3 Filter, mean = 115608A</span>
+               <span class="p">(</span><span class="s2">&quot;W3&quot;</span><span class="p">,</span> <span class="s2">&quot;W3.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">32.9652</span><span class="p">),</span>
+               <span class="c1"># Wise W4 Filter, mean = 220883A</span>
+               <span class="p">(</span><span class="s2">&quot;W4&quot;</span><span class="p">,</span> <span class="s2">&quot;W4.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">35.7332</span><span class="p">),</span>
+               <span class="c1"># ANS narrow Filter, mean = 1550A</span>
+               <span class="p">(</span><span class="s2">&quot;ANS_15N&quot;</span><span class="p">,</span> <span class="s2">&quot;ANS_15N.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.0972</span><span class="p">),</span>
+               <span class="c1"># ANS wide Filter, mean = 1550A</span>
+               <span class="p">(</span><span class="s2">&quot;ANS_15W&quot;</span><span class="p">,</span> <span class="s2">&quot;ANS_15W.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.0972</span><span class="p">),</span>
+               <span class="p">(</span><span class="s2">&quot;ANS_18&quot;</span><span class="p">,</span> <span class="s2">&quot;ANS_18.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.0972</span><span class="p">),</span>  <span class="c1"># ANS Filter, mean = 1800A</span>
+               <span class="p">(</span><span class="s2">&quot;ANS_22&quot;</span><span class="p">,</span> <span class="s2">&quot;ANS_22.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.0972</span><span class="p">),</span>  <span class="c1"># ANS Filter, mean = 2200A</span>
+               <span class="p">(</span><span class="s2">&quot;ANS_25&quot;</span><span class="p">,</span> <span class="s2">&quot;ANS_25.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.0972</span><span class="p">),</span>  <span class="c1"># ANS Filter, mean = 2500A</span>
+               <span class="p">(</span><span class="s2">&quot;ANS_33&quot;</span><span class="p">,</span> <span class="s2">&quot;ANS_33.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.0972</span><span class="p">),</span>  <span class="c1"># ANS Filter, mean = 3300A</span>
+               <span class="c1"># TD1 Filter, mean = 2740A</span>
+               <span class="p">(</span><span class="s2">&quot;TD1_2740&quot;</span><span class="p">,</span> <span class="s2">&quot;TD1_2740.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">21.0759</span><span class="p">),</span>
+               <span class="c1"># TD1 Filter, mean = 2365A</span>
+               <span class="p">(</span><span class="s2">&quot;TD1_2365&quot;</span><span class="p">,</span> <span class="s2">&quot;TD1_2365.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.9513</span><span class="p">),</span>
+               <span class="c1"># TD1 Filter, mean = 1965A</span>
+               <span class="p">(</span><span class="s2">&quot;TD1_1965&quot;</span><span class="p">,</span> <span class="s2">&quot;TD1_1965.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.6125</span><span class="p">),</span>
+               <span class="c1"># TD1 Filter, mean = 1565A</span>
+               <span class="p">(</span><span class="s2">&quot;TD1_1565&quot;</span><span class="p">,</span> <span class="s2">&quot;TD1_1565.dat&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.4522</span><span class="p">),</span>
+               <span class="c1"># Duplicate of 2MASS with different naming</span>
+               <span class="c1"># 2Mass J Filter, mean = 12350A</span>
+               <span class="p">(</span><span class="s2">&quot;2MASS_J&quot;</span><span class="p">,</span> <span class="s2">&quot;2MASS_J.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">3.129e-10</span><span class="p">)),</span>
+               <span class="c1"># 2Mass H Filter, mean = 16620A</span>
+               <span class="p">(</span><span class="s2">&quot;2MASS_H&quot;</span><span class="p">,</span> <span class="s2">&quot;2MASS_H.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1.133e-10</span><span class="p">)),</span>
+               <span class="c1"># 2Mass K Filter, mean = 21590A</span>
+               <span class="p">(</span><span class="s2">&quot;2MASS_K&quot;</span><span class="p">,</span> <span class="s2">&quot;2MASS_K.dat&quot;</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">4.283e-11</span><span class="p">)),</span>
+               <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">my_integral</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Integrate y(x) by x</span>
+<span class="sd">    is defined here to change the integral method for all uses at once</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">integrate</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_filter"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.load_filter">[docs]</a><span class="k">def</span> <span class="nf">load_filter</span><span class="p">(</span><span class="n">filter_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(np.array,np.array)&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a filterprofile from a file;</span>
+<span class="sd">    columns: wavelength(A), transmission</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filter_filename: string; name of the file</span>
+<span class="sd">        Wavelength has to be in Angstrom</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (wavelength,normalized transmission profile)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wave</span><span class="p">,</span> <span class="n">transmission</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filter_filename</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">my_integral</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">transmission</span><span class="p">)</span>  <span class="c1"># Normalise the profile</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">transmission</span> <span class="o">/</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="filtered_SED"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.filtered_SED">[docs]</a><span class="k">def</span> <span class="nf">filtered_SED</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                 <span class="n">filter_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                 <span class="n">filter_trans</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply a filter profile to a spectrum</span>
+<span class="sd">    interpolate on the log-scale because of wavelength spacing in far-IR</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_wave: np.array</span>
+<span class="sd">        wavelength</span>
+<span class="sd">    SED_flux: np.array</span>
+<span class="sd">        radiation flux</span>
+<span class="sd">    filter_wave: np.array</span>
+<span class="sd">        filter wavelength</span>
+<span class="sd">    filter_trans: np.array</span>
+<span class="sd">        filter transmission profile</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array</span>
+<span class="sd">        [filtered wavelength points, filtered radiation flux]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">,</span> <span class="n">filter_wave</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">idx1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+               <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">,</span> <span class="n">filter_wave</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_flux</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">SED_flux</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">filter_wave</span><span class="p">))</span>
+    <span class="n">SED_flux</span> <span class="o">=</span> <span class="n">SED_flux</span> <span class="o">*</span> <span class="n">filter_trans</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_wave</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="calc_color"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.calc_color">[docs]</a><span class="k">def</span> <span class="nf">calc_color</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">filter_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+               <span class="n">filter_trans</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate magnitude of a filter</span>
+<span class="sd">    without zero point corrections</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_wave: np.array</span>
+<span class="sd">        wavelength</span>
+<span class="sd">    SED_flux: np.array</span>
+<span class="sd">        radiation flux</span>
+<span class="sd">    filter_wave: np.array</span>
+<span class="sd">        filter wavelength</span>
+<span class="sd">    filter_trans: np.array</span>
+<span class="sd">        filter transmission profile</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        magnitude of the filter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SED_filtered_wave</span><span class="p">,</span> <span class="n">SED_filtered_flux</span> <span class="o">=</span> <span class="n">filtered_SED</span><span class="p">(</span>
+        <span class="n">SED_wave</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">,</span> <span class="n">filter_wave</span><span class="p">,</span> <span class="n">filter_trans</span><span class="p">)</span>
+    <span class="n">luminosity_observed</span> <span class="o">=</span> <span class="n">my_integral</span><span class="p">(</span><span class="n">SED_filtered_wave</span><span class="p">,</span> <span class="n">SED_filtered_flux</span><span class="p">)</span>
+    <span class="c1"># print(luminosity_observed)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">luminosity_observed</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">Filter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_file</span><span class="p">,</span> <span class="n">zeropoint</span><span class="p">):</span>
+        <span class="c1"># zeropoint is 2.5*log10(zero_flux); zero_flux in erg/s/cm^2/A</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_directory</span><span class="p">,</span> <span class="n">filter_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zp</span> <span class="o">=</span> <span class="n">zeropoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_wave</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_trans</span> <span class="o">=</span> <span class="n">load_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">central_wave</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">mag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">):</span>
+        <span class="c1"># Magnitude of the star with the applied filter</span>
+        <span class="k">return</span> <span class="n">calc_color</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_wave</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_trans</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zp</span>
+
+    <span class="k">def</span> <span class="nf">effective_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">):</span>
+        <span class="c1"># effective wavelength according to http://svo2.cab.inta-csic.es/theory/fps/</span>
+        <span class="n">SED_filtered_wave</span><span class="p">,</span> <span class="n">SED_filtered_flux</span> <span class="o">=</span> <span class="n">filtered_SED</span><span class="p">(</span>
+            <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_wave</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_trans</span><span class="p">)</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="n">my_integral</span><span class="p">(</span><span class="n">SED_filtered_wave</span><span class="p">,</span> <span class="n">SED_filtered_flux</span><span class="p">)</span>
+        <span class="n">SED_filtered_flux</span> <span class="o">*=</span> <span class="n">SED_filtered_wave</span>
+        <span class="n">numerator</span> <span class="o">=</span> <span class="n">my_integral</span><span class="p">(</span><span class="n">SED_filtered_wave</span><span class="p">,</span> <span class="n">SED_filtered_flux</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">filtered_sed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sed</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convolve an SED with filter profile</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sed : np.array([wave, flux])</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.array([wave, physical flux (erg/s/cm^2/A)])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># convolve SED with filter profile</span>
+        <span class="n">sed_filtered_wave</span><span class="p">,</span> <span class="n">sed_filtered_flux</span> <span class="o">=</span> <span class="n">filtered_SED</span><span class="p">(</span><span class="n">sed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sed</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_wave</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_trans</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sed_filtered_wave</span><span class="p">,</span> <span class="n">sed_filtered_flux</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">flux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sed</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates flux of SED with specified filter profile.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sed : np.array([wave, flux])</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Physical flux (erg/s/cm^2/A)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># convolve SED with filter profile</span>
+        <span class="n">sed_filtered_wave</span><span class="p">,</span> <span class="n">sed_filtered_flux</span> <span class="o">=</span> <span class="n">filtered_SED</span><span class="p">(</span><span class="n">sed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sed</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_wave</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_trans</span><span class="p">)</span>
+        <span class="c1"># return the integrated flux</span>
+        <span class="k">return</span> <span class="n">my_integral</span><span class="p">(</span><span class="n">sed_filtered_wave</span><span class="p">,</span> <span class="n">sed_filtered_flux</span><span class="p">)</span>
+
+
+<span class="n">filter_dictionary</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filter_list</span><span class="p">:</span>
+    <span class="n">profile_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_directory</span><span class="p">,</span> <span class="n">transmission_file_location</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">filter_dictionary</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Filter</span><span class="p">(</span><span class="n">profile_path</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">FilterList</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">filter_list</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="d_spec"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.d_spec">[docs]</a><span class="k">def</span> <span class="nf">d_spec</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">mv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">logg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute spectroscopic distance</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_x: np.array</span>
+<span class="sd">        wavelength [A]</span>
+<span class="sd">    SED_y: np.array</span>
+<span class="sd">        radiation flux [erg/cm^2/s/A]</span>
+<span class="sd">    mv: float</span>
+<span class="sd">        visible magnitude [mag]</span>
+<span class="sd">    mass: float</span>
+<span class="sd">        stellar mass [M_sol]</span>
+<span class="sd">    logg: float</span>
+<span class="sd">        surface gravity [log(cgs)]</span>
+<span class="sd">    rv: float</span>
+<span class="sd">        ratio of of total to selective extinction RV</span>
+<span class="sd">    ebmv: float</span>
+<span class="sd">        color excess E(B-V) [mag]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        spectroscopic distance [pc]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SED_y</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">)</span>
+    <span class="n">ms</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mf">6.6349</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="p">(</span><span class="n">mv</span> <span class="o">-</span> <span class="n">ms</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mass</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">logg</span><span class="p">)),</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="d_spec_err"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.d_spec_err">[docs]</a><span class="k">def</span> <span class="nf">d_spec_err</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">mv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">logg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+               <span class="n">dm</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute error of the spectroscopic distance</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_x: np.array</span>
+<span class="sd">        wavelength [A]</span>
+<span class="sd">    SED_y: np.array</span>
+<span class="sd">        radiation flux [erg/cm^2/s/A]</span>
+<span class="sd">    mv: float</span>
+<span class="sd">        visible magnitude [mag]</span>
+<span class="sd">    mass: float</span>
+<span class="sd">        stellar mass [M_sol]</span>
+<span class="sd">    logg: float</span>
+<span class="sd">        surface gravity [log(cgs)]</span>
+<span class="sd">    dm: float</span>
+<span class="sd">        stellar mass error [M_sol]</span>
+<span class="sd">    dg: float</span>
+<span class="sd">        surface gravity error [log(cgs)]</span>
+<span class="sd">    rv: float</span>
+<span class="sd">        ratio of of total to selective extinction R(V)</span>
+<span class="sd">    ebmv: float</span>
+<span class="sd">        color excess E(B-V) [mag]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        spectroscopic distance uncertainty [pc]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SED_y</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">)</span>
+    <span class="n">ms</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mf">6.6349</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="p">(</span><span class="n">mv</span> <span class="o">-</span> <span class="n">ms</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span>
+                   <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">logg</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dm</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">dg</span> <span class="o">*</span> <span class="n">mass</span> <span class="o">*</span> <span class="mf">2.30259</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">mass</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="BOL"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.BOL">[docs]</a><span class="k">def</span> <span class="nf">BOL</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bolometric magnitude, calibrated with solar ATLAS9 model (https://wwwuser.oats.inaf.it/castelli/sun.html)</span>
+<span class="sd">    such that BOL(SED_x_sun,SED_y_sun)+solar_magnitude_correction = 4.74.</span>
+<span class="sd">    Without correction for distance and radius of the star (-2.5*np.log10(np.pi*R**2/d**2))</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_x: np.array</span>
+<span class="sd">        wavelength [A]</span>
+<span class="sd">    SED_y: np.array</span>
+<span class="sd">        Astrophysical flux [erg/cm^2/s/A]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float:</span>
+<span class="sd">        bolometric magnitude</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">my_integral</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">))</span> <span class="o">-</span> <span class="mf">11.4915</span></div>
+
+
+<div class="viewcode-block" id="BC"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.BC">[docs]</a><span class="k">def</span> <span class="nf">BC</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bolometric Correction</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_x: np.array</span>
+<span class="sd">        wavelength [A]</span>
+<span class="sd">    SED_y: np.array</span>
+<span class="sd">        Astrophysical flux [erg/cm^2/s/A]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Bolometric Correction</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mV</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">)</span>
+    <span class="n">bol</span> <span class="o">=</span> <span class="n">BOL</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">bol</span> <span class="o">-</span> <span class="n">mV</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">If you want to use the reddening law by Cardelli, use this one:</span>
+
+<span class="sd">def reddening_cardelli(wave, flux, rgal, ebvgal, rlmc, ebvlmc,deredden=False):</span>
+<span class="sd">    if len(wave)==0: return np.array([])</span>
+<span class="sd">    dimw = len(wave)</span>
+<span class="sd">    x = 10000/wave</span>
+<span class="sd">    extgal = np.zeros(dimw)</span>
+<span class="sd">    extlmc = np.zeros(dimw)</span>
+<span class="sd">    a = np.zeros(dimw)</span>
+<span class="sd">    b = np.zeros(dimw)</span>
+<span class="sd">    fa = np.zeros(dimw)</span>
+<span class="sd">    fb = np.zeros(dimw)</span>
+<span class="sd">    y1 = np.zeros(dimw)</span>
+<span class="sd">    y2 = np.zeros(dimw)</span>
+<span class="sd">    y3 = np.zeros(dimw)</span>
+<span class="sd">    y4 = np.zeros(dimw)</span>
+<span class="sd">    y5 = np.zeros(dimw)</span>
+<span class="sd">    y6 = np.zeros(dimw)</span>
+<span class="sd">    y7 = np.zeros(dimw)</span>
+<span class="sd">    h1 = np.zeros(dimw)</span>
+<span class="sd">    h2 = np.zeros(dimw)</span>
+<span class="sd">    h3 = np.zeros(dimw)</span>
+<span class="sd">    i1 = np.where(x &gt;= 8.00)[0]</span>
+<span class="sd">    i2 = np.where((x &gt;= 5.9) &amp; (x &lt;8.00))[0]</span>
+<span class="sd">    i3 = np.where((x &gt;= 3.3) &amp; (x &lt;5.9))[0]</span>
+<span class="sd">    i4 = np.where((x &gt;= 1.1) &amp; (x &lt;3.3))[0]</span>
+<span class="sd">    i5 = np.where((x &gt;= 0.2) &amp; (x &lt;1.1))[0]</span>
+<span class="sd">    i6 = np.where((x &lt; 0.2))[0]</span>
+<span class="sd">    if len(i1) != 0:</span>
+<span class="sd">        h1[i1] = x[i1] - 8</span>
+<span class="sd">        h2[i1] = h1[i1]*h1[i1]</span>
+<span class="sd">        h3[i1] = h2[i1]*h1[i1]</span>
+<span class="sd">        a[i1] = -1.073-0.628*h1[i1]+0.137*h2[i1]-0.070*h3[i1]</span>
+<span class="sd">        b[i1] = 13.670+4.257*h1[i1]-0.420*h2[i1]+0.374*h3[i1]</span>
+<span class="sd">        extgal[i1] = rgal*a[i1] + b[i1]</span>
+<span class="sd">    if len(i2) != 0:</span>
+<span class="sd">        h1[i2] = x[i2] - 5.9</span>
+<span class="sd">        h2[i2] = h1[i2]*h1[i2]</span>
+<span class="sd">        h3[i2] = h2[i2]*h1[i2]</span>
+<span class="sd">        fa[i2] = -0.04473*h2[i2]-0.009779*h3[i2]</span>
+<span class="sd">        fb[i2] = 0.2130*h2[i2]+0.1207*h3[i2]</span>
+<span class="sd">        a[i2] =  1.752-0.316*x[i2]-0.104/((x[i2]-4.67)**2+0.341)+fa[i2]</span>
+<span class="sd">        b[i2] = -3.090+1.825*x[i2]+1.206/((x[i2]-4.62)**2+0.263)+fb[i2]</span>
+<span class="sd">        extgal[i2] = rgal*a[i2] + b[i2]</span>
+<span class="sd">    if len(i3) != 0:</span>
+<span class="sd">        a[i3] =  1.752-0.316*x[i3]-0.104/((x[i3]-4.67)**2+0.341)</span>
+<span class="sd">        b[i3] = -3.090+1.825*x[i3]+1.206/((x[i3]-4.62)**2+0.263)</span>
+<span class="sd">        extgal[i3] = rgal*a[i3] + b[i3]</span>
+<span class="sd">    if len(i4) != 0:</span>
+<span class="sd">        y1[i4]=x[i4]-1.82</span>
+<span class="sd">        y2[i4]=y1[i4]*y1[i4]</span>
+<span class="sd">        y3[i4]=y2[i4]*y1[i4]</span>
+<span class="sd">        y4[i4]=y3[i4]*y1[i4]</span>
+<span class="sd">        y5[i4]=y4[i4]*y1[i4]</span>
+<span class="sd">        y6[i4]=y5[i4]*y1[i4]</span>
+<span class="sd">        y7[i4]=y6[i4]*y1[i4]</span>
+<span class="sd">        a[i4] = 1+0.17699*y1[i4]-0.50447*y2[i4]-0.02427*y3[i4]+0.72085*y4[i4]+0.01979*y5[i4]-</span>
+<span class="sd">                0.77530*y6[i4]+0.32999*y7[i4]</span>
+<span class="sd">        b[i4] = 1.41338*y1[i4]+2.28305*y2[i4]+1.07233*y3[i4]-5.38434*y4[i4]-0.62251*y5[i4]+5.30260*</span>
+<span class="sd">                y6[i4]-2.09002*y7[i4]</span>
+<span class="sd">        extgal[i4] = rgal*a[i4] + b[i4]</span>
+<span class="sd">    if len(i5) != 0:</span>
+<span class="sd">        a[i5] =  0.574*x[i5]**1.61</span>
+<span class="sd">        b[i5] = -0.527*x[i5]**1.61</span>
+<span class="sd">        extgal[i5] = rgal*a[i5] + b[i5]</span>
+<span class="sd">    if len(i6) != 0:</span>
+<span class="sd">        xx = (0.2)**1.61</span>
+<span class="sd">        hilfy = (rgal*0.574-0.527)*xx/0.05056</span>
+<span class="sd">        if hilfy &lt; 0.0:</span>
+<span class="sd">            raise(&quot;ERROR DEREDDENING&quot;)</span>
+<span class="sd">        extgal[i6] = hilfy*x[i6]*((1.86-0.48*x[i6])*x[i6]-0.1)</span>
+<span class="sd">    j1 = np.where(x &gt; 2.75)[0]</span>
+<span class="sd">    j2 = np.where((x &gt; 1.83) &amp; (x &lt;= 2.75))[0]</span>
+<span class="sd">    j3 = np.where(x &lt;= 1.83)[0]</span>
+<span class="sd">    if len(j1) != 0:</span>
+<span class="sd">        extlmc[j1] = rlmc - 0.236 + 0.462*x[j1] + 0.105*(x[j1])**2 + 0.454/((x[j1] - 4.557)**2 + 0.293)</span>
+<span class="sd">    if len(j2) != 0:</span>
+<span class="sd">        extlmc[j2] = rlmc + 2.04*(x[j2] - 1.83) + 0.094*(x[j2] - 1.83)**2</span>
+<span class="sd">    if len(j3) != 0:</span>
+<span class="sd">        extlmc[j3] = rlmc/3.1 * ((1.86 - 0.48*x[j3])*x[j3] - 0.1)*x[j3]</span>
+<span class="sd">    fluxnew=np.zeros(dimw)</span>
+<span class="sd">    if deredden:</span>
+<span class="sd">        for ij in range(dimw):</span>
+<span class="sd">            fluxnew[ij] = flux[ij] * (10.**(0.4*(extlmc[ij]*ebvlmc + extgal[ij]*ebvgal)))</span>
+<span class="sd">        return fluxnew</span>
+<span class="sd">    else:</span>
+<span class="sd">        for ij in range(dimw):</span>
+<span class="sd">            fluxnew[ij] = flux[ij] / (10.**(0.4*(extlmc[ij]*ebvlmc + extgal[ij]*ebvgal)))</span>
+<span class="sd">        return fluxnew&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="reddening"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.reddening">[docs]</a><span class="k">def</span> <span class="nf">reddening</span><span class="p">(</span><span class="n">wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lmc2</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">avg_lmc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">deredden</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">c1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">c2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">c3</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">c4</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_curve</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the reddening law by Fitzpatrick (1999).</span>
+<span class="sd">    Paper DOI: 10.1086/316293</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    wave: np.array</span>
+<span class="sd">        wavelength [A]</span>
+<span class="sd">    flux: np.array</span>
+<span class="sd">        Astrophysical flux [erg/cm^2/s/A]</span>
+<span class="sd">    rv: float</span>
+<span class="sd">        ratio of total to selective extinction</span>
+<span class="sd">    ebv: float</span>
+<span class="sd">        color excess E(B-V)</span>
+<span class="sd">    deredden: bool</span>
+<span class="sd">        If True, a observed spectrum can be dereddened.</span>
+<span class="sd">    lmc2 : bool</span>
+<span class="sd">    avg_lmc : bool</span>
+<span class="sd">    x0 : float</span>
+<span class="sd">        central wavelength of the 2175 Angstrom (UV-)-bump</span>
+<span class="sd">    gamma : float</span>
+<span class="sd">        Width parameter uf UV-bump</span>
+<span class="sd">    c3 : float</span>
+<span class="sd">        UV-bump strength</span>
+<span class="sd">    c1 : float</span>
+<span class="sd">        UV linear extinction intercept</span>
+<span class="sd">    c2 : float</span>
+<span class="sd">        UV linear extinction slope</span>
+<span class="sd">    c4 : float</span>
+<span class="sd">        far-UV curvature</span>
+<span class="sd">    return_curve : bool</span>
+<span class="sd">        If set to true, the function returns the extinction curve in magnitudes (default: False)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array:</span>
+<span class="sd">        reddened/dereddened flux / extinction curve</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="c1"># https://pyastronomy.readthedocs.io/en/latest/pyaslDoc/aslDoc/unredDoc.html</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mf">10000.</span> <span class="o">/</span> <span class="n">wave</span>  <span class="c1"># Convert to inverse microns</span>
+    <span class="n">curve</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="c1"># Set some standard values:</span>
+    <span class="k">if</span> <span class="n">x0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="mf">4.596</span>
+    <span class="k">if</span> <span class="n">gamma</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.99</span>
+    <span class="k">if</span> <span class="n">c3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">c3</span> <span class="o">=</span> <span class="mf">3.23</span>
+    <span class="k">if</span> <span class="n">c4</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">c4</span> <span class="o">=</span> <span class="mf">0.41</span>
+    <span class="k">if</span> <span class="n">c2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.824</span> <span class="o">+</span> <span class="mf">4.717</span> <span class="o">/</span> <span class="n">rv</span>
+    <span class="k">if</span> <span class="n">c1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="mf">2.030</span> <span class="o">-</span> <span class="mf">3.007</span> <span class="o">*</span> <span class="n">c2</span>
+
+    <span class="k">if</span> <span class="n">lmc2</span><span class="p">:</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="mf">4.626</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="mf">1.05</span>
+        <span class="n">c4</span> <span class="o">=</span> <span class="mf">0.42</span>
+        <span class="n">c3</span> <span class="o">=</span> <span class="mf">1.92</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="mf">1.31</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.16</span>
+    <span class="k">elif</span> <span class="n">avg_lmc</span><span class="p">:</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="mf">4.596</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.91</span>
+        <span class="n">c4</span> <span class="o">=</span> <span class="mf">0.64</span>
+        <span class="n">c3</span> <span class="o">=</span> <span class="mf">2.73</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="mf">1.11</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.28</span>
+
+    <span class="c1"># Compute UV portion of A(lambda)/E(B-V) curve using FM fitting function and</span>
+    <span class="c1"># R-dependent coefficients</span>
+    <span class="n">xcutuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10000.0</span> <span class="o">/</span> <span class="mf">2700.0</span><span class="p">])</span>
+    <span class="n">xspluv</span> <span class="o">=</span> <span class="mf">10000.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2700.0</span><span class="p">,</span> <span class="mf">2600.0</span><span class="p">])</span>
+
+    <span class="n">iuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">xcutuv</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">N_UV</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iuv</span><span class="p">)</span>
+    <span class="n">iopir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">xcutuv</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Nopir</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iopir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">N_UV</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">xuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">xspluv</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">iuv</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">xuv</span> <span class="o">=</span> <span class="n">xspluv</span>
+
+    <span class="n">yuv</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">xuv</span>
+    <span class="n">yuv</span> <span class="o">=</span> <span class="n">yuv</span> <span class="o">+</span> <span class="n">c3</span> <span class="o">*</span> <span class="n">xuv</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">((</span><span class="n">xuv</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x0</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">xuv</span> <span class="o">*</span> <span class="n">gamma</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">yuv</span> <span class="o">=</span> <span class="n">yuv</span> <span class="o">+</span> <span class="n">c4</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5392</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">xuv</span><span class="p">,</span> <span class="mf">5.9</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.9</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+                      <span class="mf">0.05644</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">xuv</span><span class="p">,</span> <span class="mf">5.9</span><span class="p">)</span> <span class="o">-</span> <span class="mf">5.9</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">yuv</span> <span class="o">=</span> <span class="n">yuv</span> <span class="o">+</span> <span class="n">rv</span>
+    <span class="n">yspluv</span> <span class="o">=</span> <span class="n">yuv</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># save spline points</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">N_UV</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">curve</span><span class="p">[</span><span class="n">iuv</span><span class="p">]</span> <span class="o">=</span> <span class="n">yuv</span><span class="p">[</span><span class="mi">2</span><span class="p">::]</span>  <span class="c1"># remove spline points</span>
+
+    <span class="c1"># Compute optical portion of A(lambda)/E(B-V) curve</span>
+    <span class="c1"># using cubic spline anchored in UV, optical, and IR</span>
+    <span class="n">xsplopir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+        <span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="mf">10000.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">26500.0</span><span class="p">,</span> <span class="mf">12200.0</span><span class="p">,</span> <span class="mf">6000.0</span><span class="p">,</span> <span class="mf">5470.0</span><span class="p">,</span> <span class="mf">4670.0</span><span class="p">,</span> <span class="mf">4110.0</span><span class="p">])))</span>
+    <span class="n">ysplir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.26469</span><span class="p">,</span> <span class="mf">0.82925</span><span class="p">])</span> <span class="o">*</span> <span class="n">rv</span> <span class="o">/</span> <span class="mf">3.1</span>
+    <span class="n">ysplop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">([</span><span class="o">-</span><span class="mf">4.22809e-01</span><span class="p">,</span> <span class="mf">1.00270</span><span class="p">,</span> <span class="mf">2.13572e-04</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">rv</span><span class="p">),</span>
+                       <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span>
+                           <span class="p">[</span><span class="o">-</span><span class="mf">5.13540e-02</span><span class="p">,</span> <span class="mf">1.00216</span><span class="p">,</span> <span class="o">-</span><span class="mf">7.35778e-05</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">rv</span><span class="p">),</span>
+                       <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span>
+                           <span class="p">[</span><span class="mf">7.00127e-01</span><span class="p">,</span> <span class="mf">1.00184</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.32598e-05</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">rv</span><span class="p">),</span>
+                       <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">([</span><span class="mf">1.19456</span><span class="p">,</span> <span class="mf">1.01707</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.46959e-03</span><span class="p">,</span> <span class="mf">7.97809e-04</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.45636e-05</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">rv</span><span class="p">)))</span>
+    <span class="n">ysplopir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">ysplir</span><span class="p">,</span> <span class="n">ysplop</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">Nopir</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splrep</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">xsplopir</span><span class="p">,</span> <span class="n">xspluv</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">ysplopir</span><span class="p">,</span> <span class="n">yspluv</span><span class="p">)),</span> <span class="n">s</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">curve</span><span class="p">[</span><span class="n">iopir</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">splev</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">iopir</span><span class="p">],</span> <span class="n">tck</span><span class="p">)</span>
+
+    <span class="c1"># Now apply extinction correction to input flux vector</span>
+    <span class="n">curve</span> <span class="o">*=</span> <span class="n">ebv</span>
+    <span class="k">if</span> <span class="n">deredden</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flux</span> <span class="o">*</span> <span class="mf">10.</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">curve</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">return_curve</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">curve</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">flux</span> <span class="o">*</span> <span class="mf">10.</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">curve</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_IUE"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.load_IUE">[docs]</a><span class="k">def</span> <span class="nf">load_IUE</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(np.array,np.array,np.array)&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    load an IUE spectrum (or STIS or whatever you like)</span>
+<span class="sd">    file columns: wavelength [A], flux [erg/cm^2/s/A], flux uncertainty [erg/cm^2/s/A]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename: string</span>
+<span class="sd">        name of the file containing the spectrum</span>
+<span class="sd">    has_error: bool</span>
+<span class="sd">        set it to false if the file has no error column</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple of np.array</span>
+<span class="sd">        wavelength, flux, flux_uncertainty (set to 1 if has_error = False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">has_error</span><span class="p">:</span>
+        <span class="n">y_err</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_err</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spec_phot_red_chisq"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.spec_phot_red_chisq">[docs]</a><span class="k">def</span> <span class="nf">spec_phot_red_chisq</span><span class="p">(</span><span class="n">model_sed</span><span class="p">,</span> <span class="n">spec_phot</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the reduced chi square between a model SED flux and spectrophotometry flux.</span>
+<span class="sd">    If an error column is given, the weighted variance is calculated.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model_sed : np.array</span>
+<span class="sd">        Model SED in Spectrum format [wave, flux].</span>
+<span class="sd">    spec_phot : np.array</span>
+<span class="sd">        E.g. IUE data [wave, flux, (optional: error)].</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Chi square between model and observation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sed_x</span> <span class="o">=</span> <span class="n">model_sed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">sed_redd</span> <span class="o">=</span> <span class="n">model_sed</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">iue_x</span> <span class="o">=</span> <span class="n">spec_phot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">iue_y</span> <span class="o">=</span> <span class="n">spec_phot</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">idx0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">sed_x</span><span class="p">,</span> <span class="n">iue_x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">idx1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sed_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">sed_x</span><span class="p">,</span> <span class="n">iue_x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># calculate interpolation function of model SED</span>
+    <span class="n">f_interp</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">sed_x</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">],</span> <span class="n">sed_redd</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">)</span>
+    <span class="n">sed_at_iue</span> <span class="o">=</span> <span class="n">f_interp</span><span class="p">(</span><span class="n">iue_x</span><span class="p">)</span>  <span class="c1"># calculate model SED flux at observed wavelengths</span>
+    <span class="c1"># calculate variance in mag space</span>
+    <span class="n">iue_diff</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">iue_y</span><span class="p">)</span> <span class="o">-</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">sed_at_iue</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="c1"># iue_diff = (2.5*np.log10(sed_at_iue/iue_y)) ** 2</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec_phot</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">iue_error</span> <span class="o">=</span> <span class="n">spec_phot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># transform the flux error into a magnitude error</span>
+        <span class="n">iue_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">iue_y</span> <span class="o">+</span> <span class="n">iue_error</span><span class="p">)</span> <span class="o">-</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">iue_y</span><span class="p">))</span>
+        <span class="n">iue_diff</span> <span class="o">=</span> <span class="n">iue_diff</span> <span class="o">/</span> <span class="n">iue_e</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">iue_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iue_x</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">iue_diff</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">iue_e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fit_SED"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.fit_SED">[docs]</a><span class="k">def</span> <span class="nf">fit_SED</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">,</span> <span class="n">IUE_y</span><span class="p">,</span> <span class="n">magnitude_array</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">output_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">IUE_error</span><span class="o">=</span><span class="p">[],</span> <span class="n">magnitude_error</span><span class="o">=</span><span class="p">[],</span> <span class="n">normalizeV</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">showPlot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(float,float,float)&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fitting routine to get RV and E(B-V)</span>
+<span class="sd">    V-magnitude IS MANDATORY!!!</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_x: np.array</span>
+<span class="sd">        SED wavelength</span>
+<span class="sd">    SED_y: np.array</span>
+<span class="sd">        SED flux</span>
+<span class="sd">    IUE_x: np.array</span>
+<span class="sd">        IUE wavelength (or STIS...) OR empty array</span>
+<span class="sd">    IUE_y: np.array</span>
+<span class="sd">        IUE flux (or STIS...) OR empty array</span>
+<span class="sd">    magnitude_array: np.array</span>
+<span class="sd">        contains measured magnitudes;</span>
+<span class="sd">        IS SORTED, NEEDS A VALUE FOR EACH MAGNITUDE (np.nan if not available)</span>
+<span class="sd">    start: list</span>
+<span class="sd">        initial parameters for RV and E(B-V): [RV_start, EBMV_start]</span>
+<span class="sd">    output_all: bool</span>
+<span class="sd">        if set to True the result of the chi2 fit is shown</span>
+<span class="sd">    IUE_error: np.array</span>
+<span class="sd">        IUE flux error (or STIS...); IS OPTIONAL</span>
+<span class="sd">    magnitude_error: np.array</span>
+<span class="sd">        contains magnitude uncertainties; IS OPTIONAL</span>
+<span class="sd">    normalizeV: bool</span>
+<span class="sd">        if set to True, the fit goes through the measured V-magnitude</span>
+<span class="sd">    showPlot: bool</span>
+<span class="sd">        if set to True, the best fit is shown in a plot</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (RV, E(B-V), offset)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rv_start</span><span class="p">,</span> <span class="n">ebmv_start</span> <span class="o">=</span> <span class="n">start</span>
+    <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv_start</span><span class="p">,</span> <span class="n">ebmv_start</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span>
+    <span class="n">offset_mag_start</span> <span class="o">=</span> <span class="n">magnitude_array</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span>
+
+    <span class="k">def</span> <span class="nf">chi</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ebmv</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">normalizeV</span><span class="p">:</span>
+            <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span>
+            <span class="n">mag_offset</span> <span class="o">=</span> <span class="n">magnitude_array</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span>
+            <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">SED_redd</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_offset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mag_offset</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_offset</span><span class="p">)</span>
+        <span class="c1"># Magnitude difference</span>
+        <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">myFilter</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span>
+            <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span> <span class="k">for</span> <span class="n">myFilter</span> <span class="ow">in</span> <span class="n">FilterList</span><span class="p">])</span>
+        <span class="n">mag_diff</span> <span class="o">-=</span> <span class="n">magnitude_array</span>
+        <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">mag_diff</span><span class="p">)</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">mag_diff</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">magnitude_error</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">mag_diff</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">magnitude_error</span><span class="p">[</span><span class="n">keep</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">mag_diff</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+        <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mag_diff</span><span class="p">)</span>
+        <span class="c1"># IUE difference</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">IUE_x</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">idx0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">idx1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">SED_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_x</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span>
+                <span class="n">SED_redd</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">SED_at_IUE</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_x</span><span class="p">))</span>
+            <span class="n">IUE_diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_y</span><span class="p">)</span> <span class="o">-</span> <span class="n">SED_at_IUE</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">IUE_error</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">IUE_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_y</span> <span class="o">+</span> <span class="n">IUE_error</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_y</span><span class="p">))</span>
+                <span class="n">IUE_diff</span> <span class="o">=</span> <span class="n">IUE_diff</span> <span class="o">/</span> <span class="n">IUE_e</span>
+
+            <span class="n">IUE_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">IUE_diff</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">IUE_diff</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">mag_diff</span> <span class="o">+</span> <span class="n">IUE_diff</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">chi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">rv_start</span><span class="p">,</span> <span class="n">ebmv_start</span><span class="p">,</span> <span class="n">offset_mag_start</span><span class="p">]),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;Nelder-Mead&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;res = minimize(chi, [rv_start, ebmv_start, offset_mag_start],</span>
+<span class="sd">                   method=&quot;L-BFGS-B&quot;, bounds=[(2, 4), (0, 1), (-np.inf, np.inf)])&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">output_all</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="n">rv_best</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ebmv_best</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">normalizeV</span><span class="p">:</span>
+        <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv_best</span><span class="p">,</span> <span class="n">ebmv_best</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span>
+        <span class="n">offset_best</span> <span class="o">=</span> <span class="n">magnitude_array</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">offset_best</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv_best</span><span class="p">,</span> <span class="n">ebmv_best</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">offset_best</span><span class="p">)</span>
+    <span class="n">idx0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">idx1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SED_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_x</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span>
+        <span class="n">SED_redd</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">myFilter</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span>
+        <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span> <span class="k">for</span> <span class="n">myFilter</span> <span class="ow">in</span> <span class="n">FilterList</span><span class="p">])</span>
+    <span class="n">mag_diff</span> <span class="o">-=</span> <span class="n">magnitude_array</span>  <span class="c1"># difference observed-synthetic magnitude</span>
+    <span class="n">mean_wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">myFilter</span><span class="p">]</span><span class="o">.</span><span class="n">effective_wavelength</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">myFilter</span> <span class="ow">in</span> <span class="n">FilterList</span><span class="p">])</span>
+    <span class="n">idx0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">idx1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SED_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_x</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span>
+        <span class="n">SED_redd</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">SED_at_mag</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">showPlot</span><span class="p">:</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">SED_redd</span> <span class="o">&gt;</span> <span class="mf">1e-30</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_x</span><span class="p">[</span><span class="n">keep</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_redd</span><span class="p">[</span><span class="n">keep</span><span class="p">]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_y</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_diff</span> <span class="o">+</span>
+                 <span class="n">SED_at_mag</span><span class="p">,</span> <span class="s2">&quot;ks&quot;</span><span class="p">,</span> <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># disrad = np.sqrt(np.pi*10**(0.4*offset_best)) # Ratio Distance/Radius</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">rv_best</span><span class="p">,</span> <span class="n">ebmv_best</span><span class="p">,</span> <span class="n">offset_best</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_SED_redd"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.plot_SED_redd">[docs]</a><span class="k">def</span> <span class="nf">plot_SED_redd</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">IUE_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">magnitude_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                  <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">normalizeV</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plotting the reddened SED with IUE spectrum and magnitudes</span>
+<span class="sd">    V-magnitude IS MANDATORY!!!</span>
+<span class="sd">    It is an interactive plot to fit RV and E(B-V) by eye</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    SED_x: np.array</span>
+<span class="sd">        SED wavelength</span>
+<span class="sd">    SED_y: np.array</span>
+<span class="sd">        SED flux</span>
+<span class="sd">    IUE_x: np.array</span>
+<span class="sd">        IUE wavelength (or STIS...) OR empty array</span>
+<span class="sd">    IUE_y: np.array</span>
+<span class="sd">        IUE flux (or STIS...) OR empty array</span>
+<span class="sd">    rv: float</span>
+<span class="sd">        ratio of total to selective extiction</span>
+<span class="sd">    ebmv: float</span>
+<span class="sd">        E(B-V)</span>
+<span class="sd">    offset: float</span>
+<span class="sd">        the offset provided by the fit_SED() function; ignored if normalizeV=True</span>
+<span class="sd">    normalizeV: bool</span>
+<span class="sd">        if set to True, the SED goes through the measured V-magnitude</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">normalizeV</span><span class="p">:</span>
+        <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">magnitude_array</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span>
+        <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">SED_redd</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">offset</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">offset</span><span class="p">)</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">SED_redd</span> <span class="o">&gt;</span> <span class="mf">1e-30</span>
+    <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">myFilter</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span>
+        <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span> <span class="k">for</span> <span class="n">myFilter</span> <span class="ow">in</span> <span class="n">FilterList</span><span class="p">])</span>
+    <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">mag_diff</span> <span class="o">-</span> <span class="n">magnitude_array</span>
+    <span class="n">mean_wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">myFilter</span><span class="p">]</span><span class="o">.</span><span class="n">effective_wavelength</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">myFilter</span> <span class="ow">in</span> <span class="n">FilterList</span><span class="p">])</span>
+    <span class="n">idx0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">idx1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SED_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_x</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span>
+        <span class="n">SED_redd</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">SED_at_mag</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">))</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+
+    <span class="n">axes_plot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">])</span>
+    <span class="n">slider_Rv_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+    <span class="n">slider_EBMV_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+    <span class="n">slider_offset_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">axes_plot</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">IUE_x</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_diff</span> <span class="o">+</span> <span class="n">SED_at_mag</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_y</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_diff</span> <span class="o">+</span> <span class="n">SED_at_mag</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span>
+                 <span class="mi">2</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_diff</span> <span class="o">+</span> <span class="n">SED_at_mag</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">mag_plt</span><span class="p">,</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_diff</span> <span class="o">+</span>
+                        <span class="n">SED_at_mag</span><span class="p">,</span> <span class="s2">&quot;ks&quot;</span><span class="p">,</span> <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="n">SED_plt</span><span class="p">,</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_x</span><span class="p">[</span><span class="n">keep</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_redd</span><span class="p">[</span><span class="n">keep</span><span class="p">]),</span> <span class="s2">&quot;r-&quot;</span><span class="p">)</span>
+    <span class="n">IUE_plt</span><span class="p">,</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">IUE_y</span><span class="p">),</span> <span class="s2">&quot;k-&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">RV_slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">slider_Rv_ax</span><span class="p">,</span> <span class="s2">&quot;RV&quot;</span><span class="p">,</span> <span class="n">rv</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rv</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="n">rv</span><span class="p">)</span>
+    <span class="n">EBMV_slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">slider_EBMV_ax</span><span class="p">,</span> <span class="s2">&quot;E(B-V)&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ebmv</span> <span class="o">+</span> <span class="mf">0.500</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="n">ebmv</span><span class="p">)</span>
+    <span class="n">OFFSET_slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">slider_offset_ax</span><span class="p">,</span> <span class="s2">&quot;Offset&quot;</span><span class="p">,</span>
+                           <span class="n">offset</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+    <span class="n">check</span> <span class="o">=</span> <span class="n">CheckButtons</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]),</span> <span class="p">[</span>
+        <span class="s2">&quot;V norm&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">normalizeV</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rv_new</span> <span class="o">=</span> <span class="n">RV_slider</span><span class="o">.</span><span class="n">val</span>
+        <span class="n">ebmv_new</span> <span class="o">=</span> <span class="n">EBMV_slider</span><span class="o">.</span><span class="n">val</span>
+        <span class="k">if</span> <span class="n">check</span><span class="o">.</span><span class="n">get_status</span><span class="p">()[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv_new</span><span class="p">,</span> <span class="n">ebmv_new</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span>
+            <span class="n">offset_new</span> <span class="o">=</span> <span class="n">magnitude_array</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span>
+            <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">SED_redd</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">offset_new</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">offset_new</span> <span class="o">=</span> <span class="n">OFFSET_slider</span><span class="o">.</span><span class="n">val</span>
+            <span class="n">SED_redd</span> <span class="o">=</span> <span class="n">reddening</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">rv_new</span><span class="p">,</span>
+                                 <span class="n">ebmv_new</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">offset_new</span><span class="p">)</span>
+        <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">myFilter</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span>
+            <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span> <span class="k">for</span> <span class="n">myFilter</span> <span class="ow">in</span> <span class="n">FilterList</span><span class="p">])</span>
+        <span class="n">mag_diff</span> <span class="o">=</span> <span class="n">mag_diff</span> <span class="o">-</span> <span class="n">magnitude_array</span>
+        <span class="n">mean_wave</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_dictionary</span><span class="p">[</span><span class="n">myFilter</span><span class="p">]</span><span class="o">.</span><span class="n">effective_wavelength</span><span class="p">(</span>
+            <span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_redd</span><span class="p">)</span> <span class="k">for</span> <span class="n">myFilter</span> <span class="ow">in</span> <span class="n">FilterList</span><span class="p">])</span>
+        <span class="n">idx0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">idx1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SED_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">find_nearest_index</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span>
+                                                      <span class="nb">max</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">),</span> <span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_x</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span>
+            <span class="n">SED_redd</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quadratic&quot;</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">SED_at_mag</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">mean_wave</span><span class="p">))</span>
+        <span class="n">SED_plt</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">SED_redd</span><span class="p">[</span><span class="n">keep</span><span class="p">]))</span>
+        <span class="n">mag_plt</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">mag_diff</span> <span class="o">+</span> <span class="n">SED_at_mag</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span>
+
+    <span class="n">RV_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+    <span class="n">EBMV_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+    <span class="n">OFFSET_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+    <span class="n">check</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<span class="c1"># read filter_data file</span>
+<span class="n">filter_data_path</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;astro_scripts_uibk&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;filter_profiles/filter_data.csv&#39;</span>
+<span class="n">filter_data_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filter_data_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+
+<span class="c1"># load filters from filter_data file and filter profiles in &quot;/filter_profiles&quot;</span>
+<span class="n">filter_dict_2</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">df_index</span> <span class="ow">in</span> <span class="n">filter_data_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">profile_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_directory</span><span class="p">,</span> <span class="n">transmission_file_location</span><span class="p">,</span> <span class="n">df_index</span> <span class="o">+</span> <span class="s1">&#39;.dat&#39;</span><span class="p">)</span>
+    <span class="n">filter_dict_2</span><span class="p">[</span><span class="n">df_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">Filter</span><span class="p">(</span><span class="n">profile_path</span><span class="p">,</span> <span class="n">filter_data_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_index</span><span class="p">,</span> <span class="s1">&#39;zp&#39;</span><span class="p">])</span>
+    <span class="n">filter_dict_2</span><span class="p">[</span><span class="n">df_index</span><span class="p">]</span><span class="o">.</span><span class="n">central_wave</span> <span class="o">=</span> <span class="n">filter_data_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_index</span><span class="p">,</span> <span class="s1">&#39;wave&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="sed_plotter"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.sed_plotter">[docs]</a><span class="k">def</span> <span class="nf">sed_plotter</span><span class="p">(</span><span class="n">sed</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">magnitude_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">spec_phot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.1</span><span class="p">,</span>
+                <span class="n">ebv</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fitzpatrick_parameters</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">plot_filtered_sed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plots observed magnitudes (magnitude_df) and optionally spectrophotometry (spec_phot) in units of physical flux</span>
+<span class="sd">    (erg cm-2 s-1 Å-1) in black.</span>
+<span class="sd">    A synthetic SED is plotted in red. This SED is reddened by the reddening law of Fitzpatrick.</span>
+<span class="sd">    R_V and E(B-V) can be changed interactively.</span>
+<span class="sd">    Photometry filters are applied to the synthetic SED and displayed as black &#39;+&#39;-signs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sed : np.array([wave, flux, additional_columns])</span>
+<span class="sd">        synthetic-/model-SED</span>
+<span class="sd">    magnitude_df : pd.DataFrame(columns=[&#39;flux&#39;, &#39;wave&#39;, &#39;mag&#39;, additional_columns])</span>
+<span class="sd">        Array of observed magnitudes in units of physical flux.</span>
+<span class="sd">    spec_phot : np.array([wave, flux, additional_columns])</span>
+<span class="sd">        Spectrophotometry, e.g. IUE.</span>
+<span class="sd">    rv : float</span>
+<span class="sd">        starting R_V value</span>
+<span class="sd">    ebv : float</span>
+<span class="sd">        starting E(B-V) value</span>
+<span class="sd">    fitzpatrick_parameters : pd.Series</span>
+<span class="sd">        pd.Series containing all additional Fitzpatrick extinction curve parameters: lambda_0, gamma, c1, c2, c3, c4</span>
+<span class="sd">    block : bool</span>
+<span class="sd">        If set to False, the code after the sed_plotter is executed (default: True).</span>
+<span class="sd">    plot_filtered_sed : bool</span>
+<span class="sd">        If set to True, the model SED convolved by the filter curves is plotted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">fitzpatrick_parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">sed_plot_reddening</span><span class="p">(</span><span class="n">sed_wave</span><span class="p">,</span> <span class="n">sed_flux</span><span class="p">,</span> <span class="n">my_rv</span><span class="p">,</span> <span class="n">my_ebv</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">reddening</span><span class="p">(</span><span class="n">sed_wave</span><span class="p">,</span> <span class="n">sed_flux</span><span class="p">,</span> <span class="n">my_rv</span><span class="p">,</span> <span class="n">my_ebv</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">sed_plot_reddening</span><span class="p">(</span><span class="n">sed_wave</span><span class="p">,</span> <span class="n">sed_flux</span><span class="p">,</span> <span class="n">my_rv</span><span class="p">,</span> <span class="n">my_ebv</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">reddening</span><span class="p">(</span><span class="n">sed_wave</span><span class="p">,</span> <span class="n">sed_flux</span><span class="p">,</span> <span class="n">my_rv</span><span class="p">,</span> <span class="n">my_ebv</span><span class="p">,</span>
+                             <span class="n">x0</span><span class="o">=</span><span class="n">fitzpatrick_parameters</span><span class="p">[</span><span class="s1">&#39;lambda_0&#39;</span><span class="p">],</span>
+                             <span class="n">gamma</span><span class="o">=</span><span class="n">fitzpatrick_parameters</span><span class="p">[</span><span class="s1">&#39;gamma&#39;</span><span class="p">],</span>
+                             <span class="n">c1</span><span class="o">=</span><span class="n">fitzpatrick_parameters</span><span class="p">[</span><span class="s1">&#39;c1&#39;</span><span class="p">],</span>
+                             <span class="n">c2</span><span class="o">=</span><span class="n">fitzpatrick_parameters</span><span class="p">[</span><span class="s1">&#39;c2&#39;</span><span class="p">],</span>
+                             <span class="n">c3</span><span class="o">=</span><span class="n">fitzpatrick_parameters</span><span class="p">[</span><span class="s1">&#39;c3&#39;</span><span class="p">],</span>
+                             <span class="n">c4</span><span class="o">=</span><span class="n">fitzpatrick_parameters</span><span class="p">[</span><span class="s1">&#39;c4&#39;</span><span class="p">])</span>
+
+    <span class="c1"># redden the SED with the current E(B-V) and R_V</span>
+    <span class="n">sed_red_flux</span> <span class="o">=</span> <span class="n">sed_plot_reddening</span><span class="p">(</span><span class="n">sed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sed</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rv</span><span class="p">,</span> <span class="n">ebv</span><span class="p">)</span>
+    <span class="n">sed_red</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sed_red_flux</span><span class="p">])</span>
+
+    <span class="n">magnitude_df</span> <span class="o">=</span> <span class="n">apply_flux</span><span class="p">(</span><span class="n">magnitude_df</span><span class="p">)</span>  <span class="c1"># add physical fluxes to DataFrame</span>
+    <span class="n">magnitude_df</span> <span class="o">=</span> <span class="n">apply_wave</span><span class="p">(</span><span class="n">magnitude_df</span><span class="p">)</span>  <span class="c1"># add mean filter wavelengths to DataFrame</span>
+
+    <span class="c1"># apply flux offset to model SED</span>
+    <span class="n">v_model_sed</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flux</span><span class="p">(</span><span class="n">sed_red</span><span class="p">)</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;flux&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">v_model_sed</span>
+    <span class="n">sed_red</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="n">offset</span>
+
+    <span class="c1"># Plotting setup start --------------</span>
+    <span class="n">pub_plot</span><span class="o">.</span><span class="n">pub_style_fig</span><span class="p">()</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.31</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">])</span>
+    <span class="n">slider_rv_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+    <span class="n">slider_ebv_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+    <span class="n">slider_offset_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mathregular{log\,\lambda\,(\AA}$)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mathregular{log\,F_\lambda}$ (erg cm$^{-2}$ s$^{-1}\ \mathregular{\AA}^{-1}$)&quot;</span><span class="p">)</span>
+    <span class="n">rv_slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">slider_rv_ax</span><span class="p">,</span> <span class="s2">&quot;RV&quot;</span><span class="p">,</span> <span class="n">rv</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rv</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="n">rv</span><span class="p">)</span>
+    <span class="n">ebv_slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">slider_ebv_ax</span><span class="p">,</span> <span class="s2">&quot;E(B-V)&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ebv</span> <span class="o">+</span> <span class="mf">0.500</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="n">ebv</span><span class="p">)</span>
+    <span class="n">offset_slider</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="n">slider_offset_ax</span><span class="p">,</span> <span class="s2">&quot;Offset&quot;</span><span class="p">,</span>
+                           <span class="n">offset</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+    <span class="c1"># Plotting setup end ----------------</span>
+
+    <span class="c1"># Plot observed filter fluxes</span>
+    <span class="n">_</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">magnitude_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;wave&#39;</span><span class="p">],</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;flux&#39;</span><span class="p">],</span> <span class="s2">&quot;ks&quot;</span><span class="p">,</span>
+                 <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+
+    <span class="c1"># If available, plot spectrophotometry</span>
+    <span class="k">if</span> <span class="n">spec_phot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spec_phot</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spec_phot</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;k-&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec_phot</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">spec_phot</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spec_phot</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">spec_phot</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="c1"># freeze plot limits to limits of observations</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">y_lim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+    <span class="n">x_lim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y_lim</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_lim</span><span class="p">)</span>
+
+    <span class="c1"># plot synthetic SED</span>
+    <span class="n">sed_plt</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sed_red</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sed_red</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;r-&quot;</span><span class="p">)</span>
+
+    <span class="c1"># calculate filter fluxes for SED</span>
+    <span class="n">magnitude_df</span><span class="p">[</span><span class="s1">&#39;flux_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">filter_dict_2</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">flux</span><span class="p">(</span><span class="n">sed_red</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sed_filter_plt</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">magnitude_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;wave&#39;</span><span class="p">],</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;flux_model&#39;</span><span class="p">],</span> <span class="s2">&quot;k+&quot;</span><span class="p">,</span>
+                              <span class="n">markerfacecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+    <span class="c1"># calculate filtered SEDs</span>
+    <span class="k">if</span> <span class="n">plot_filtered_sed</span><span class="p">:</span>
+        <span class="c1"># set up array for filtered SEDs</span>
+        <span class="n">filtered_sed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[],</span> <span class="p">[]])</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">filtered_sed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">filtered_sed</span><span class="p">,</span> <span class="n">filter_dict_2</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">filtered_sed</span><span class="p">(</span><span class="n">sed_red</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">filtered_sed_plot</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">filtered_sed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filtered_sed</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the plot if a slider is moved or button is pushed.&quot;&quot;&quot;</span>
+        <span class="n">rv_new</span> <span class="o">=</span> <span class="n">rv_slider</span><span class="o">.</span><span class="n">val</span>
+        <span class="n">ebv_new</span> <span class="o">=</span> <span class="n">ebv_slider</span><span class="o">.</span><span class="n">val</span>
+
+        <span class="c1"># redden the SED with the current E(B-V) and R_V</span>
+        <span class="n">sed_red_flux_new</span> <span class="o">=</span> <span class="n">sed_plot_reddening</span><span class="p">(</span><span class="n">sed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sed</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rv_new</span><span class="p">,</span> <span class="n">ebv_new</span><span class="p">)</span>
+        <span class="n">sed_red_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sed_red_flux_new</span><span class="p">])</span>
+
+        <span class="c1"># apply flux offset to model SED</span>
+        <span class="n">v_model_sed_new</span> <span class="o">=</span> <span class="n">filter_dict_2</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flux</span><span class="p">(</span><span class="n">sed_red_new</span><span class="p">)</span>
+        <span class="n">offset_new</span> <span class="o">=</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;flux&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">v_model_sed_new</span>
+        <span class="n">sed_red_new</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="n">offset_new</span>
+
+        <span class="n">sed_plt</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">sed_red_new</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># plot new reddened model SED</span>
+
+        <span class="c1"># calculate filter fluxes for SED</span>
+        <span class="n">magnitude_df</span><span class="p">[</span><span class="s1">&#39;flux_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">filter_dict_2</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">flux</span><span class="p">(</span><span class="n">sed_red_new</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sed_filter_plt</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">magnitude_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;flux_model&#39;</span><span class="p">])</span>
+
+        <span class="c1"># calculate filtered SEDs</span>
+        <span class="k">if</span> <span class="n">plot_filtered_sed</span><span class="p">:</span>
+            <span class="c1"># set up array for filtered SEDs</span>
+            <span class="n">filtered_sed_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[],</span> <span class="p">[]])</span>
+            <span class="k">for</span> <span class="n">ind_new</span> <span class="ow">in</span> <span class="n">magnitude_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="n">filtered_sed_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">filtered_sed_new</span><span class="p">,</span> <span class="n">filter_dict_2</span><span class="p">[</span><span class="n">ind_new</span><span class="p">]</span><span class="o">.</span><span class="n">filtered_sed</span><span class="p">(</span><span class="n">sed_red</span><span class="p">)),</span>
+                                                  <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">filtered_sed_plot</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">filtered_sed_new</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span>
+
+    <span class="n">rv_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+    <span class="n">ebv_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+    <span class="n">offset_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+    <span class="c1"># check.on_clicked(update)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Astrophysics UIBK.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
