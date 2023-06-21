@@ -15,7 +15,7 @@ git config --global user.email "FirstName.LastName@student.uibk.ac.at"
 ```
 ### After that:
 ```console
-git clone https://git.uibk.ac.at/csap5791/astro_scripts_uibk.git
+git clone https://github.com/alex-ebi/astro_scripts_uibk.git
 python3 -m pip install ./astro_scripts_uibk
 ```
 ### Build Documentation:
