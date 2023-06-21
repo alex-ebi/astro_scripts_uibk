@@ -69,7 +69,7 @@ jobs:
             git config user.name "alex-ebi"
       - run:
           name: Deploy docs to gh-pages branch
-          command: gh-pages --dist docs/_build/html
+          command: gh-pages --dist docs/build/html
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
