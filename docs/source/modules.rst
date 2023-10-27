@@ -6,7 +6,7 @@ Modules
    :toctree:
 
 Alignment
---------
+---------
 .. automodule:: astro_scripts_uibk.alignment
     :members:
 
