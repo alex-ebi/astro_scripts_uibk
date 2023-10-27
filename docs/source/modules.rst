@@ -5,6 +5,11 @@ Modules
 .. autosummary::
    :toctree:
 
+Alignment
+--------
+.. automodule:: astro_scripts_uibk.alignment
+    :members:
+
 Convolve
 --------
 .. automodule:: astro_scripts_uibk.convolve

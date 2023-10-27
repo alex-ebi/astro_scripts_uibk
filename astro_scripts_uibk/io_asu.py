@@ -2,7 +2,7 @@ import numpy as np
 from astropy.io import fits
 
 
-def wave_from_dispersion(flux, start_wave, dispersion):
+def wave_from_dispersion(flux, start_wave, dispersion, crpix=0):
     """
     Calculates a wavelength array as a equidistant grid.
     Starts from 'star_wave' and makes further points with a constant separation 'dispersion'.
@@ -15,16 +15,17 @@ def wave_from_dispersion(flux, start_wave, dispersion):
         Starting wavelength.
     dispersion : float
         Wavelength step.
+    crpix : int
+        Index of reference pixel.
 
     Returns
     -------
     np.array
         Wavelength array matching to flux array in length.
     """
-    wave = []
-    for i, _ in enumerate(flux):
-        wave_i = start_wave + dispersion * i
-        wave.append(wave_i)
+    index_col = np.array(range(len(flux)))
+    index_col = index_col - crpix
+    wave = index_col * dispersion + start_wave
 
     return wave
 
