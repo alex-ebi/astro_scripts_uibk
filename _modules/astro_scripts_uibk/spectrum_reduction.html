@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.spectrum_reduction &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+  <title>astro_scripts_uibk.spectrum_reduction &mdash; astro_scripts_uibk 0.post28+gb4a4a06 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -12,11 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/documentation_options.js?v=d1759445"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -34,7 +34,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post27+gdcb808d
+                0.post28+gb4a4a06
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -85,7 +85,9 @@
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 
-<div class="viewcode-block" id="slice_spectrum"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.slice_spectrum">[docs]</a><span class="k">def</span> <span class="nf">slice_spectrum</span><span class="p">(</span><span class="n">array_in</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<div class="viewcode-block" id="slice_spectrum">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.slice_spectrum">[docs]</a>
+<span class="k">def</span> <span class="nf">slice_spectrum</span><span class="p">(</span><span class="n">array_in</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a spectrum interval for x_min &lt; wave &lt; x_max.</span>
 
@@ -114,7 +116,10 @@
     <span class="k">return</span> <span class="n">array_in</span><span class="p">[:,</span> <span class="n">bool_array</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="crop_spectrum"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.crop_spectrum">[docs]</a><span class="k">def</span> <span class="nf">crop_spectrum</span><span class="p">(</span><span class="n">array_in</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="crop_spectrum">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.crop_spectrum">[docs]</a>
+<span class="k">def</span> <span class="nf">crop_spectrum</span><span class="p">(</span><span class="n">array_in</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a spectrum interval for x_min &lt; wave &lt; x_max.</span>
 
@@ -142,7 +147,10 @@
     <span class="k">return</span> <span class="n">array_in</span><span class="p">[:,</span> <span class="n">bool_array</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="exclude_spikes_limits"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.exclude_spikes_limits">[docs]</a><span class="k">def</span> <span class="nf">exclude_spikes_limits</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flux_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="exclude_spikes_limits">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.exclude_spikes_limits">[docs]</a>
+<span class="k">def</span> <span class="nf">exclude_spikes_limits</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flux_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Excludes parts of a spectrum which exceed specified flux thresholds (flux_min and/or flux_max).</span>
 <span class="sd">    Used to exclude e.g. cosmics.</span>
@@ -173,7 +181,10 @@
     <span class="k">return</span> <span class="n">spectrum</span><span class="p">[:,</span> <span class="n">bool_array</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="filter_spikes_normalized"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.filter_spikes_normalized">[docs]</a><span class="k">def</span> <span class="nf">filter_spikes_normalized</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">.02</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+
+<div class="viewcode-block" id="filter_spikes_normalized">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.filter_spikes_normalized">[docs]</a>
+<span class="k">def</span> <span class="nf">filter_spikes_normalized</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">.02</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Filters a spectrum for spikes with a median filter.</span>
 <span class="sd">    The kwargs should be checked and varied to correctly filter the spectrum.</span>
@@ -199,8 +210,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">spectrum</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
-    <span class="n">median</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;bfill&#39;</span><span class="p">)</span><span class="o">.</span> \
-        <span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;ffill&#39;</span><span class="p">)</span>
+    <span class="n">median</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
 
     <span class="n">difference</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">median</span><span class="p">)</span> <span class="o">/</span> <span class="n">median</span>
 
@@ -209,7 +219,10 @@
     <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:][</span><span class="n">inlier_idx</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># return standard spectrum format</span></div>
 
 
-<div class="viewcode-block" id="normalize_spectrum_linear"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.normalize_spectrum_linear">[docs]</a><span class="k">def</span> <span class="nf">normalize_spectrum_linear</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cont_1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cont_2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+
+<div class="viewcode-block" id="normalize_spectrum_linear">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.normalize_spectrum_linear">[docs]</a>
+<span class="k">def</span> <span class="nf">normalize_spectrum_linear</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cont_1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cont_2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
                               <span class="n">additional_normalized_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalizes an absorption spectrum using a linear continuum model defined by two points con_1 and cont_2.</span>
@@ -257,7 +270,10 @@
     <span class="k">return</span> <span class="n">out_spec</span></div>
 
 
-<div class="viewcode-block" id="normalize_mean_flux"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.normalize_mean_flux">[docs]</a><span class="k">def</span> <span class="nf">normalize_mean_flux</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">wave_1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">wave_2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cont_range</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+
+<div class="viewcode-block" id="normalize_mean_flux">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.normalize_mean_flux">[docs]</a>
+<span class="k">def</span> <span class="nf">normalize_mean_flux</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">wave_1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">wave_2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cont_range</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                         <span class="n">additional_normalized_columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_weight</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalizes a spectrum using a linear continuum fit.</span>
@@ -305,7 +321,10 @@
         <span class="k">return</span> <span class="n">norm_spec</span></div>
 
 
-<div class="viewcode-block" id="coadd"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.coadd">[docs]</a><span class="k">def</span> <span class="nf">coadd</span><span class="p">(</span><span class="n">spectra</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">wave_new</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="coadd">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.coadd">[docs]</a>
+<span class="k">def</span> <span class="nf">coadd</span><span class="p">(</span><span class="n">spectra</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">wave_new</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Co-addition of multiple spectra.</span>
 <span class="sd">    The input spectra are interpolated linearly on the new wavelength array (wave_new) and then summed up.</span>
@@ -337,7 +356,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave_new</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">res_fluxes</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weight_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">res_fluxes</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)])</span></div>
 
 
-<div class="viewcode-block" id="profile_comp_trafo"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.profile_comp_trafo">[docs]</a><span class="k">def</span> <span class="nf">profile_comp_trafo</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cont_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">wave_number</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="profile_comp_trafo">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.profile_comp_trafo">[docs]</a>
+<span class="k">def</span> <span class="nf">profile_comp_trafo</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">cont_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">wave_number</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transformation of a single spectral feature (e.g. DIB) for profile comparison with another feature.</span>
 <span class="sd">    The transformation has multiple steps:</span>
@@ -378,7 +400,10 @@
     <span class="k">return</span> <span class="n">spectrum</span></div>
 
 
-<div class="viewcode-block" id="normalize_one_point"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.normalize_one_point">[docs]</a><span class="k">def</span> <span class="nf">normalize_one_point</span><span class="p">(</span><span class="n">spec_list</span><span class="p">,</span> <span class="n">norm_wl</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">norm_half_range</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+
+<div class="viewcode-block" id="normalize_one_point">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.normalize_one_point">[docs]</a>
+<span class="k">def</span> <span class="nf">normalize_one_point</span><span class="p">(</span><span class="n">spec_list</span><span class="p">,</span> <span class="n">norm_wl</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">norm_half_range</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalizes a list of spectra. Useful for fast spectrum comparison.</span>
 <span class="sd">    Each spectrum is normalized by one divisor, which is the median flux around the normalization wavelength</span>
@@ -402,7 +427,10 @@
         <span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="n">norm_flux</span></div>
 
 
-<div class="viewcode-block" id="smooth_spec"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.smooth_spec">[docs]</a><span class="k">def</span> <span class="nf">smooth_spec</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+
+<div class="viewcode-block" id="smooth_spec">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.smooth_spec">[docs]</a>
+<span class="k">def</span> <span class="nf">smooth_spec</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Smooths a spectrum using a boxcar kernel with a given kernel size in PIXELS.</span>
 <span class="sd">    Smooths each axis (wavelength, flux,...) using this kernel.</span>
@@ -428,7 +456,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out_spec</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="median_smooth"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.median_smooth">[docs]</a><span class="k">def</span> <span class="nf">median_smooth</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+
+<div class="viewcode-block" id="median_smooth">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.median_smooth">[docs]</a>
+<span class="k">def</span> <span class="nf">median_smooth</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Smooths a spectrum using a rolling median with a given kernel size in PIXELS.</span>
 <span class="sd">    Smooths each axis (wavelength, flux,...) using this kernel.</span>
@@ -451,7 +482,10 @@
     <span class="k">return</span> <span class="n">ds</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="divide_spec"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.divide_spec">[docs]</a><span class="k">def</span> <span class="nf">divide_spec</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">div_spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+
+<div class="viewcode-block" id="divide_spec">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.spectrum_reduction.divide_spec">[docs]</a>
+<span class="k">def</span> <span class="nf">divide_spec</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">div_spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Divides one spectrum (spectrum) by another spectrum (div_spec).</span>
 <span class="sd">    Before division, div_spec gets resampled on the wavelength axis of spectrum.</span>
@@ -473,6 +507,7 @@
     <span class="n">divided_flux</span> <span class="o">=</span> <span class="n">spec_crop</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">res_spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">spec_crop</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">divided_flux</span><span class="p">])</span></div>
+
 </pre></div>
 
            </div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.convolve &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+  <title>astro_scripts_uibk.convolve &mdash; astro_scripts_uibk 0.post28+gb4a4a06 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -12,11 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/documentation_options.js?v=d1759445"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -34,7 +34,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post27+gdcb808d
+                0.post28+gb4a4a06
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -91,7 +91,9 @@
 <span class="n">clight</span> <span class="o">=</span> <span class="mf">299792.5</span>
 
 
-<div class="viewcode-block" id="find_nearest_index"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.find_nearest_index">[docs]</a><span class="k">def</span> <span class="nf">find_nearest_index</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="find_nearest_index">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.find_nearest_index">[docs]</a>
+<span class="k">def</span> <span class="nf">find_nearest_index</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the index of an array where the value is nearest to a specified value.</span>
 
@@ -122,7 +124,10 @@
     <span class="k">return</span> <span class="n">idx</span></div>
 
 
-<div class="viewcode-block" id="find_nearest_value"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.find_nearest_value">[docs]</a><span class="k">def</span> <span class="nf">find_nearest_value</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="find_nearest_value">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.find_nearest_value">[docs]</a>
+<span class="k">def</span> <span class="nf">find_nearest_value</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the value of an array which is nearest to a specified value.</span>
 
@@ -146,7 +151,10 @@
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">find_nearest_index</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">)])</span></div>
 
 
-<div class="viewcode-block" id="get_lower_interval_index"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.get_lower_interval_index">[docs]</a><span class="k">def</span> <span class="nf">get_lower_interval_index</span><span class="p">(</span><span class="n">intervals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_lower_interval_index">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.get_lower_interval_index">[docs]</a>
+<span class="k">def</span> <span class="nf">get_lower_interval_index</span><span class="p">(</span><span class="n">intervals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the index of the closest lower boundary of a value.</span>
 <span class="sd">    A list of boundaries is provided by &#39;intervals&#39;.</span>
@@ -170,7 +178,10 @@
         <span class="k">return</span> <span class="n">idx</span></div>
 
 
-<div class="viewcode-block" id="wave_to_bin"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.wave_to_bin">[docs]</a><span class="k">def</span> <span class="nf">wave_to_bin</span><span class="p">(</span><span class="n">wave_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="wave_to_bin">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.wave_to_bin">[docs]</a>
+<span class="k">def</span> <span class="nf">wave_to_bin</span><span class="p">(</span><span class="n">wave_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert central wavelength points into an array of bins:</span>
 <span class="sd">        Example: [0,1,2,3] -&gt; [-0.5,0.5,1.5,2.5,3.5]</span>
@@ -194,7 +205,10 @@
     <span class="k">return</span> <span class="n">b</span></div>
 
 
-<div class="viewcode-block" id="rebin_plot"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.rebin_plot">[docs]</a><span class="k">def</span> <span class="nf">rebin_plot</span><span class="p">(</span><span class="n">obs_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">model_spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="rebin_plot">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.rebin_plot">[docs]</a>
+<span class="k">def</span> <span class="nf">rebin_plot</span><span class="p">(</span><span class="n">obs_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">model_spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rebins model spectrum to bins of observation, e.g. for accurate plot.</span>
 <span class="sd">    Model spectrum has to have higher resolution than observation and should be one bin range broader.</span>
@@ -218,7 +232,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">obs_wave</span><span class="p">,</span> <span class="n">binned_flux</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="resample"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.resample">[docs]</a><span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">wave_new</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="resample">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.resample">[docs]</a>
+<span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">wave_new</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resample a spectrum to given wavelength points.</span>
 
@@ -241,7 +258,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave_new</span><span class="p">,</span> <span class="n">flux_new</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="macro_broadening"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.macro_broadening">[docs]</a><span class="k">def</span> <span class="nf">macro_broadening</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">macroturbulence</span><span class="p">):</span>
+
+<div class="viewcode-block" id="macro_broadening">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.macro_broadening">[docs]</a>
+<span class="k">def</span> <span class="nf">macro_broadening</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">macroturbulence</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convolves spectrum with radial tangential macroturbulence broadening profile.</span>
 
@@ -284,7 +304,10 @@
     <span class="k">return</span> <span class="n">sy</span></div>
 
 
-<div class="viewcode-block" id="inst_rot_macro"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.inst_rot_macro">[docs]</a><span class="k">def</span> <span class="nf">inst_rot_macro</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vsini</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">macroturbulence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fixed_deltaw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+
+<div class="viewcode-block" id="inst_rot_macro">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.convolve.inst_rot_macro">[docs]</a>
+<span class="k">def</span> <span class="nf">inst_rot_macro</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vsini</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">macroturbulence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fixed_deltaw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">interval_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">is_equidistant</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Instrumental, rotational and macroturbulence broadening.</span>
@@ -365,6 +388,7 @@
         <span class="n">y_con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_con</span><span class="p">,</span> <span class="n">syn</span><span class="p">[</span><span class="n">overlap</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="n">overlap</span> <span class="o">//</span> <span class="mi">2</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_con</span><span class="p">,</span> <span class="n">y_con</span><span class="p">])</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">grid_spec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>

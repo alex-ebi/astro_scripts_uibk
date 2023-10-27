@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.query &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+  <title>astro_scripts_uibk.query &mdash; astro_scripts_uibk 0.post28+gb4a4a06 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -12,11 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/documentation_options.js?v=d1759445"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -34,7 +34,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post27+gdcb808d
+                0.post28+gb4a4a06
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -119,10 +119,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">x</span>
 
-    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">map_func</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">map_func</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="apply_flux"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.apply_flux">[docs]</a><span class="k">def</span> <span class="nf">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="apply_flux">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.apply_flux">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_flux</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply the asu.transformations.mag_to_flux function to a magnitude DataFrame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -136,6 +138,7 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">filter_wave</span><span class="p">(</span><span class="n">filter_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add wavelength to a filter in a row of a DataFrame.</span>
@@ -145,7 +148,9 @@
     <span class="k">return</span> <span class="n">filter_data_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">filter_name</span><span class="p">,</span> <span class="s1">&#39;wave&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="apply_wave"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.apply_wave">[docs]</a><span class="k">def</span> <span class="nf">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="apply_wave">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.apply_wave">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_wave</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply the asu.query.filter_wave function to a magnitude DataFrame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -159,7 +164,10 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_ans_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_ans_mags">[docs]</a><span class="k">def</span> <span class="nf">get_ans_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_ans_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_ans_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">get_ans_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a Vizier query for an object in the ANS catalog.</span>
 
@@ -215,7 +223,10 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_swift_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_swift_mags">[docs]</a><span class="k">def</span> <span class="nf">get_swift_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_swift_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_swift_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">get_swift_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a Vizier query for an object in the SWIFT catalog.</span>
 
@@ -267,7 +278,10 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_mermilliod_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_mermilliod_mags">[docs]</a><span class="k">def</span> <span class="nf">get_mermilliod_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_mermilliod_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_mermilliod_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">get_mermilliod_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a Vizier query for an object in the Mermilliod catalog.</span>
 
@@ -327,7 +341,10 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_2mass_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_2mass_mags">[docs]</a><span class="k">def</span> <span class="nf">get_2mass_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_2mass_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_2mass_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">get_2mass_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a Vizier query for an object in the 2MASS catalog.</span>
 
@@ -379,7 +396,10 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_allwise_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_allwise_mags">[docs]</a><span class="k">def</span> <span class="nf">get_allwise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_allwise_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_allwise_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">get_allwise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a Vizier query for an object in the AllWISE Source Catalog.</span>
 
@@ -433,7 +453,10 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_wise_all_sky_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_wise_all_sky_mags">[docs]</a><span class="k">def</span> <span class="nf">get_wise_all_sky_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_wise_all_sky_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_wise_all_sky_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">get_wise_all_sky_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a Vizier query for an object in the WISE All-Sky Source Catalog.</span>
 
@@ -487,7 +510,10 @@
         <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_wise_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_wise_mags">[docs]</a><span class="k">def</span> <span class="nf">get_wise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_wise_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.get_wise_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">get_wise_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Query for one target!</span>
 <span class="sd">    Makes a Vizier query for an object in the AllWISE Source Catalog and WISE All-Sky Source Catalog.</span>
@@ -514,7 +540,10 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="sed_mags"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.sed_mags">[docs]</a><span class="k">def</span> <span class="nf">sed_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+
+<div class="viewcode-block" id="sed_mags">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.query.sed_mags">[docs]</a>
+<span class="k">def</span> <span class="nf">sed_mags</span><span class="p">(</span><span class="n">obj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Makes a Vizier query for an object in the catalogs used for SED fitting.</span>
 
@@ -548,6 +577,7 @@
         <span class="n">out_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">out_df</span>  <span class="c1"># return concatenated dataframe</span></div>
+
 </pre></div>
 
            </div>

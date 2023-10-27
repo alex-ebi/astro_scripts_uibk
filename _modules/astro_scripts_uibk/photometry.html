@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.photometry &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+  <title>astro_scripts_uibk.photometry &mdash; astro_scripts_uibk 0.post28+gb4a4a06 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -12,11 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/documentation_options.js?v=d1759445"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -34,7 +34,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post27+gdcb808d
+                0.post28+gb4a4a06
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -158,7 +158,9 @@
     <span class="k">return</span> <span class="n">integrate</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="load_filter"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.load_filter">[docs]</a><span class="k">def</span> <span class="nf">load_filter</span><span class="p">(</span><span class="n">filter_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(np.array,np.array)&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="load_filter">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.load_filter">[docs]</a>
+<span class="k">def</span> <span class="nf">load_filter</span><span class="p">(</span><span class="n">filter_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(np.array,np.array)&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a filterprofile from a file;</span>
 <span class="sd">    columns: wavelength(A), transmission</span>
@@ -178,7 +180,10 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="n">transmission</span> <span class="o">/</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="filtered_SED"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.filtered_SED">[docs]</a><span class="k">def</span> <span class="nf">filtered_SED</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+
+<div class="viewcode-block" id="filtered_SED">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.filtered_SED">[docs]</a>
+<span class="k">def</span> <span class="nf">filtered_SED</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
                  <span class="n">filter_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
                  <span class="n">filter_trans</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -211,7 +216,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">filter_wave</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="calc_color"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.calc_color">[docs]</a><span class="k">def</span> <span class="nf">calc_color</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">filter_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+
+<div class="viewcode-block" id="calc_color">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.calc_color">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_color</span><span class="p">(</span><span class="n">SED_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">filter_wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
                <span class="n">filter_trans</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate magnitude of a filter</span>
@@ -238,6 +246,7 @@
     <span class="n">luminosity_observed</span> <span class="o">=</span> <span class="n">my_integral</span><span class="p">(</span><span class="n">SED_filtered_wave</span><span class="p">,</span> <span class="n">SED_filtered_flux</span><span class="p">)</span>
     <span class="c1"># print(luminosity_observed)</span>
     <span class="k">return</span> <span class="o">-</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">luminosity_observed</span><span class="p">)</span></div>
+
 
 
 <span class="k">class</span> <span class="nc">Filter</span><span class="p">:</span>
@@ -304,7 +313,9 @@
 <span class="n">FilterList</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">filter_list</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="d_spec"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.d_spec">[docs]</a><span class="k">def</span> <span class="nf">d_spec</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">mv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">logg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="d_spec">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.d_spec">[docs]</a>
+<span class="k">def</span> <span class="nf">d_spec</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">mv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">logg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute spectroscopic distance</span>
 
@@ -335,7 +346,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mf">6.6349</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="p">(</span><span class="n">mv</span> <span class="o">-</span> <span class="n">ms</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mass</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">logg</span><span class="p">)),</span> <span class="mi">2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="d_spec_err"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.d_spec_err">[docs]</a><span class="k">def</span> <span class="nf">d_spec_err</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">mv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">logg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+<div class="viewcode-block" id="d_spec_err">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.d_spec_err">[docs]</a>
+<span class="k">def</span> <span class="nf">d_spec_err</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">mv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">logg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                <span class="n">dm</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dg</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute error of the spectroscopic distance</span>
@@ -373,7 +387,10 @@
     <span class="k">return</span> <span class="n">out</span></div>
 
 
-<div class="viewcode-block" id="BOL"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.BOL">[docs]</a><span class="k">def</span> <span class="nf">BOL</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="BOL">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.BOL">[docs]</a>
+<span class="k">def</span> <span class="nf">BOL</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Bolometric magnitude, calibrated with solar ATLAS9 model (https://wwwuser.oats.inaf.it/castelli/sun.html)</span>
 <span class="sd">    such that BOL(SED_x_sun,SED_y_sun)+solar_magnitude_correction = 4.74.</span>
@@ -394,7 +411,10 @@
     <span class="k">return</span> <span class="o">-</span><span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">my_integral</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">))</span> <span class="o">-</span> <span class="mf">11.4915</span></div>
 
 
-<div class="viewcode-block" id="BC"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.BC">[docs]</a><span class="k">def</span> <span class="nf">BC</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+<div class="viewcode-block" id="BC">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.BC">[docs]</a>
+<span class="k">def</span> <span class="nf">BC</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Bolometric Correction</span>
 
@@ -413,6 +433,7 @@
     <span class="n">mV</span> <span class="o">=</span> <span class="n">filter_dictionary</span><span class="p">[</span><span class="s2">&quot;V&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">)</span>
     <span class="n">bol</span> <span class="o">=</span> <span class="n">BOL</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">bol</span> <span class="o">-</span> <span class="n">mV</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
+
 
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -507,7 +528,9 @@
 <span class="sd">        return fluxnew&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="reddening"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.reddening">[docs]</a><span class="k">def</span> <span class="nf">reddening</span><span class="p">(</span><span class="n">wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lmc2</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="reddening">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.reddening">[docs]</a>
+<span class="k">def</span> <span class="nf">reddening</span><span class="p">(</span><span class="n">wave</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">flux</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lmc2</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
               <span class="n">avg_lmc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">deredden</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">c1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">c2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">c3</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">c4</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_curve</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -635,7 +658,10 @@
         <span class="k">return</span> <span class="n">flux</span> <span class="o">*</span> <span class="mf">10.</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">curve</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_IUE"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.load_IUE">[docs]</a><span class="k">def</span> <span class="nf">load_IUE</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(np.array,np.array,np.array)&#39;</span><span class="p">:</span>
+
+<div class="viewcode-block" id="load_IUE">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.load_IUE">[docs]</a>
+<span class="k">def</span> <span class="nf">load_IUE</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(np.array,np.array,np.array)&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    load an IUE spectrum (or STIS or whatever you like)</span>
 <span class="sd">    file columns: wavelength [A], flux [erg/cm^2/s/A], flux uncertainty [erg/cm^2/s/A]</span>
@@ -662,7 +688,10 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_err</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="spec_phot_red_chisq"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.spec_phot_red_chisq">[docs]</a><span class="k">def</span> <span class="nf">spec_phot_red_chisq</span><span class="p">(</span><span class="n">model_sed</span><span class="p">,</span> <span class="n">spec_phot</span><span class="p">):</span>
+
+<div class="viewcode-block" id="spec_phot_red_chisq">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.spec_phot_red_chisq">[docs]</a>
+<span class="k">def</span> <span class="nf">spec_phot_red_chisq</span><span class="p">(</span><span class="n">model_sed</span><span class="p">,</span> <span class="n">spec_phot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the reduced chi square between a model SED flux and spectrophotometry flux.</span>
 <span class="sd">    If an error column is given, the weighted variance is calculated.</span>
@@ -705,7 +734,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">iue_diff</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">iue_e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fit_SED"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.fit_SED">[docs]</a><span class="k">def</span> <span class="nf">fit_SED</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">,</span> <span class="n">IUE_y</span><span class="p">,</span> <span class="n">magnitude_array</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">output_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+
+<div class="viewcode-block" id="fit_SED">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.fit_SED">[docs]</a>
+<span class="k">def</span> <span class="nf">fit_SED</span><span class="p">(</span><span class="n">SED_x</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">,</span> <span class="n">IUE_y</span><span class="p">,</span> <span class="n">magnitude_array</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">output_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">IUE_error</span><span class="o">=</span><span class="p">[],</span> <span class="n">magnitude_error</span><span class="o">=</span><span class="p">[],</span> <span class="n">normalizeV</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">showPlot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;tuple(float,float,float)&#39;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fitting routine to get RV and E(B-V)</span>
@@ -830,7 +862,10 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">rv_best</span><span class="p">,</span> <span class="n">ebmv_best</span><span class="p">,</span> <span class="n">offset_best</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_SED_redd"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.plot_SED_redd">[docs]</a><span class="k">def</span> <span class="nf">plot_SED_redd</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">IUE_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">magnitude_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+
+<div class="viewcode-block" id="plot_SED_redd">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.plot_SED_redd">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_SED_redd</span><span class="p">(</span><span class="n">SED_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">SED_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">IUE_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">IUE_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">magnitude_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
                   <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ebmv</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">normalizeV</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plotting the reddened SED with IUE spectrum and magnitudes</span>
@@ -935,6 +970,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
+
 <span class="c1"># read filter_data file</span>
 <span class="n">filter_data_path</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;astro_scripts_uibk&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;filter_profiles/filter_data.csv&#39;</span>
 <span class="n">filter_data_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filter_data_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
@@ -947,7 +983,9 @@
     <span class="n">filter_dict_2</span><span class="p">[</span><span class="n">df_index</span><span class="p">]</span><span class="o">.</span><span class="n">central_wave</span> <span class="o">=</span> <span class="n">filter_data_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_index</span><span class="p">,</span> <span class="s1">&#39;wave&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="sed_plotter"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.sed_plotter">[docs]</a><span class="k">def</span> <span class="nf">sed_plotter</span><span class="p">(</span><span class="n">sed</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">magnitude_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">spec_phot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.1</span><span class="p">,</span>
+<div class="viewcode-block" id="sed_plotter">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.photometry.sed_plotter">[docs]</a>
+<span class="k">def</span> <span class="nf">sed_plotter</span><span class="p">(</span><span class="n">sed</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">magnitude_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">spec_phot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rv</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.1</span><span class="p">,</span>
                 <span class="n">ebv</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fitzpatrick_parameters</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">plot_filtered_sed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1091,6 +1129,7 @@
     <span class="n">offset_slider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
     <span class="c1"># check.on_clicked(update)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

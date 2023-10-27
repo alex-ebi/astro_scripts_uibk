@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.io_asu &mdash; astro_scripts_uibk 0.post27+gdcb808d documentation</title>
+  <title>astro_scripts_uibk.io_asu &mdash; astro_scripts_uibk 0.post28+gb4a4a06 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -12,11 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/documentation_options.js?v=d1759445"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -34,7 +34,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post27+gdcb808d
+                0.post28+gb4a4a06
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -81,7 +81,9 @@
 <span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
 
 
-<div class="viewcode-block" id="wave_from_dispersion"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.wave_from_dispersion">[docs]</a><span class="k">def</span> <span class="nf">wave_from_dispersion</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">start_wave</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">):</span>
+<div class="viewcode-block" id="wave_from_dispersion">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.wave_from_dispersion">[docs]</a>
+<span class="k">def</span> <span class="nf">wave_from_dispersion</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">start_wave</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates a wavelength array as a equidistant grid.</span>
 <span class="sd">    Starts from &#39;star_wave&#39; and makes further points with a constant separation &#39;dispersion&#39;.</span>
@@ -108,7 +110,10 @@
     <span class="k">return</span> <span class="n">wave</span></div>
 
 
-<div class="viewcode-block" id="read_surface_spectrum"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_surface_spectrum">[docs]</a><span class="k">def</span> <span class="nf">read_surface_spectrum</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="read_surface_spectrum">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_surface_spectrum">[docs]</a>
+<span class="k">def</span> <span class="nf">read_surface_spectrum</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads the spectrum of a surface output-file (e.g. &quot;T9000G1.50X7.0M02HE.100C8.41_flux&quot;).</span>
 
@@ -152,7 +157,10 @@
     <span class="k">return</span> <span class="n">spec</span></div>
 
 
-<div class="viewcode-block" id="read_atlas9_flux"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_atlas9_flux">[docs]</a><span class="k">def</span> <span class="nf">read_atlas9_flux</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="read_atlas9_flux">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_atlas9_flux">[docs]</a>
+<span class="k">def</span> <span class="nf">read_atlas9_flux</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load the radiation flux from an ATLAS9 output file (\*_struct).</span>
 <span class="sd">    The ATLAS9 Eddington flux gets converted to the Astrophysical flux.</span>
@@ -184,7 +192,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave</span><span class="p">,</span> <span class="n">flux</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="read_atlas9_struct"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_atlas9_struct">[docs]</a><span class="k">def</span> <span class="nf">read_atlas9_struct</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="read_atlas9_struct">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_atlas9_struct">[docs]</a>
+<span class="k">def</span> <span class="nf">read_atlas9_struct</span><span class="p">(</span><span class="n">atlas9_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load the atmosphere structure from an ATLAS9 output file (\*_struct).</span>
 
@@ -241,7 +252,10 @@
     <span class="k">return</span> <span class="n">struct_array</span></div>
 
 
-<div class="viewcode-block" id="read_molecfit_crires_spec"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_spec">[docs]</a><span class="k">def</span> <span class="nf">read_molecfit_crires_spec</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="read_molecfit_crires_spec">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_spec">[docs]</a>
+<span class="k">def</span> <span class="nf">read_molecfit_crires_spec</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads a molecfit output fits file of oCRIRES with a specified chip number.</span>
 <span class="sd">    Returns a spectrum. Use *read_molecfit_crires_col_names* to get the column names.</span>
@@ -272,7 +286,10 @@
     <span class="k">return</span> <span class="n">out_spec</span></div>
 
 
-<div class="viewcode-block" id="read_molecfit_crires_col_names"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_col_names">[docs]</a><span class="k">def</span> <span class="nf">read_molecfit_crires_col_names</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="read_molecfit_crires_col_names">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_col_names">[docs]</a>
+<span class="k">def</span> <span class="nf">read_molecfit_crires_col_names</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads a molecfit output fits file of oCRIRES with a specified chip number.</span>
 <span class="sd">    Returns the column names of the spectrum (*read_molecfit_crires_spec*).</span>
@@ -299,7 +316,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">col_names</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="read_molecfit_crires_header"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_header">[docs]</a><span class="k">def</span> <span class="nf">read_molecfit_crires_header</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+<div class="viewcode-block" id="read_molecfit_crires_header">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_molecfit_crires_header">[docs]</a>
+<span class="k">def</span> <span class="nf">read_molecfit_crires_header</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">chip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads a molecfit output fits file of oCRIRES with a specified chip number.</span>
 <span class="sd">    Returns the merged Primary header and Header of the specified chip as a dictionary.</span>
@@ -324,7 +344,10 @@
     <span class="k">return</span> <span class="n">header</span></div>
 
 
-<div class="viewcode-block" id="read_iue_stis"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_iue_stis">[docs]</a><span class="k">def</span> <span class="nf">read_iue_stis</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="read_iue_stis">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_iue_stis">[docs]</a>
+<span class="k">def</span> <span class="nf">read_iue_stis</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads an spectrophotometry file (IUE or STIS)</span>
 <span class="sd">    file columns: wavelength [A], flux [erg/cm^2/s/A], flux uncertainty [erg/cm^2/s/A]</span>
@@ -351,7 +374,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_err</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="read_uves"><a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_uves">[docs]</a><span class="k">def</span> <span class="nf">read_uves</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="read_uves">
+<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.read_uves">[docs]</a>
+<span class="k">def</span> <span class="nf">read_uves</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads ESO-UVES data.</span>
 <span class="sd">    Calculates the wavelengths from the header keywords &#39;CRVAL1&#39; and &#39;CDELT1&#39;.</span>
@@ -379,6 +405,7 @@
         <span class="k">return</span> <span class="n">spec</span><span class="p">,</span> <span class="n">header</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">spec</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">read_carmenes</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
