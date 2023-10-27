@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.io_asu &mdash; astro_scripts_uibk 0.post28+gb4a4a06 documentation</title>
+  <title>astro_scripts_uibk.io_asu &mdash; astro_scripts_uibk 0.post31+gb3e78c3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -12,7 +12,7 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/documentation_options.js?v=d1759445"></script>
+        <script src="../../_static/documentation_options.js?v=9277bf33"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -34,7 +34,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post28+gb4a4a06
+                0.post31+gb3e78c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -83,7 +83,7 @@
 
 <div class="viewcode-block" id="wave_from_dispersion">
 <a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.io_asu.wave_from_dispersion">[docs]</a>
-<span class="k">def</span> <span class="nf">wave_from_dispersion</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">start_wave</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">wave_from_dispersion</span><span class="p">(</span><span class="n">flux</span><span class="p">,</span> <span class="n">start_wave</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">,</span> <span class="n">crpix</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates a wavelength array as a equidistant grid.</span>
 <span class="sd">    Starts from &#39;star_wave&#39; and makes further points with a constant separation &#39;dispersion&#39;.</span>
@@ -96,16 +96,17 @@
 <span class="sd">        Starting wavelength.</span>
 <span class="sd">    dispersion : float</span>
 <span class="sd">        Wavelength step.</span>
+<span class="sd">    crpix : int</span>
+<span class="sd">        Index of reference pixel.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    np.array</span>
 <span class="sd">        Wavelength array matching to flux array in length.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">wave</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">flux</span><span class="p">):</span>
-        <span class="n">wave_i</span> <span class="o">=</span> <span class="n">start_wave</span> <span class="o">+</span> <span class="n">dispersion</span> <span class="o">*</span> <span class="n">i</span>
-        <span class="n">wave</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wave_i</span><span class="p">)</span>
+    <span class="n">index_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flux</span><span class="p">)))</span>
+    <span class="n">index_col</span> <span class="o">=</span> <span class="n">index_col</span> <span class="o">-</span> <span class="n">crpix</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">index_col</span> <span class="o">*</span> <span class="n">dispersion</span> <span class="o">+</span> <span class="n">start_wave</span>
 
     <span class="k">return</span> <span class="n">wave</span></div>
 
@@ -359,8 +360,8 @@
 <span class="sd">    has_error: bool</span>
 <span class="sd">        set it to false if the file has no error column</span>
 
-<span class="sd">    Return</span>
-<span class="sd">    ------</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
 <span class="sd">    np.array</span>
 <span class="sd">        Spectrum with wavelength, flux, flux_uncertainty (set to 1 if has_error = False)</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modules &mdash; astro_scripts_uibk 0.post28+gb4a4a06 documentation</title>
+  <title>Modules &mdash; astro_scripts_uibk 0.post31+gb3e78c3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
@@ -13,7 +13,7 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/documentation_options.js?v=d1759445"></script>
+        <script src="_static/documentation_options.js?v=9277bf33"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -37,7 +37,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post28+gb4a4a06
+                0.post31+gb3e78c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -51,6 +51,26 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-astro_scripts_uibk.alignment">Alignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.SpectralAligner"><code class="docutils literal notranslate"><span class="pre">SpectralAligner</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#astro_scripts_uibk.alignment.SpectralAligner.corr_func"><code class="docutils literal notranslate"><span class="pre">SpectralAligner.corr_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#astro_scripts_uibk.alignment.SpectralAligner.one_query_analysis"><code class="docutils literal notranslate"><span class="pre">SpectralAligner.one_query_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#astro_scripts_uibk.alignment.SpectralAligner.preprocessing"><code class="docutils literal notranslate"><span class="pre">SpectralAligner.preprocessing()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.auto_plot_clusters"><code class="docutils literal notranslate"><span class="pre">auto_plot_clusters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.error_of_std"><code class="docutils literal notranslate"><span class="pre">error_of_std()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.extract_clusters_1d"><code class="docutils literal notranslate"><span class="pre">extract_clusters_1d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.fit_gauss_skew"><code class="docutils literal notranslate"><span class="pre">fit_gauss_skew()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.gauss_skew"><code class="docutils literal notranslate"><span class="pre">gauss_skew()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.gauss_skew_slope"><code class="docutils literal notranslate"><span class="pre">gauss_skew_slope()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.plot_matches"><code class="docutils literal notranslate"><span class="pre">plot_matches()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.query_preparation"><code class="docutils literal notranslate"><span class="pre">query_preparation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.rest_frame_crop"><code class="docutils literal notranslate"><span class="pre">rest_frame_crop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.rest_frame_resample"><code class="docutils literal notranslate"><span class="pre">rest_frame_resample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.alignment.transform_normalized_dib"><code class="docutils literal notranslate"><span class="pre">transform_normalized_dib()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-astro_scripts_uibk.convolve">Convolve</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.convolve.find_nearest_index"><code class="docutils literal notranslate"><span class="pre">find_nearest_index()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#astro_scripts_uibk.convolve.find_nearest_value"><code class="docutils literal notranslate"><span class="pre">find_nearest_value()</span></code></a></li>
@@ -194,6 +214,474 @@
 <tbody>
 </tbody>
 </table>
+<section id="module-astro_scripts_uibk.alignment">
+<span id="alignment"></span><h2>Alignment<a class="headerlink" href="#module-astro_scripts_uibk.alignment" title="Link to this heading">¶</a></h2>
+<p>File: alignment
+Version:
+Date: 13.02.2023
+Author: Alexander Ebenbichler
+Description:
+Module for finding DIBs with similar profiles in wave number space.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.SpectralAligner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">SpectralAligner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.1.1)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.1.1)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_range_ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">star_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavenumber_grid_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_fit_range_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_width_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_center_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#SpectralAligner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.SpectralAligner" title="Link to this definition">¶</a></dt>
+<dd><p>Class for spectral alignment.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.SpectralAligner.corr_func">
+<span class="sig-name descname"><span class="pre">corr_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_win</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#SpectralAligner.corr_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.SpectralAligner.corr_func" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the distance between query and subject in rolling window operation.
+The subject in the window is compared to the query which has equal length.
+Only flux and no wavelength is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sub_win</strong><span class="classifier">pd.Series</span></dt><dd><p>Subject in window of rolling window operation.</p>
+</dd>
+<dt><strong>query_series</strong><span class="classifier">pd.Series</span></dt><dd><p>Query flux.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dist</strong><span class="classifier">float</span></dt><dd><p>Euclidean distance between query and subject window.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.SpectralAligner.one_query_analysis">
+<span class="sig-name descname"><span class="pre">one_query_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">star_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_obs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#SpectralAligner.one_query_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.SpectralAligner.one_query_analysis" title="Link to this definition">¶</a></dt>
+<dd><p>Performs DIB alignment for one query.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>star_name</strong><span class="classifier">string</span></dt><dd><p>Star name of query sight line.</p>
+</dd>
+<dt><strong>query_obs</strong><span class="classifier">pd.Series</span></dt><dd><p>Row of data_index. Contains spec_path and star_name.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt>pd.Dataframe</dt><dd><p>DataFrame of DIB alignment results.</p>
+<p>‘grid_res’: Resolution of wavenumber grid (points per wavenumber)</p>
+<p>‘spec_path_q’: Path of Query spectrum relative to spectra directory.</p>
+<p>‘spec_path_s’: Path of Subject spectrum relative to spectra directory.</p>
+<p>‘star_name’: Star name</p>
+<p>‘match_dist’: d(Q,S) of this match pair</p>
+<p>‘match_wave’: Wavenumber of the subject.</p>
+<p>‘sigma_s’: Standard deviation of the subject flux.</p>
+<p>‘mean_s’: Mean flux of subject.</p>
+<p>‘ew_s’: Equivalent width of the subject in wavenumbers.</p>
+<p>‘sigma_q’: Standard deviation of the query flux.</p>
+<p>‘mean_q’: Mean flux of query.</p>
+<p>‘center_q’: Central wavenumber of the query.</p>
+<p>‘fwhm_q’: FWHM of the query in wavenumbers.</p>
+<p>‘ew_q’: Equivalent width of the query in wavenumbers.</p>
+<p>‘query_rv’: Radial velocity of the query in km/s.</p>
+<p>‘c0xq’: Wavenumber coordinate of the first continuum point of the query.</p>
+<p>‘c0yq’: Flux coordinate of the first continuum point of the query.</p>
+<p>‘c1xq’: Wavenumber coordinate of the second continuum point of the query.</p>
+<p>‘c1yq’: Flux coordinate of the second continuum point of the query.</p>
+<p>‘c0xs’: Wavenumber coordinate of the first continuum point of the subject.</p>
+<p>‘c0ys’: Flux coordinate of the first continuum point of the subject.</p>
+<p>‘c1xs’: Wavenumber coordinate of the second continuum point of the subject.</p>
+<p>‘c1ys’: Flux coordinate of the second continuum point of the subject.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.SpectralAligner.preprocessing">
+<span class="sig-name descname"><span class="pre">preprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="(in pandas v2.1.1)"><span class="pre">Series</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#SpectralAligner.preprocessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.SpectralAligner.preprocessing" title="Link to this definition">¶</a></dt>
+<dd><p>Correct constant slope around DIB and do standardisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>s_in</strong><span class="classifier">pd.Series</span></dt><dd><p>Series of flux values in an equidistant wavenumber grid with the resolution grid_res.</p>
+</dd>
+<dt><strong>analyse</strong><span class="classifier">bool</span></dt><dd><p>If False, the function returns only the preprocessed spectrum.
+If True, it additionally returns the mean, standard deviation and equivalent width (in wavenumbers!) of
+the query. (Default: False)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.array</dt><dd><p>Normalized and standardized spectrum.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.auto_plot_clusters">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">auto_plot_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">io_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pearson_r_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_dist_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ang_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_stars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#auto_plot_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.auto_plot_clusters" title="Link to this definition">¶</a></dt>
+<dd><p>Automatically plotting some matches for a query DIB.
+Several parameters can be changed to change the output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>result_file</strong><span class="classifier">Path</span></dt><dd><p>Name of DIB alignment result file (pickle format).</p>
+</dd>
+<dt><strong>mem_range</strong><span class="classifier">float</span></dt><dd><p>Half width of range for included matches.</p>
+</dd>
+<dt><strong>query_key</strong><span class="classifier">int</span></dt><dd><p>Name of the query DIB.</p>
+</dd>
+<dt><strong>number_cut</strong><span class="classifier">int</span></dt><dd><p>Maximum number of matches to be plotted.</p>
+</dd>
+<dt><strong>pearson_r_cut</strong><span class="classifier">float</span></dt><dd><p>Minimum Pearson coefficient of band strength correlation.</p>
+</dd>
+<dt><strong>eps</strong><span class="classifier">float</span></dt><dd><p>Minimum distance between matches in wavenumber space to be considered members of the same cluster.</p>
+</dd>
+<dt><strong>plot_dir</strong><span class="classifier">Path</span></dt><dd><p>Directory where the plots will be saved.</p>
+</dd>
+<dt><strong>sort_by</strong><span class="classifier">str</span></dt><dd><p>Key to sort found clusters by. (Default: None)</p>
+</dd>
+<dt><strong>ascending</strong><span class="classifier">bool</span></dt><dd><p>If True, found clusters are sorted ascending. (Default: True)</p>
+</dd>
+<dt><strong>padding_factor</strong><span class="classifier">float</span></dt><dd><p>Padding which will be added to each spectrum plot in multiples of the fitted DIB range.</p>
+</dd>
+<dt><strong>match_dist_cut</strong><span class="classifier">float</span></dt><dd><p>Maximum match distance to be considered BEFORE match clusters are found.</p>
+</dd>
+<dt><strong>ang_range</strong><span class="classifier">list</span></dt><dd><p>If set, only matches in this wavelength range are considered.</p>
+</dd>
+<dt><strong>dark_style</strong><span class="classifier">bool</span></dt><dd><p>Bool to set dark plot style. (Default: False)</p>
+</dd>
+<dt><strong>show</strong><span class="classifier">bool</span></dt><dd><p>If True, the plots are shown interactively and not saved. (Default: False)</p>
+</dd>
+<dt><strong>excluded_stars</strong><span class="classifier">list</span></dt><dd><p>list of excluded stars.</p>
+</dd>
+<dt><strong>sample_number</strong><span class="classifier">int</span></dt><dd><p>Number of spectra which will be plotted per spectrum panel.</p>
+</dd>
+<dt><strong>annotate</strong><span class="classifier">bool</span></dt><dd><p>If True, all example_data points in the correlation plots are annotated. (Default: False)</p>
+</dd>
+<dt><strong>min_cluster_size</strong><span class="classifier">int</span></dt><dd><p>Minimal number of matches needed to be considered a cluster.</p>
+</dd>
+<dt><strong>sm_ratio</strong></dt><dd><p>Smoothing range relative to query range. (Default: 0.1)</p>
+</dd>
+<dt><strong>smooth</strong><span class="classifier">bool</span></dt><dd><p>If True, the smoothed spectra are shown, along with the un-smoothed in the background.
+If False, only the un-smoothed spectra are shown. (Default: False)</p>
+</dd>
+<dt><strong>io_function</strong><span class="classifier">function</span></dt><dd><p>IO function for reading spectra.
+Argument: file_path : str
+Returns: np.array([wave(wavenumber), flux])</p>
+</dd>
+<dt><strong>spec_dir</strong><span class="classifier">Path</span></dt><dd><p>Path of spectra directory. All paths of data_index have to be relative to spec_dir</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"></dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.error_of_std">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">error_of_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#error_of_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.error_of_std" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the error of a standard deviation.</p>
+<p>Source: Mood, A. M., Graybill, F. A., and Boes, D.C. (1974) Introduction to the Theory of Statistics, 3rd Edition,
+McGraw-Hill, New York, p. 229</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>a</strong><span class="classifier">array_like</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>Error of standard deviation of sample a.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.extract_clusters_1d">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">extract_clusters_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.1.1)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mem_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_cluster_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#extract_clusters_1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.extract_clusters_1d" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts clusters of DIB matches from DIB alignment result DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>r_df</strong></dt><dd></dd>
+<dt><strong>eps</strong></dt><dd></dd>
+<dt><strong>mem_range</strong></dt><dd></dd>
+<dt><strong>show</strong></dt><dd></dd>
+<dt><strong>min_cluster_size</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"></dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.fit_gauss_skew">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">fit_gauss_skew</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dib_fwhm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_wavenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_fit_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cont_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#fit_gauss_skew"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.fit_gauss_skew" title="Link to this definition">¶</a></dt>
+<dd><p>Fits a skewed gaussian to a spectrum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dib_fwhm</strong><span class="classifier">float</span></dt><dd><p>Nominal FWHM of the query DIB. The FWHM of the fitting function is bound close to this value.</p>
+</dd>
+<dt><strong>query_wavenumber</strong><span class="classifier">float</span></dt><dd><p>Rest wavelength of query.</p>
+</dd>
+<dt><strong>query_fit_spec</strong><span class="classifier">np.array</span></dt><dd><p>Spectrum with query in wavenumbers.</p>
+</dd>
+<dt><strong>cont_lim</strong><span class="classifier">float</span></dt><dd><p>Defines where the DIB ends. It ends when the fitted function absorbs less than the central depth times cont_lim.
+Default: 0.02</p>
+</dd>
+<dt><strong>center_limits</strong><span class="classifier">list</span></dt><dd><p>Limits of central absorption for Query. Default: [-4, 4]</p>
+</dd>
+<dt><strong>width_limits</strong><span class="classifier">list</span></dt><dd><p>Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple</dt><dd><p>(fitting result, limits of query in wavenumbers, central wavelength of query,
+central depth of fit, FWHM of fit, success (bool))</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.gauss_skew">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">gauss_skew</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#gauss_skew"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.gauss_skew" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a skewed Gaussian on a specified x-axis.
+The function is an un-skewed Gaussian multiplied by an exponential function derived from a Pearson IV distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">np.array</span></dt><dd><p>Array of x-axis, typically wavelength or wavenumber.</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>Amplitude coefficient. The real amplitude, i.e. the maximum of the curve is different and has to be determined
+numerically (or you work out an analytic way).</p>
+</dd>
+<dt><strong>m</strong><span class="classifier">float</span></dt><dd><p>Center of the un-skewed gaussian. Again, the real center is shifted because of the skewing.</p>
+</dd>
+<dt><strong>w</strong><span class="classifier">float</span></dt><dd><p>Width of the un-skewed Gaussian. Real width is different.</p>
+</dd>
+<dt><strong>s</strong><span class="classifier">float</span></dt><dd><p>Skewness parameter. For s = 0, the Gaussian is not skewed at all.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.array</dt><dd><p>Skewed Gaussian curve on basis of array x.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.gauss_skew_slope">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">gauss_skew_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cont</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#gauss_skew_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.gauss_skew_slope" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a skewed Gaussian as an absorption in a linear continuum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">np.array</span></dt><dd><p>Array of x-axis, typically wavelength or wavenumber.</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>Amplitude coefficient. The real amplitude, i.e. the maximum of the curve is different and has to be determined
+numerically (or you work out an analytic way).</p>
+</dd>
+<dt><strong>m</strong><span class="classifier">float</span></dt><dd><p>Center of the un-skewed gaussian. Again, the real center is shifted because of the skewing.</p>
+</dd>
+<dt><strong>w</strong><span class="classifier">float</span></dt><dd><p>Width of the un-skewed Gaussian. Real width is different.</p>
+</dd>
+<dt><strong>s</strong><span class="classifier">float</span></dt><dd><p>Skewness parameter. For s = 0, the Gaussian is not skewed at all.</p>
+</dd>
+<dt><strong>cont</strong><span class="classifier">float</span></dt><dd><p>Constant offset of continuum.</p>
+</dd>
+<dt><strong>slope</strong><span class="classifier">float</span></dt><dd><p>Slope of continuum.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.array</dt><dd><p>Skewed Gaussian absorption on linear continuum.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.plot_matches">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">plot_matches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.1.1)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_ang</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">io_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#plot_matches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.plot_matches" title="Link to this definition">¶</a></dt>
+<dd><p>Plots matching DIB pairs on a A4 page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>m_df</strong><span class="classifier">pd.Dataframe</span></dt><dd><p>DataFrame read from DIB alignment result file (pickles format) and cropped to the matches which
+should be plotted.</p>
+</dd>
+<dt><strong>query_key</strong><span class="classifier">int</span></dt><dd><p>Key of the query DIB.</p>
+</dd>
+<dt><strong>mean_ang</strong><span class="classifier">float</span></dt><dd><p>Mean wavelength of detected matches.</p>
+</dd>
+<dt><strong>plot_path</strong><span class="classifier">Path</span></dt><dd><p>Filename of plot without suffix. PDF and PNG will be created.</p>
+</dd>
+<dt><strong>sample_number</strong><span class="classifier">int</span></dt><dd><p>Number of spectra which will be plotted per spectrum panel.</p>
+</dd>
+<dt><strong>dark_style</strong><span class="classifier">bool</span></dt><dd><p>Bool to set dark plot style. (Default: False)</p>
+</dd>
+<dt><strong>padding_factor</strong><span class="classifier">float</span></dt><dd><p>Padding which will be added to each spectrum plot in multiples of the fitted DIB range.</p>
+</dd>
+<dt><strong>annotate</strong><span class="classifier">bool</span></dt><dd><p>If True, all example_data points in the correlation plots are annotated. (Default: False)</p>
+</dd>
+<dt><strong>show</strong><span class="classifier">bool</span></dt><dd><p>If True, the plots are shown interactively and not saved. (Default: False)</p>
+</dd>
+<dt><strong>smooth</strong><span class="classifier">bool</span></dt><dd><p>If True, the smoothed spectra are shown, along with the un-smoothed in the background.
+If False, only the un-smoothed spectra are shown. (Default: False)</p>
+</dd>
+<dt><strong>sm_ratio</strong></dt><dd><p>Smoothing range relative to query range. (Default: 0.1)</p>
+</dd>
+<dt><strong>io_function</strong><span class="classifier">function</span></dt><dd><p>IO function for reading spectra.
+Argument: file_path : str
+Returns: np.array([wave(wavenumber), flux])</p>
+</dd>
+<dt><strong>spec_dir</strong><span class="classifier">Path</span></dt><dd><p>Path of spectra directory. All paths of data_index have to be relative to spec_dir</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>None</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.query_preparation">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">query_preparation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_wavenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_fit_half_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dib_fwhm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sm_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#query_preparation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.query_preparation" title="Link to this definition">¶</a></dt>
+<dd><p>Prepares a query spectrum and extracts the query used for DIB alignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>query_spec</strong><span class="classifier">np.array</span></dt><dd><p>Spectrum with query in wavenumbers.</p>
+</dd>
+<dt><strong>spec_path</strong><span class="classifier">Path</span></dt><dd><p>Path of spectrum.</p>
+</dd>
+<dt><strong>query_wavenumber</strong><span class="classifier">float</span></dt><dd><p>Rest wavelength of query.</p>
+</dd>
+<dt><strong>query_fit_half_width</strong><span class="classifier">float</span></dt><dd><p>Half width of spectrum which should be used for the fitting process.</p>
+</dd>
+<dt><strong>dib_fwhm</strong><span class="classifier">float</span></dt><dd><p>Nominal FWHM of the query DIB. The FWHM of the fitting function is bound close to this value.</p>
+</dd>
+<dt><strong>grid_res</strong><span class="classifier">float</span></dt><dd><p>Resolution of resampled grid. Points per wavenumber.
+For grid_resolution = 100 , the distance between two grid points is 0.01 cm-1.</p>
+</dd>
+<dt><strong>plot_fit</strong><span class="classifier">bool</span></dt><dd><p>If True, the fit is plotted. Default: False</p>
+</dd>
+<dt><strong>smoothing</strong><span class="classifier">bool</span></dt><dd><p>If True, the spectrum will be smoothed with a boxcar kernel.</p>
+</dd>
+<dt><strong>dark_style</strong><span class="classifier">bool</span></dt><dd><p>If True, the query fit is plotted in dark style. Default: False</p>
+</dd>
+<dt><strong>sm_ratio</strong><span class="classifier">float</span></dt><dd><p>Smoothing range relative to query range.</p>
+</dd>
+<dt><strong>center_limits</strong><span class="classifier">list</span></dt><dd><p>Limits of central absorption for Query. Default: [-4, 4]</p>
+</dd>
+<dt><strong>width_limits</strong><span class="classifier">list</span></dt><dd><p>Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple</dt><dd><p>(query spectrum, fitting result, central wavelength of query, RV of query, size of smoothing kernel,
+limits of query in wavenumbers in query rest frame, central depth of fit, FWHM of fit, success (bool))</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.rest_frame_crop">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">rest_frame_crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_rv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_lims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#rest_frame_crop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.rest_frame_crop" title="Link to this definition">¶</a></dt>
+<dd><p>Transform into DIB rest frame and transform to wavenumbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>crop</strong></dt><dd></dd>
+<dt><strong>spec_in</strong></dt><dd></dd>
+<dt><strong>query_rv</strong></dt><dd></dd>
+<dt><strong>grid_lims</strong></dt><dd></dd>
+<dt><strong>padding_factor</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.array</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.rest_frame_resample">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">rest_frame_resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_rv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#rest_frame_resample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.rest_frame_resample" title="Link to this definition">¶</a></dt>
+<dd><p>Transform into DIB rest frame and resample to equidistant wavenumber grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>spec</strong><span class="classifier">np.array([wave, flux, additional_columns])</span></dt><dd><p>Input spectrum in wavenumbers.</p>
+</dd>
+<dt><strong>query_rv</strong><span class="classifier">float</span></dt><dd><p>Radial velocity of query in km/s.</p>
+</dd>
+<dt><strong>grid_res</strong><span class="classifier">float</span></dt><dd><p>Resolution of resampled grid. Points per wavenumber.
+For grid_resolution = 100 , the distance between two grid points is 0.01 cm-1.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.array</dt><dd><p>Resampled spectrum in query rest frame.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="astro_scripts_uibk.alignment.transform_normalized_dib">
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.alignment.</span></span><span class="sig-name descname"><span class="pre">transform_normalized_dib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strength_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wn_shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/alignment.html#transform_normalized_dib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.alignment.transform_normalized_dib" title="Link to this definition">¶</a></dt>
+<dd><p>Transforms a DIB in an already normalized spectrum by scaling its strength and shifting it, to match a DIB profile
+family member.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>spectrum</strong><span class="classifier">np.array([wave, flux, additional_columns])</span></dt><dd><p>Input spectrum with wavelengths in Angstroms.</p>
+</dd>
+<dt><strong>strength_factor</strong><span class="classifier">float</span></dt><dd><p>Intensity ratio between the DIBs.</p>
+</dd>
+<dt><strong>wn_shift</strong><span class="classifier">float</span></dt><dd><p>Shift between DIBs in wavenumbers.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.array</dt><dd><p>Rescaled spectrum. Wavelengths are in Angstroms.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-astro_scripts_uibk.convolve">
 <span id="convolve"></span><h2>Convolve<a class="headerlink" href="#module-astro_scripts_uibk.convolve" title="Link to this heading">¶</a></h2>
 <dl class="py function">
@@ -469,6 +957,12 @@ file columns: wavelength [A], flux [erg/cm^2/s/A], flux uncertainty [erg/cm^2/s/
 </dd>
 </dl>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>np.array</dt><dd><p>Spectrum with wavelength, flux, flux_uncertainty (set to 1 if has_error = False)</p>
+</dd>
+</dl>
+</dd>
 </dl>
 </dd></dl>
 
@@ -589,7 +1083,7 @@ Calculates the wavelengths from the header keywords ‘CRVAL1’ and ‘CDELT1�
 
 <dl class="py function">
 <dt class="sig sig-object py" id="astro_scripts_uibk.io_asu.wave_from_dispersion">
-<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.io_asu.</span></span><span class="sig-name descname"><span class="pre">wave_from_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_wave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispersion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/io_asu.html#wave_from_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.io_asu.wave_from_dispersion" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">astro_scripts_uibk.io_asu.</span></span><span class="sig-name descname"><span class="pre">wave_from_dispersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_wave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispersion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crpix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/astro_scripts_uibk/io_asu.html#wave_from_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#astro_scripts_uibk.io_asu.wave_from_dispersion" title="Link to this definition">¶</a></dt>
 <dd><p>Calculates a wavelength array as a equidistant grid.
 Starts from ‘star_wave’ and makes further points with a constant separation ‘dispersion’.</p>
 <dl class="field-list simple">
@@ -600,6 +1094,8 @@ Starts from ‘star_wave’ and makes further points with a constant separation 
 <dt><strong>start_wave</strong><span class="classifier">float</span></dt><dd><p>Starting wavelength.</p>
 </dd>
 <dt><strong>dispersion</strong><span class="classifier">float</span></dt><dd><p>Wavelength step.</p>
+</dd>
+<dt><strong>crpix</strong><span class="classifier">int</span></dt><dd><p>Index of reference pixel.</p>
 </dd>
 </dl>
 </dd>
