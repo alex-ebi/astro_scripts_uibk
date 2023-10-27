@@ -822,17 +822,39 @@ def extract_clusters_1d(r_df: pd.DataFrame, eps=0.1, mem_range=None, show=False,
 
     Parameters
     ----------
-    r_df
-    eps
-    mem_range
-    show
-    min_cluster_size
+    r_df : pd.Dataframe
+        DataFrame read from DIB alignment result file (pickles format) and cropped to the matches which
+        should be plotted.
+    eps : float
+        Minimum distance between matches in wavenumber space to be considered members of the same cluster.
+    mem_range : float
+        Half width of range for included matches.
+    show : bool
+        If True, the plots are shown interactively and not saved. (Default: False)
+    min_cluster_size : int
+        Minimal number of matches needed to be considered a cluster.
 
     Returns
     -------
+    pd.DataFrame
+        DataFrame of the found match clusters.
+
+        Columns:
+
+        'mean_wavenumber': Mean wavenumber.
+
+        'mean_angstrom': Mean wavelength.
+
+        'pearson_r': Pearson coefficient of band strength correlation.
+
+        'wn_range': Half width of range for included matches.
+
+        'median_dist': Median euclidean distance.
+
+        'std_wn': Standard deviation of the wavenumbers.
 
     """
-    # define features for clustering: match wavelength and strength ratio
+    # define features for clustering: match wavenumber
     features = r_df.match_wave.to_numpy().reshape(-1, 1)
     model = DBSCAN(eps=eps, min_samples=min_cluster_size)
     # fit model and predict clusters

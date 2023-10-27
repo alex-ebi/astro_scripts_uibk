@@ -3,6 +3,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 
+# Some strings for axis labels
+wn_str = r'$\tilde \nu$(cm$^{-1}$)'
+ang_str = r'$\lambda(\AA)$'
+
 
 def pub_style_fig():
     """
