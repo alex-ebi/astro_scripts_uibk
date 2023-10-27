@@ -120,8 +120,7 @@ def filter_spikes_normalized(spectrum: np.array, threshold=.02, window=5):
     """
     df = DataFrame(data=spectrum.T)
 
-    median = df[1].rolling(window=window, center=True).median().fillna(method='bfill'). \
-        fillna(method='ffill')
+    median = df[1].rolling(window=window, center=True).median().bfill().ffill()
 
     difference = np.abs(df[1] - median) / median
 

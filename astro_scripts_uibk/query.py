@@ -40,7 +40,7 @@ def mask_as_nan(df: pd.DataFrame) -> pd.DataFrame:
         else:
             return x
 
-    return df.applymap(map_func)
+    return df.map(map_func)
 
 
 def apply_flux(df: pd.DataFrame) -> pd.DataFrame:
