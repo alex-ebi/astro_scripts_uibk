@@ -104,6 +104,7 @@ def gauss_skew(x, a, m, w, s):
 def gauss_skew_slope(x, a, m, w, s, cont, slope):
     """
     Returns a skewed Gaussian as an absorption in a linear continuum.
+
     Parameters
     ----------
     x : np.array
@@ -133,6 +134,7 @@ def gauss_skew_slope(x, a, m, w, s, cont, slope):
 def fit_gauss_skew(dib_fwhm, query_wavenumber, query_fit_spec, cont_lim=0.02, center_limits=None, width_limits=None):
     """
     Fits a skewed gaussian to a spectrum.
+
     Parameters
     ----------
     dib_fwhm : float
@@ -149,13 +151,11 @@ def fit_gauss_skew(dib_fwhm, query_wavenumber, query_fit_spec, cont_lim=0.02, ce
     width_limits : list
         Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]
 
-
     Returns
     -------
     tuple
         (fitting result, limits of query in wavenumbers, central wavelength of query,
         central depth of fit, FWHM of fit, success (bool))
-
     """
     if center_limits is None:
         center_limits = [-4, +4]
@@ -418,6 +418,9 @@ def calc_i_ratio(s_query, s_subject):
 
 
 class SpectralAligner:
+    """
+    Class for spectral alignment.
+    """
     def __init__(self,
                  query_list: pd.DataFrame,
                  query_key: int,
@@ -592,29 +595,53 @@ class SpectralAligner:
         -------
         pd.Dataframe
             DataFrame of DIB alignment results.
-            'grid_res': resolution of wavenumber grid (points per wavenumber)
+
+            'grid_res': Resolution of wavenumber grid (points per wavenumber)
+
             'spec_path_q': Path of Query spectrum relative to spectra directory.
+
             'spec_path_s': Path of Subject spectrum relative to spectra directory.
+
             'star_name': Star name
+
             'match_dist': d(Q,S) of this match pair
-            'match_wave': Wavenumber of the subject
+
+            'match_wave': Wavenumber of the subject.
+
             'sigma_s': Standard deviation of the subject flux.
+
             'mean_s': Mean flux of subject.
+
             'ew_s': Equivalent width of the subject in wavenumbers.
+
             'sigma_q': Standard deviation of the query flux.
+
             'mean_q': Mean flux of query.
+
             'center_q': Central wavenumber of the query.
+
             'fwhm_q': FWHM of the query in wavenumbers.
+
             'ew_q': Equivalent width of the query in wavenumbers.
+
             'query_rv': Radial velocity of the query in km/s.
+
             'c0xq': Wavenumber coordinate of the first continuum point of the query.
+
             'c0yq': Flux coordinate of the first continuum point of the query.
+
             'c1xq': Wavenumber coordinate of the second continuum point of the query.
+
             'c1yq': Flux coordinate of the second continuum point of the query.
+
             'c0xs': Wavenumber coordinate of the first continuum point of the subject.
+
             'c0ys': Flux coordinate of the first continuum point of the subject.
+
             'c1xs': Wavenumber coordinate of the second continuum point of the subject.
+
             'c1ys': Flux coordinate of the second continuum point of the subject.
+
         """
         if self.dark_style:
             asu.pub_plot.dark_style_fig()

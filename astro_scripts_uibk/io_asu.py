@@ -258,8 +258,8 @@ def read_iue_stis(filename: str, has_error=True) -> np.array:
     has_error: bool
         set it to false if the file has no error column
 
-    Return
-    ------
+    Returns
+    -------
     np.array
         Spectrum with wavelength, flux, flux_uncertainty (set to 1 if has_error = False)
     """
