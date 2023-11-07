@@ -421,6 +421,7 @@ class SpectralAligner:
     """
     Class for spectral alignment.
     """
+
     def __init__(self,
                  query_list: pd.DataFrame,
                  query_key: int,
@@ -1113,9 +1114,9 @@ def res_plot(m_df: pd.DataFrame, ax, padding_factor=.5, grid_res=40, smooth_kern
     return
 
 
-def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_number=10, dark_style=False,
+def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_number=7, dark_style=False,
                  padding_factor=.5, annotate=False, show=False, smooth=True, sm_ratio=0.1, io_function=None,
-                 spec_dir=None):
+                 spec_dir=None, sigma_zeta_df=None, sc_df=None):
     """
     Plots matching DIB pairs on a A4 page.
 
@@ -1151,6 +1152,10 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
         Returns: np.array([wave(wavenumber), flux])
     spec_dir : Path
         Path of spectra directory. All paths of data_index have to be relative to spec_dir
+    sigma_zeta_df : pd.DataFrame
+        DataFrame with EW5797/EW5780 values for the sight lines
+    sc_df : pd.DataFrame
+        DataFrame of DIB alignment results for single cloud sight lines.
 
     Returns
     -------
@@ -1166,7 +1171,7 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     else:
         asu.pub_plot.pub_style_fig()
         f = plt.figure(layout='compressed', figsize=(10, 13), label=f'{query_key}_{int(np.round(mean_ang))}')
-        gs = f.add_gridspec(5, 3, height_ratios=[2, 2, 3, 3, 2])
+        gs = f.add_gridspec(5, 3, height_ratios=[4, 4, 3, 2, 3])
 
     mpl.rcParams.update({'font.size': 14})
     # Sort by match distance
@@ -1175,25 +1180,36 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     plot_m = plot_m.drop_duplicates(subset='star_name')
 
     plot_offset = 5
-    ax_spec_1 = f.add_subplot(gs[:, 0])
+    ax_spec_1 = f.add_subplot(gs[:-2, 0])
     spec_plot(plot_m.iloc[:sample_number, :], ax_spec_1, plot_offset=plot_offset, padding_factor=padding_factor,
               dark_style=dark_style, smooth=smooth, sm_ratio=sm_ratio, io_function=io_function, spec_dir=spec_dir)
     ax_spec_1.set_ylim(-4, sample_number * plot_offset)
 
-    ax_spec_2 = f.add_subplot(gs[:, 1])
+    ax_spec_2 = f.add_subplot(gs[:-2, 1])
     spec_plot(plot_m.iloc[-sample_number:, :], ax_spec_2, plot_offset=plot_offset,
               padding_factor=padding_factor, dark_style=dark_style, smooth=smooth, sm_ratio=sm_ratio,
               io_function=io_function, spec_dir=spec_dir)
     ax_spec_2.set_ylim(-4, sample_number * plot_offset)
 
-    for ax_spec in [ax_spec_1, ax_spec_2]:
+    if sc_df is not None:
+        # Sort by match distance
+        sc_df = sc_df.sort_values(by=['match_dist'])
+        # Drop duplicate sightlines
+        sc_df = sc_df.drop_duplicates(subset='star_name')
+        ax_spec_sc = f.add_subplot(gs[:-2, 2])
+        spec_plot(sc_df.iloc[-sample_number:, :], ax_spec_sc, plot_offset=plot_offset,
+                  padding_factor=padding_factor, dark_style=dark_style, smooth=smooth, sm_ratio=sm_ratio,
+                  io_function=io_function, spec_dir=spec_dir)
+        ax_spec_sc.set_ylim(-4, sample_number * plot_offset)
+
+    for ax_spec in [ax_spec_1, ax_spec_2, ax_spec_sc]:
         ax_spec.set_xlabel(r'$\tilde \nu$(cm$^{-1}$)')
-        ax_spec.set_ylabel('Standardised Flux + Offset')
+    ax_spec_1.set_ylabel('Standardised Flux + Offset')
 
     if dark_style:
         ax_res = f.add_subplot(gs[0:2, 2])
     else:
-        ax_res = f.add_subplot(gs[0, 2])
+        ax_res = f.add_subplot(gs[-2, 0])
     res_plot(plot_m.iloc[:sample_number * 2, :], ax_res, io_function=io_function, spec_dir=spec_dir)
     ax_res.set_xlim(ax_spec_1.get_xlim())
     ax_res.set_title(r'$\mu(residual)$')
@@ -1203,13 +1219,12 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     if dark_style:
         ax_sigma = f.add_subplot(gs[2:4, 3])
     else:
-        ax_sigma = f.add_subplot(gs[-2, 2])
+        ax_sigma = f.add_subplot(gs[-1, 1])
     plt.scatter(m_df.sigma_q, m_df.sigma_s, c=m_df.match_dist * 100)
 
     if annotate:
         for _, m_s in m_df.iterrows():
             plt.annotate(m_s.star_name, xy=(m_s.sigma_q, m_s.sigma_s))
-    plt.colorbar(label=r'$d(Q,S) \cdot 100$', ax=ax_sigma)
     pearson_r = stats.pearsonr(m_df.sigma_q, m_df.sigma_s).statistic
     sigma_ratio = np.median(m_df.sigma_s / m_df.sigma_q)
 
@@ -1220,10 +1235,24 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     ax_sigma.set_xlim(xmin=0)
     ax_sigma.set_ylim(ymin=0.000000001)
 
+    ax_sz = f.add_subplot((gs[-1, 2]))
+    if sigma_zeta_df is not None:
+        df_sz = plot_m.loc[plot_m.star_name.isin(sigma_zeta_df.index)]
+        df_sz.loc[:, 'I'] = df_sz.sigma_s / df_sz.sigma_q
+
+        sigma_zeta_col = sigma_zeta_df.loc[df_sz.star_name, 'EW5797/EW5780']
+
+        ax_sz.scatter(sigma_zeta_col, df_sz.I, c=df_sz.match_dist * 100)
+        ax_sz.set_xlabel('EW5797/EW5780')
+        ax_sz.set_ylabel(f'I({int(np.round(mean_ang))}/{query_key})')
+        ax_sz.set_title(f'r={stats.pearsonr(sigma_zeta_col, df_sz.I).statistic:.2f}')
+
+        ax_sz.set_ylim(ymin=0)
+
     if dark_style:
         ax_ew = f.add_subplot(gs[:2, 3])
     else:
-        ax_ew = f.add_subplot(gs[-3, 2])
+        ax_ew = f.add_subplot(gs[-1, 0])
 
     if not isinstance(query_key, str):
         # Transform EW from wavenumber to mA
@@ -1232,20 +1261,19 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
         plt.scatter(ew_q, ew_s, c=m_df.match_dist * 100)
         ew_pearson_r = stats.pearsonr(ew_q, ew_s).statistic
         ax_ew.set_title(f'r = {ew_pearson_r: .2f}')
-        plt.colorbar(label=r'$d(Q,S) \cdot 100$', ax=ax_ew)
-        # ax_ew.set_title(f'r = {cluster_s.pearson_r: .2f}, ' +
-        #                 r'Med($\sigma_\mathregular{S}/\sigma_\mathregular{Q}$)' + f'= {cluster_s.sigma_ratio:.2f}')
         ax_ew.set_xlabel(r'$EW$' + f'(DIB {query_key})')
         ax_ew.set_ylabel(r'$EW$' + f'(DIB {int(np.round(mean_ang))})')
         ax_ew.set_xlim(0, ax_ew.get_xlim()[1])
         ax_ew.set_ylim(0.0001, ax_ew.get_ylim()[1])
+
+    plt.colorbar(label=r'$d(Q,S) \cdot 100$', ax=[ax_ew, ax_sz, ax_sigma], location='bottom', aspect=30, shrink=0.4)
 
     mpl.rcParams['xtick.top'] = False
     if dark_style:
         ax_rv = f.add_subplot(gs[-2:, 2:])
         rv_style = 'orange'
     else:
-        ax_rv = f.add_subplot(gs[-1:, 2:])
+        ax_rv = f.add_subplot(gs[-2, 2])
         rv_style = 'k'
 
     ax_rv.hist(m_df.match_wave, bins=30, color=rv_style)
@@ -1259,7 +1287,7 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
         ax_dh = f.add_subplot(gs[2:4, 2])
 
     else:
-        ax_dh = f.add_subplot(gs[-4, 2])
+        ax_dh = f.add_subplot(gs[-2, 1])
 
     ax_dh.set_title(f'{len(m_df.match_dist)} counts')
     ax_dh.hist(m_df.match_dist * 100, color='r', bins=20)

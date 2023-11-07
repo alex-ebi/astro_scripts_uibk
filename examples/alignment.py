@@ -97,7 +97,7 @@ my_literature_dib_path = files("astro_scripts_uibk") / 'example_data/literature_
 plot_query = False
 test_run = False
 
-index_orders(spec_dir=my_spec_dir, index_path=my_index_path)  # Run this function to index your spectra
+# index_orders(spec_dir=my_spec_dir, index_path=my_index_path)  # Run this function to index your spectra
 
 data_index = pd.read_excel(my_index_path, index_col=0)
 
@@ -153,7 +153,6 @@ if __name__ == '__main__':
 
                 # List of "peaks" of the lowest distances between Query and Subject
                 result_df.to_pickle(cluster_output_path / f'peaks_{query_key}.p')
-
 
 # Plot some of the results
 if __name__ == '__main__':
