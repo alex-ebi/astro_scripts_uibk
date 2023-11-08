@@ -1191,12 +1191,12 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
               io_function=io_function, spec_dir=spec_dir)
     ax_spec_2.set_ylim(-4, sample_number * plot_offset)
 
+    ax_spec_sc = f.add_subplot(gs[:-2, 2])
     if sc_df is not None:
         # Sort by match distance
         sc_df = sc_df.sort_values(by=['match_dist'])
         # Drop duplicate sightlines
         sc_df = sc_df.drop_duplicates(subset='star_name')
-        ax_spec_sc = f.add_subplot(gs[:-2, 2])
         spec_plot(sc_df.iloc[-sample_number:, :], ax_spec_sc, plot_offset=plot_offset,
                   padding_factor=padding_factor, dark_style=dark_style, smooth=smooth, sm_ratio=sm_ratio,
                   io_function=io_function, spec_dir=spec_dir)
@@ -1236,6 +1236,8 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     ax_sigma.set_ylim(ymin=0.000000001)
 
     ax_sz = f.add_subplot((gs[-1, 2]))
+    ax_sz.set_xlabel('EW5797/EW5780')
+    ax_sz.set_ylabel(f'I({int(np.round(mean_ang))}/{query_key})')
     if sigma_zeta_df is not None:
         df_sz = plot_m.loc[plot_m.star_name.isin(sigma_zeta_df.index)]
         df_sz.loc[:, 'I'] = df_sz.sigma_s / df_sz.sigma_q
@@ -1243,8 +1245,6 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
         sigma_zeta_col = sigma_zeta_df.loc[df_sz.star_name, 'EW5797/EW5780']
 
         ax_sz.scatter(sigma_zeta_col, df_sz.I, c=df_sz.match_dist * 100)
-        ax_sz.set_xlabel('EW5797/EW5780')
-        ax_sz.set_ylabel(f'I({int(np.round(mean_ang))}/{query_key})')
         ax_sz.set_title(f'r={stats.pearsonr(sigma_zeta_col, df_sz.I).statistic:.2f}')
 
         ax_sz.set_ylim(ymin=0)
@@ -1308,8 +1308,8 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
                        plot_dir=None, sort_by=None, ascending=True,
                        padding_factor=.5,
                        match_dist_cut=None, ang_range=None, dark_style=False, show=False, excluded_stars=None,
-                       sample_number=10, annotate=False, min_cluster_size=5, sm_ratio=0.1, smooth=True
-                       ):
+                       sample_number=7, annotate=False, min_cluster_size=5, sm_ratio=0.1, smooth=True,
+                       single_cloud_sightlines=None):
     """
     Automatically plotting some matches for a query DIB.
     Several parameters can be changed to change the output.
@@ -1410,12 +1410,16 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
             continue
 
         m_df = r_df.loc[(mean_wave - mem_range < r_df['match_wave']) & (r_df['match_wave'] < mean_wave + mem_range), :]
+        if single_cloud_sightlines is None:
+            sc_df = None
+        else:
+            sc_df = m_df.loc[m_df.star_name.isin(single_cloud_sightlines)]
         plot_path = plot_dir / f'profiles_{query_key}_{int(np.round(mean_ang))}'
         asu.alignment.plot_matches(m_df, query_key, mean_ang, plot_path, sample_number=sample_number,
                                    dark_style=dark_style,
                                    padding_factor=padding_factor, annotate=annotate, show=show, sm_ratio=sm_ratio,
                                    smooth=smooth,
-                                   io_function=io_function, spec_dir=spec_dir)
+                                   io_function=io_function, spec_dir=spec_dir, sc_df=sc_df)
 
 
 def transform_normalized_dib(spectrum: np.array, strength_factor: float, wn_shift: float):

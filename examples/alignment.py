@@ -105,6 +105,8 @@ max_dist = 0.5  # Define maximal distance between Query and Subject for a match
 
 lit_dibs = pd.read_excel(my_literature_dib_path, index_col=[0])
 
+single_cloud_sightlines = ['HD 144470', 'HD166937', 'HD 170740', 'HD 184915']
+
 query_keys = lit_dibs.index
 # query_keys = [10780]  # uncomment if you want to run only one query.
 
@@ -171,5 +173,6 @@ if __name__ == '__main__':
                                          show=False,
                                          min_cluster_size=10,
                                          sm_ratio=sm_ratio,
-                                         smooth=True
+                                         smooth=True,
+                                         single_cloud_sightlines=single_cloud_sightlines
                                          )
