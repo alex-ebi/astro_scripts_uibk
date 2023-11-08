@@ -106,7 +106,7 @@ max_dist = 0.5  # Define maximal distance between Query and Subject for a match
 lit_dibs = pd.read_excel(my_literature_dib_path, index_col=[0])
 
 query_keys = lit_dibs.index
-query_keys = [10780]  # uncomment if you want to run only one query.
+# query_keys = [10780]  # uncomment if you want to run only one query.
 
 sm_ratio = 0.2
 
@@ -156,13 +156,7 @@ if __name__ == '__main__':
 
 # Plot some of the results
 if __name__ == '__main__':
-    # query_list = [10780, 13175]
-    lit_dibs = pd.read_excel(my_literature_dib_path, index_col=[0])
-    query_list = lit_dibs.index
-    query_list = [10780]
-
-    print(query_list)
-    for query in query_list:
+    for query in query_keys:
         asu.alignment.auto_plot_clusters(io_function=read_spec, spec_dir=my_spec_dir,
                                          result_file=cluster_output_path / f'peaks_{query}.p',
                                          query_key=query,
