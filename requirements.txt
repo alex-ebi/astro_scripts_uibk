@@ -1,7 +1,7 @@
 # List required packages in this file, one per line.
 wheel
 numpy
-scipy
+scipy >= 1.9
 PyAstronomy
 astropy
 setuptools

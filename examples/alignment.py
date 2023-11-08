@@ -97,7 +97,7 @@ my_literature_dib_path = files("astro_scripts_uibk") / 'example_data/literature_
 plot_query = False
 test_run = False
 
-index_orders(spec_dir=my_spec_dir, index_path=my_index_path)  # Run this function to index your spectra
+# index_orders(spec_dir=my_spec_dir, index_path=my_index_path)  # Run this function to index your spectra
 
 data_index = pd.read_excel(my_index_path, index_col=0)
 
@@ -105,8 +105,10 @@ max_dist = 0.5  # Define maximal distance between Query and Subject for a match
 
 lit_dibs = pd.read_excel(my_literature_dib_path, index_col=[0])
 
+single_cloud_sightlines = ['HD 144470', 'HD166937', 'HD 170740', 'HD 184915']
+
 query_keys = lit_dibs.index
-query_keys = [10780]  # uncomment if you want to run only one query.
+# query_keys = [10780]  # uncomment if you want to run only one query.
 
 sm_ratio = 0.2
 
@@ -154,16 +156,9 @@ if __name__ == '__main__':
                 # List of "peaks" of the lowest distances between Query and Subject
                 result_df.to_pickle(cluster_output_path / f'peaks_{query_key}.p')
 
-
 # Plot some of the results
 if __name__ == '__main__':
-    # query_list = [10780, 13175]
-    lit_dibs = pd.read_excel(my_literature_dib_path, index_col=[0])
-    query_list = lit_dibs.index
-    query_list = [10780]
-
-    print(query_list)
-    for query in query_list:
+    for query in query_keys:
         asu.alignment.auto_plot_clusters(io_function=read_spec, spec_dir=my_spec_dir,
                                          result_file=cluster_output_path / f'peaks_{query}.p',
                                          query_key=query,
@@ -178,5 +173,6 @@ if __name__ == '__main__':
                                          show=False,
                                          min_cluster_size=10,
                                          sm_ratio=sm_ratio,
-                                         smooth=True
+                                         smooth=True,
+                                         single_cloud_sightlines=single_cloud_sightlines
                                          )
