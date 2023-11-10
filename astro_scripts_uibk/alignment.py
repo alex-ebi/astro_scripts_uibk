@@ -1363,12 +1363,12 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         Returns: np.array([wave(wavenumber), flux])
     spec_dir : Path
         Path of spectra directory. All paths of data_index have to be relative to spec_dir
-
-
+    single_cloud_sightlines : list
+        List of star names for single cloud sight lines.
 
     Returns
     -------
-
+    None
     """
     if not result_file.is_file():
         return
