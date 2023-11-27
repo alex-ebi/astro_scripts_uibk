@@ -417,6 +417,20 @@ def calc_i_ratio(s_query, s_subject):
     return result
 
 
+def convolve_lorentzian(conv_sub, grid_res, subject_spec_r):
+    grid_lims = [-conv_sub * 6, conv_sub * 6]
+    lor_x = np.linspace(*grid_lims, int((grid_lims[1] - grid_lims[0]) * grid_res))
+    lor = asu.convolve.lorentzian(lor_x, x0=0, a=1, gam=conv_sub)
+    lor_sum = np.sum(lor)
+    lor /= lor_sum
+    subject_spec_r_conv = []
+    for i in range(len(subject_spec_r)):
+        smoothed_column = np.convolve(subject_spec_r[i], lor, mode='valid')
+        subject_spec_r_conv.append(smoothed_column)
+
+    return np.array(subject_spec_r_conv)
+
+
 class SpectralAligner:
     """
     Class for spectral alignment.
@@ -437,7 +451,8 @@ class SpectralAligner:
                  wavenumber_grid_resolution=40,
                  query_fit_range_factor=3,
                  query_width_limits=None,
-                 query_center_limits=None):
+                 query_center_limits=None,
+                 conv_subject=None):
         """
         Class for spectral alignment.
 
@@ -506,6 +521,7 @@ class SpectralAligner:
             self.star_names = star_names
 
         self.iter_vars = compile_iter_vars(self.star_names, self.query_key, self.query_list, self.data_index)
+        self.conv_sub = conv_subject
 
     def preprocessing(self, s_in: pd.Series, analyse=False):
         """
@@ -720,6 +736,10 @@ class SpectralAligner:
                 # resample unsmoothed subject spectrum to smoothed binning
                 subject_spec_r = asu.convolve.resample(subject_spec, subject_spec_sm[0], assume_sorted=False)
 
+                # convolve with lorentzian
+                if self.conv_sub is not None:
+                    subject_spec_r = convolve_lorentzian(self.conv_sub, self.grid_res, subject_spec_r)
+
                 # Transform flux column of np.array to pd.Series for rolling window comparison
                 subject_series = pd.Series(subject_spec_sm[1], name='subject')
                 subject_series_r = pd.Series(subject_spec_r[1], name='subject_r')
@@ -764,12 +784,14 @@ class SpectralAligner:
 
                     subject_plot_r = normalize_series(subject_plot_r, subject_slope_points)
 
-                    i_result = calc_i_ratio(query_series_r, subject_plot_r)
+                    # i_result = calc_i_ratio(query_series_r, subject_plot_r)
+                    # i = i_result.best_values['i']
+                    # i_err = np.sqrt(i_result.covar[0][0])
+                    # i_shift = i_result.best_values['cont_shift']
 
-                    i = i_result.best_values['i']
-                    i_err = np.sqrt(i_result.covar[0][0])
-
-                    i_shift = i_result.best_values['cont_shift']
+                    i = 1
+                    i_err = 0.1
+                    i_shift = 0
 
                     # Calculate EW
                     if self.test_run:
@@ -931,7 +953,7 @@ def rest_frame_crop(spec_in: np.array, query_rv: float, grid_lims, padding_facto
     """
 
     # apply doppler shift to transform to cloud rest frame
-    wave = asu.transformations.doppler_shift_wl(spec_in[0], -query_rv)
+    wave = asu.transformations.doppler_shift_wn(spec_in[0], -query_rv)
 
     spec = np.array([wave, spec_in[1]])
 
@@ -939,9 +961,6 @@ def rest_frame_crop(spec_in: np.array, query_rv: float, grid_lims, padding_facto
     spec = asu.spectrum_reduction.filter_spikes_normalized(spec)
 
     # resampling
-    spec[0] = asu.transformations.angstrom_air_to_vac(spec[0])  # Air to vacuum
-    spec[0] = asu.transformations.angstrom_to_wavenumber(spec[0], air_to_vac=False)  # Angstrom to wavenumber
-
     lim_range = (grid_lims[1] - grid_lims[0]) * padding_factor
     if crop:
         crop_lims = [grid_lims[0] - lim_range, grid_lims[1] + lim_range]
@@ -989,9 +1008,12 @@ def spec_plot(m_df: pd.DataFrame, ax, plot_offset=5, padding_factor=.5, dark_sty
         s_color = 'k'
         face_color = 'w'
     to = (len(m_df) - 1) * plot_offset  # Total offset, so y-axis starts with 0
+    grid_res = 40
     for i, (_, m_s) in enumerate(m_df.iterrows()):
         spec_q = io_function(spec_dir / m_s.spec_path_q)
         spec_s = io_function(spec_dir / m_s.spec_path_s)
+
+        spec_s = convolve_lorentzian(0.1, grid_res, spec_s)
 
         spec_q = prep_spec(spec_q, np.array([[m_s.c0xq, m_s.c0yq], [m_s.c1xq, m_s.c1yq]]),
                            m_s.sigma_q, m_s.mean_q, m_s, padding_factor=padding_factor)
@@ -1004,7 +1026,6 @@ def spec_plot(m_df: pd.DataFrame, ax, plot_offset=5, padding_factor=.5, dark_sty
                            sigma_s, m_s.mean_s, m_s, padding_factor=padding_factor)
 
         # smoothed spectra
-        grid_res = 40
         grid_lims = [np.nanmin(spec_q[0]), np.nanmax(spec_q[0])]
         new_grid = np.linspace(*grid_lims, int((grid_lims[1] - grid_lims[0]) * grid_res))
 
@@ -1051,6 +1072,7 @@ def res_plot(m_df: pd.DataFrame, ax, padding_factor=.5, grid_res=40, smooth_kern
     for i, (_, m_s) in enumerate(m_df.iterrows()):
         spec_q = io_function(spec_dir / m_s.spec_path_q)
         spec_s = io_function(spec_dir / m_s.spec_path_s)
+        spec_s = convolve_lorentzian(0.05, grid_res, spec_s)
 
         spec_q = prep_spec(spec_q, np.array([[m_s.c0xq, m_s.c0yq], [m_s.c1xq, m_s.c1yq]]),
                            m_s.sigma_q, m_s.mean_q, m_s, padding_factor=padding_factor)

@@ -291,3 +291,7 @@ def inst_rot_macro(spectrum: np.array, resolution=None, vsini=None, eps=0.4, mac
 def multiply(spec: np.array, grid_spec: np.array) -> np.array:
     # resample spec on grid_spec
     spec = resample(spec, grid_spec[0])
+
+
+def lorentzian(x, x0, a, gam):
+    return a * gam ** 2 / (gam ** 2 + (x - x0) ** 2)
