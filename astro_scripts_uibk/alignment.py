@@ -1013,8 +1013,6 @@ def spec_plot(m_df: pd.DataFrame, ax, plot_offset=5, padding_factor=.5, dark_sty
         spec_q = io_function(spec_dir / m_s.spec_path_q)
         spec_s = io_function(spec_dir / m_s.spec_path_s)
 
-        spec_s = convolve_lorentzian(0.1, grid_res, spec_s)
-
         spec_q = prep_spec(spec_q, np.array([[m_s.c0xq, m_s.c0yq], [m_s.c1xq, m_s.c1yq]]),
                            m_s.sigma_q, m_s.mean_q, m_s, padding_factor=padding_factor)
 
@@ -1072,7 +1070,6 @@ def res_plot(m_df: pd.DataFrame, ax, padding_factor=.5, grid_res=40, smooth_kern
     for i, (_, m_s) in enumerate(m_df.iterrows()):
         spec_q = io_function(spec_dir / m_s.spec_path_q)
         spec_s = io_function(spec_dir / m_s.spec_path_s)
-        spec_s = convolve_lorentzian(0.05, grid_res, spec_s)
 
         spec_q = prep_spec(spec_q, np.array([[m_s.c0xq, m_s.c0yq], [m_s.c1xq, m_s.c1yq]]),
                            m_s.sigma_q, m_s.mean_q, m_s, padding_factor=padding_factor)
