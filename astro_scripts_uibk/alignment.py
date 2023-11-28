@@ -451,8 +451,7 @@ class SpectralAligner:
                  wavenumber_grid_resolution=40,
                  query_fit_range_factor=3,
                  query_width_limits=None,
-                 query_center_limits=None,
-                 conv_subject=None):
+                 query_center_limits=None):
         """
         Class for spectral alignment.
 
@@ -521,7 +520,6 @@ class SpectralAligner:
             self.star_names = star_names
 
         self.iter_vars = compile_iter_vars(self.star_names, self.query_key, self.query_list, self.data_index)
-        self.conv_sub = conv_subject
 
     def preprocessing(self, s_in: pd.Series, analyse=False):
         """
@@ -736,10 +734,6 @@ class SpectralAligner:
                 # resample unsmoothed subject spectrum to smoothed binning
                 subject_spec_r = asu.convolve.resample(subject_spec, subject_spec_sm[0], assume_sorted=False)
 
-                # convolve with lorentzian
-                if self.conv_sub is not None:
-                    subject_spec_r = convolve_lorentzian(self.conv_sub, self.grid_res, subject_spec_r)
-
                 # Transform flux column of np.array to pd.Series for rolling window comparison
                 subject_series = pd.Series(subject_spec_sm[1], name='subject')
                 subject_series_r = pd.Series(subject_spec_r[1], name='subject_r')
@@ -784,14 +778,10 @@ class SpectralAligner:
 
                     subject_plot_r = normalize_series(subject_plot_r, subject_slope_points)
 
-                    # i_result = calc_i_ratio(query_series_r, subject_plot_r)
-                    # i = i_result.best_values['i']
-                    # i_err = np.sqrt(i_result.covar[0][0])
-                    # i_shift = i_result.best_values['cont_shift']
-
-                    i = 1
-                    i_err = 0.1
-                    i_shift = 0
+                    i_result = calc_i_ratio(query_series_r, subject_plot_r)
+                    i = i_result.best_values['i']
+                    i_err = np.sqrt(i_result.covar[0][0])
+                    i_shift = i_result.best_values['cont_shift']
 
                     # Calculate EW
                     if self.test_run:
