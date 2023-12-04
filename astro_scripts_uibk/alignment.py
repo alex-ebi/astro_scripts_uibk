@@ -20,29 +20,6 @@ from sklearn.cluster import DBSCAN
 import astro_scripts_uibk as asu
 
 
-def error_of_std(a):
-    """
-    Calculates the error of a standard deviation.
-
-    Source: Mood, A. M., Graybill, F. A., and Boes, D.C. (1974) Introduction to the Theory of Statistics, 3rd Edition,
-    McGraw-Hill, New York, p. 229
-
-    Parameters
-    ----------
-    a : array_like
-
-    Returns
-    -------
-    float
-        Error of standard deviation of sample a.
-    """
-    m4 = stats.moment(a, moment=4)  # Calculate fourth central moment of sample
-    n = len(a)  # Sample size
-    s = np.std(a)  # Standard deviation
-
-    return np.sqrt((m4 - (n - 3) / (n - 1) * s ** 4) / n)
-
-
 def rest_frame_resample(spec: np.array, query_rv: float, grid_res: float):
     """
     Transform into DIB rest frame and resample to equidistant wavenumber grid.
@@ -557,10 +534,8 @@ class SpectralAligner:
         s_out = (s_out - spec_mean) / dib_std
 
         if analyse:
-            # Calculate error of standard deviation
-            std_error = error_of_std(s_out)
 
-            return s_out, spec_mean, dib_std, std_error, ew
+            return s_out, spec_mean, dib_std, ew
         else:
             return s_out, dib_std
 
@@ -674,6 +649,7 @@ class SpectralAligner:
         out_df = pd.DataFrame()
 
         spec_path = self.spec_dir / query_obs.spec_path
+        print(spec_path)
         query_spec = self.io_function(spec_path)  # read query spectrum
 
         # remove spikes
@@ -694,7 +670,7 @@ class SpectralAligner:
         query_series = pd.Series(query_spec_sm[1], name='query')
 
         # Preprocessing
-        query_series, query_mean, query_sigma, query_sigma_error, query_ew = \
+        query_series, query_mean, query_sigma, query_ew = \
             self.preprocessing(query_series, analyse=True)
 
         query_spec_r = asu.convolve.resample(query_spec, query_spec_sm[0], assume_sorted=False)
@@ -772,7 +748,7 @@ class SpectralAligner:
                          [wave_grid[subject_plot.index[-1]], subject_plot.iloc[-1]]])
 
                     match_dist = self.corr_func(pd.Series(subject_plot), query_series) / np.sqrt(query_len)
-                    subject_plot, sub_mean, sub_sigma, sub_sigma_error, sub_ew = self.preprocessing(
+                    subject_plot, sub_mean, sub_sigma, sub_ew = self.preprocessing(
                         subject_plot,
                         analyse=True)
 
@@ -801,11 +777,9 @@ class SpectralAligner:
                                        'match_dist': match_dist,
                                        'match_wave': peak_wave,
                                        'sigma_s': sub_sigma,
-                                       'sigma_s_err': sub_sigma_error,
                                        'mean_s': sub_mean,
                                        'ew_s': sub_ew,
                                        'sigma_q': query_sigma,
-                                       'sigma_q_err': query_sigma_error,
                                        'mean_q': query_mean,
                                        'center_q': q_cen,
                                        'fwhm_q': fit_fwhm,
@@ -1216,7 +1190,7 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     ax_spec_1.set_ylabel('Standardised Flux + Offset')
 
     if dark_style:
-        ax_res = f.add_subplot(gs[0:2, 2])
+        ax_res = f.add_subplot(gs[-2:, 0])
     else:
         ax_res = f.add_subplot(gs[-2, 0])
     res_plot(plot_m.iloc[:sample_number * 2, :], ax_res, io_function=io_function, spec_dir=spec_dir)
@@ -1279,7 +1253,7 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
 
     mpl.rcParams['xtick.top'] = False
     if dark_style:
-        ax_rv = f.add_subplot(gs[-2:, 2:])
+        ax_rv = f.add_subplot(gs[-2:, -1])
         rv_style = 'orange'
     else:
         ax_rv = f.add_subplot(gs[-2, 2])
