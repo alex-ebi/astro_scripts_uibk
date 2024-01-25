@@ -1244,8 +1244,8 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
         plt.scatter(ew_q, ew_s, c=m_df.match_dist * 100)
         ew_pearson_r = stats.pearsonr(ew_q, ew_s).statistic
         ax_ew.set_title(f'r = {ew_pearson_r: .2f}')
-        ax_ew.set_xlabel(r'$EW$' + f'(DIB {query_key})')
-        ax_ew.set_ylabel(r'$EW$' + f'(DIB {int(np.round(mean_ang))})')
+        ax_ew.set_xlabel(r'$EW$' + f'(DIB {query_key})' + r'(m$\AA$)')
+        ax_ew.set_ylabel(r'$EW$' + f'(DIB {int(np.round(mean_ang))})' + r'(m$\AA$)')
         ax_ew.set_xlim(0, ax_ew.get_xlim()[1])
         ax_ew.set_ylim(0.0001, ax_ew.get_ylim()[1])
 
