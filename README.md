@@ -1,8 +1,7 @@
 # astro_scripts_uibk
 
-[![pipeline status](https://git.uibk.ac.at/csap5791/astro_scripts_uibk/badges/master/pipeline.svg)](https://git.uibk.ac.at/csap5791/astro_scripts_uibk/commits/master)
+[![CircleCI](https://circleci.com/gh/alex-ebi/astro_scripts_uibk.svg?style=svg)](https://app.circleci.com/pipelines/github/alex-ebi/astro_scripts_uibk)
 [![coverage report](https://git.uibk.ac.at/csap5791/astro_scripts_uibk/badges/master/coverage.svg)](https://git.uibk.ac.at/csap5791/astro_scripts_uibk/commits/master)
-
 ## Installation
 ### If you have not yet installed git enter in your terminal:
 ```console
