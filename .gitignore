@@ -91,3 +91,6 @@ target/
 programs/molecfit/*.run
 programs/molecfit/*.whl
 astro_scripts_uibk/test_data/*.tmp
+
+astro_scripts_uibk/example_data/spectra/*
+!astro_scripts_uibk/example_data/spectra/download_script_uves_edibles_targets.sh

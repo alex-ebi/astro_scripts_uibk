@@ -92,7 +92,7 @@ cluster_output_path = Path('path/to/output_dir')
 my_spec_dir = Path('path/to/spectra')
 my_plot_dir = Path('path/to/my/plot_dir')
 
-my_literature_dib_path = files("astro_scripts_uibk") / 'example_data/literature_dibs_2023_nir.xlsx'
+my_literature_dib_path = files("astro_scripts_uibk") / 'example_data/literature_dibs_2024.xlsx'
 
 plot_query = False
 test_run = False
