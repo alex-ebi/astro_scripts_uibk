@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.alignment &mdash; astro_scripts_uibk 0.post38+g1f98630 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <title>astro_scripts_uibk.alignment &mdash; astro_scripts_uibk 0.post54+gaf0a0c2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/documentation_options.js?v=ed10d471"></script>
+        <script src="../../_static/documentation_options.js?v=745c3625"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -34,7 +36,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post38+g1f98630
+                0.post54+gaf0a0c2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -97,32 +99,6 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">DBSCAN</span>
 <span class="kn">import</span> <span class="nn">astro_scripts_uibk</span> <span class="k">as</span> <span class="nn">asu</span>
-
-
-<div class="viewcode-block" id="error_of_std">
-<a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.alignment.error_of_std">[docs]</a>
-<span class="k">def</span> <span class="nf">error_of_std</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the error of a standard deviation.</span>
-
-<span class="sd">    Source: Mood, A. M., Graybill, F. A., and Boes, D.C. (1974) Introduction to the Theory of Statistics, 3rd Edition,</span>
-<span class="sd">    McGraw-Hill, New York, p. 229</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    a : array_like</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float</span>
-<span class="sd">        Error of standard deviation of sample a.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">m4</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">moment</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">moment</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># Calculate fourth central moment of sample</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>  <span class="c1"># Sample size</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>  <span class="c1"># Standard deviation</span>
-
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">m4</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">s</span> <span class="o">**</span> <span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="rest_frame_resample">
@@ -514,6 +490,20 @@
     <span class="k">return</span> <span class="n">result</span>
 
 
+<span class="k">def</span> <span class="nf">convolve_lorentzian</span><span class="p">(</span><span class="n">conv_sub</span><span class="p">,</span> <span class="n">grid_res</span><span class="p">,</span> <span class="n">subject_spec_r</span><span class="p">):</span>
+    <span class="n">grid_lims</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">conv_sub</span> <span class="o">*</span> <span class="mi">6</span><span class="p">,</span> <span class="n">conv_sub</span> <span class="o">*</span> <span class="mi">6</span><span class="p">]</span>
+    <span class="n">lor_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">grid_lims</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">grid_lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">grid_lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">grid_res</span><span class="p">))</span>
+    <span class="n">lor</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">convolve</span><span class="o">.</span><span class="n">lorentzian</span><span class="p">(</span><span class="n">lor_x</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gam</span><span class="o">=</span><span class="n">conv_sub</span><span class="p">)</span>
+    <span class="n">lor_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lor</span><span class="p">)</span>
+    <span class="n">lor</span> <span class="o">/=</span> <span class="n">lor_sum</span>
+    <span class="n">subject_spec_r_conv</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subject_spec_r</span><span class="p">)):</span>
+        <span class="n">smoothed_column</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">subject_spec_r</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">lor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">)</span>
+        <span class="n">subject_spec_r_conv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">smoothed_column</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">subject_spec_r_conv</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="SpectralAligner">
 <a class="viewcode-back" href="../../modules.html#astro_scripts_uibk.alignment.SpectralAligner">[docs]</a>
 <span class="k">class</span> <span class="nc">SpectralAligner</span><span class="p">:</span>
@@ -644,10 +634,8 @@
         <span class="n">s_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">s_out</span> <span class="o">-</span> <span class="n">spec_mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">dib_std</span>
 
         <span class="k">if</span> <span class="n">analyse</span><span class="p">:</span>
-            <span class="c1"># Calculate error of standard deviation</span>
-            <span class="n">std_error</span> <span class="o">=</span> <span class="n">error_of_std</span><span class="p">(</span><span class="n">s_out</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">s_out</span><span class="p">,</span> <span class="n">spec_mean</span><span class="p">,</span> <span class="n">dib_std</span><span class="p">,</span> <span class="n">std_error</span><span class="p">,</span> <span class="n">ew</span>
+            <span class="k">return</span> <span class="n">s_out</span><span class="p">,</span> <span class="n">spec_mean</span><span class="p">,</span> <span class="n">dib_std</span><span class="p">,</span> <span class="n">ew</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">s_out</span><span class="p">,</span> <span class="n">dib_std</span></div>
 
@@ -767,6 +755,7 @@
         <span class="n">out_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
         <span class="n">spec_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spec_dir</span> <span class="o">/</span> <span class="n">query_obs</span><span class="o">.</span><span class="n">spec_path</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">spec_path</span><span class="p">)</span>
         <span class="n">query_spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_function</span><span class="p">(</span><span class="n">spec_path</span><span class="p">)</span>  <span class="c1"># read query spectrum</span>
 
         <span class="c1"># remove spikes</span>
@@ -787,7 +776,7 @@
         <span class="n">query_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">query_spec_sm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;query&#39;</span><span class="p">)</span>
 
         <span class="c1"># Preprocessing</span>
-        <span class="n">query_series</span><span class="p">,</span> <span class="n">query_mean</span><span class="p">,</span> <span class="n">query_sigma</span><span class="p">,</span> <span class="n">query_sigma_error</span><span class="p">,</span> <span class="n">query_ew</span> <span class="o">=</span> \
+        <span class="n">query_series</span><span class="p">,</span> <span class="n">query_mean</span><span class="p">,</span> <span class="n">query_sigma</span><span class="p">,</span> <span class="n">query_ew</span> <span class="o">=</span> \
             <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">query_series</span><span class="p">,</span> <span class="n">analyse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">query_spec_r</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">convolve</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">query_spec</span><span class="p">,</span> <span class="n">query_spec_sm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -865,17 +854,15 @@
                          <span class="p">[</span><span class="n">wave_grid</span><span class="p">[</span><span class="n">subject_plot</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">subject_plot</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]])</span>
 
                     <span class="n">match_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_func</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">subject_plot</span><span class="p">),</span> <span class="n">query_series</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">query_len</span><span class="p">)</span>
-                    <span class="n">subject_plot</span><span class="p">,</span> <span class="n">sub_mean</span><span class="p">,</span> <span class="n">sub_sigma</span><span class="p">,</span> <span class="n">sub_sigma_error</span><span class="p">,</span> <span class="n">sub_ew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span>
+                    <span class="n">subject_plot</span><span class="p">,</span> <span class="n">sub_mean</span><span class="p">,</span> <span class="n">sub_sigma</span><span class="p">,</span> <span class="n">sub_ew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span>
                         <span class="n">subject_plot</span><span class="p">,</span>
                         <span class="n">analyse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
                     <span class="n">subject_plot_r</span> <span class="o">=</span> <span class="n">normalize_series</span><span class="p">(</span><span class="n">subject_plot_r</span><span class="p">,</span> <span class="n">subject_slope_points</span><span class="p">)</span>
 
                     <span class="n">i_result</span> <span class="o">=</span> <span class="n">calc_i_ratio</span><span class="p">(</span><span class="n">query_series_r</span><span class="p">,</span> <span class="n">subject_plot_r</span><span class="p">)</span>
-
                     <span class="n">i</span> <span class="o">=</span> <span class="n">i_result</span><span class="o">.</span><span class="n">best_values</span><span class="p">[</span><span class="s1">&#39;i&#39;</span><span class="p">]</span>
                     <span class="n">i_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">i_result</span><span class="o">.</span><span class="n">covar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-
                     <span class="n">i_shift</span> <span class="o">=</span> <span class="n">i_result</span><span class="o">.</span><span class="n">best_values</span><span class="p">[</span><span class="s1">&#39;cont_shift&#39;</span><span class="p">]</span>
 
                     <span class="c1"># Calculate EW</span>
@@ -896,11 +883,9 @@
                                        <span class="s1">&#39;match_dist&#39;</span><span class="p">:</span> <span class="n">match_dist</span><span class="p">,</span>
                                        <span class="s1">&#39;match_wave&#39;</span><span class="p">:</span> <span class="n">peak_wave</span><span class="p">,</span>
                                        <span class="s1">&#39;sigma_s&#39;</span><span class="p">:</span> <span class="n">sub_sigma</span><span class="p">,</span>
-                                       <span class="s1">&#39;sigma_s_err&#39;</span><span class="p">:</span> <span class="n">sub_sigma_error</span><span class="p">,</span>
                                        <span class="s1">&#39;mean_s&#39;</span><span class="p">:</span> <span class="n">sub_mean</span><span class="p">,</span>
                                        <span class="s1">&#39;ew_s&#39;</span><span class="p">:</span> <span class="n">sub_ew</span><span class="p">,</span>
                                        <span class="s1">&#39;sigma_q&#39;</span><span class="p">:</span> <span class="n">query_sigma</span><span class="p">,</span>
-                                       <span class="s1">&#39;sigma_q_err&#39;</span><span class="p">:</span> <span class="n">query_sigma_error</span><span class="p">,</span>
                                        <span class="s1">&#39;mean_q&#39;</span><span class="p">:</span> <span class="n">query_mean</span><span class="p">,</span>
                                        <span class="s1">&#39;center_q&#39;</span><span class="p">:</span> <span class="n">q_cen</span><span class="p">,</span>
                                        <span class="s1">&#39;fwhm_q&#39;</span><span class="p">:</span> <span class="n">fit_fwhm</span><span class="p">,</span>
@@ -1045,7 +1030,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># apply doppler shift to transform to cloud rest frame</span>
-    <span class="n">wave</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">doppler_shift_wl</span><span class="p">(</span><span class="n">spec_in</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">query_rv</span><span class="p">)</span>
+    <span class="n">wave</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">doppler_shift_wn</span><span class="p">(</span><span class="n">spec_in</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">query_rv</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">spec_in</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="n">spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave</span><span class="p">,</span> <span class="n">spec_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
@@ -1053,9 +1041,6 @@
     <span class="n">spec</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">filter_spikes_normalized</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
 
     <span class="c1"># resampling</span>
-    <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">angstrom_air_to_vac</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Air to vacuum</span>
-    <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">angstrom_to_wavenumber</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">air_to_vac</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Angstrom to wavenumber</span>
-
     <span class="n">lim_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">grid_lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">grid_lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">padding_factor</span>
     <span class="k">if</span> <span class="n">crop</span><span class="p">:</span>
         <span class="n">crop_lims</span> <span class="o">=</span> <span class="p">[</span><span class="n">grid_lims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">lim_range</span><span class="p">,</span> <span class="n">grid_lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">lim_range</span><span class="p">]</span>
@@ -1104,6 +1089,7 @@
         <span class="n">s_color</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span>
         <span class="n">face_color</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
     <span class="n">to</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m_df</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">plot_offset</span>  <span class="c1"># Total offset, so y-axis starts with 0</span>
+    <span class="n">grid_res</span> <span class="o">=</span> <span class="mi">40</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">m_s</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">m_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
         <span class="n">spec_q</span> <span class="o">=</span> <span class="n">io_function</span><span class="p">(</span><span class="n">spec_dir</span> <span class="o">/</span> <span class="n">m_s</span><span class="o">.</span><span class="n">spec_path_q</span><span class="p">)</span>
         <span class="n">spec_s</span> <span class="o">=</span> <span class="n">io_function</span><span class="p">(</span><span class="n">spec_dir</span> <span class="o">/</span> <span class="n">m_s</span><span class="o">.</span><span class="n">spec_path_s</span><span class="p">)</span>
@@ -1119,7 +1105,6 @@
                            <span class="n">sigma_s</span><span class="p">,</span> <span class="n">m_s</span><span class="o">.</span><span class="n">mean_s</span><span class="p">,</span> <span class="n">m_s</span><span class="p">,</span> <span class="n">padding_factor</span><span class="o">=</span><span class="n">padding_factor</span><span class="p">)</span>
 
         <span class="c1"># smoothed spectra</span>
-        <span class="n">grid_res</span> <span class="o">=</span> <span class="mi">40</span>
         <span class="n">grid_lims</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">spec_q</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">spec_q</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
         <span class="n">new_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">grid_lims</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">grid_lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">grid_lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">grid_res</span><span class="p">))</span>
 
@@ -1324,7 +1309,7 @@
     <span class="n">ax_spec_1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Standardised Flux + Offset&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dark_style</span><span class="p">:</span>
-        <span class="n">ax_res</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">ax_res</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ax_res</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="n">res_plot</span><span class="p">(</span><span class="n">plot_m</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">sample_number</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">ax_res</span><span class="p">,</span> <span class="n">io_function</span><span class="o">=</span><span class="n">io_function</span><span class="p">,</span> <span class="n">spec_dir</span><span class="o">=</span><span class="n">spec_dir</span><span class="p">)</span>
@@ -1378,8 +1363,8 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">ew_q</span><span class="p">,</span> <span class="n">ew_s</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">m_df</span><span class="o">.</span><span class="n">match_dist</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
         <span class="n">ew_pearson_r</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">ew_q</span><span class="p">,</span> <span class="n">ew_s</span><span class="p">)</span><span class="o">.</span><span class="n">statistic</span>
         <span class="n">ax_ew</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;r = </span><span class="si">{</span><span class="n">ew_pearson_r</span><span class="si">:</span><span class="s1"> .2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">ax_ew</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$EW$&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;(DIB </span><span class="si">{</span><span class="n">query_key</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
-        <span class="n">ax_ew</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$EW$&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;(DIB </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mean_ang</span><span class="p">))</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="n">ax_ew</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$EW$&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;(DIB </span><span class="si">{</span><span class="n">query_key</span><span class="si">}</span><span class="s1">)&#39;</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;(m$\AA$)&#39;</span><span class="p">)</span>
+        <span class="n">ax_ew</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$EW$&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;(DIB </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mean_ang</span><span class="p">))</span><span class="si">}</span><span class="s1">)&#39;</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;(m$\AA$)&#39;</span><span class="p">)</span>
         <span class="n">ax_ew</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ax_ew</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">ax_ew</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">ax_ew</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
 
@@ -1387,7 +1372,7 @@
 
     <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;xtick.top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">dark_style</span><span class="p">:</span>
-        <span class="n">ax_rv</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">2</span><span class="p">:])</span>
+        <span class="n">ax_rv</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">rv_style</span> <span class="o">=</span> <span class="s1">&#39;orange&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ax_rv</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
@@ -1483,12 +1468,12 @@
 <span class="sd">        Returns: np.array([wave(wavenumber), flux])</span>
 <span class="sd">    spec_dir : Path</span>
 <span class="sd">        Path of spectra directory. All paths of data_index have to be relative to spec_dir</span>
-
-
+<span class="sd">    single_cloud_sightlines : list</span>
+<span class="sd">        List of star names for single cloud sight lines.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-
+<span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="k">return</span>
@@ -1534,6 +1519,8 @@
             <span class="n">sc_df</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sc_df</span> <span class="o">=</span> <span class="n">m_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">m_df</span><span class="o">.</span><span class="n">star_name</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">single_cloud_sightlines</span><span class="p">)]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">m_df</span><span class="p">)</span>
         <span class="n">plot_path</span> <span class="o">=</span> <span class="n">plot_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;profiles_</span><span class="si">{</span><span class="n">query_key</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mean_ang</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">asu</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">plot_matches</span><span class="p">(</span><span class="n">m_df</span><span class="p">,</span> <span class="n">query_key</span><span class="p">,</span> <span class="n">mean_ang</span><span class="p">,</span> <span class="n">plot_path</span><span class="p">,</span> <span class="n">sample_number</span><span class="o">=</span><span class="n">sample_number</span><span class="p">,</span>
                                    <span class="n">dark_style</span><span class="o">=</span><span class="n">dark_style</span><span class="p">,</span>
