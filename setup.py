@@ -3,7 +3,6 @@ from setuptools import setup, find_packages
 import sys
 import versioneer
 
-
 # NOTE: This file must remain Python 2 compatible for the foreseeable future,
 # to ensure that we error out properly for people with outdated setuptools
 # and/or pip.
@@ -33,7 +32,6 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
     requirements = [line for line in requirements_file.read().splitlines()
                     if not line.startswith('#')]
 
-
 setup(
     name='astro_scripts_uibk',
     version=versioneer.get_version(),
@@ -57,13 +55,14 @@ setup(
             # or else they will not be included in the distribution on PyPI!
             'test_data/*',
             'config_files/*',
-            'filter_profiles/*'
+            'filter_profiles/*',
+            'example_data/*'
         ]
     },
     install_requires=requirements,
     license="BSD (3-clause)",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: Beta',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
     ],

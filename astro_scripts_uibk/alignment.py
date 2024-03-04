@@ -20,29 +20,6 @@ from sklearn.cluster import DBSCAN
 import astro_scripts_uibk as asu
 
 
-def error_of_std(a):
-    """
-    Calculates the error of a standard deviation.
-
-    Source: Mood, A. M., Graybill, F. A., and Boes, D.C. (1974) Introduction to the Theory of Statistics, 3rd Edition,
-    McGraw-Hill, New York, p. 229
-
-    Parameters
-    ----------
-    a : array_like
-
-    Returns
-    -------
-    float
-        Error of standard deviation of sample a.
-    """
-    m4 = stats.moment(a, moment=4)  # Calculate fourth central moment of sample
-    n = len(a)  # Sample size
-    s = np.std(a)  # Standard deviation
-
-    return np.sqrt((m4 - (n - 3) / (n - 1) * s ** 4) / n)
-
-
 def rest_frame_resample(spec: np.array, query_rv: float, grid_res: float):
     """
     Transform into DIB rest frame and resample to equidistant wavenumber grid.
@@ -417,6 +394,20 @@ def calc_i_ratio(s_query, s_subject):
     return result
 
 
+def convolve_lorentzian(conv_sub, grid_res, subject_spec_r):
+    grid_lims = [-conv_sub * 6, conv_sub * 6]
+    lor_x = np.linspace(*grid_lims, int((grid_lims[1] - grid_lims[0]) * grid_res))
+    lor = asu.convolve.lorentzian(lor_x, x0=0, a=1, gam=conv_sub)
+    lor_sum = np.sum(lor)
+    lor /= lor_sum
+    subject_spec_r_conv = []
+    for i in range(len(subject_spec_r)):
+        smoothed_column = np.convolve(subject_spec_r[i], lor, mode='valid')
+        subject_spec_r_conv.append(smoothed_column)
+
+    return np.array(subject_spec_r_conv)
+
+
 class SpectralAligner:
     """
     Class for spectral alignment.
@@ -543,10 +534,8 @@ class SpectralAligner:
         s_out = (s_out - spec_mean) / dib_std
 
         if analyse:
-            # Calculate error of standard deviation
-            std_error = error_of_std(s_out)
 
-            return s_out, spec_mean, dib_std, std_error, ew
+            return s_out, spec_mean, dib_std, ew
         else:
             return s_out, dib_std
 
@@ -660,6 +649,7 @@ class SpectralAligner:
         out_df = pd.DataFrame()
 
         spec_path = self.spec_dir / query_obs.spec_path
+        print(spec_path)
         query_spec = self.io_function(spec_path)  # read query spectrum
 
         # remove spikes
@@ -680,7 +670,7 @@ class SpectralAligner:
         query_series = pd.Series(query_spec_sm[1], name='query')
 
         # Preprocessing
-        query_series, query_mean, query_sigma, query_sigma_error, query_ew = \
+        query_series, query_mean, query_sigma, query_ew = \
             self.preprocessing(query_series, analyse=True)
 
         query_spec_r = asu.convolve.resample(query_spec, query_spec_sm[0], assume_sorted=False)
@@ -758,17 +748,15 @@ class SpectralAligner:
                          [wave_grid[subject_plot.index[-1]], subject_plot.iloc[-1]]])
 
                     match_dist = self.corr_func(pd.Series(subject_plot), query_series) / np.sqrt(query_len)
-                    subject_plot, sub_mean, sub_sigma, sub_sigma_error, sub_ew = self.preprocessing(
+                    subject_plot, sub_mean, sub_sigma, sub_ew = self.preprocessing(
                         subject_plot,
                         analyse=True)
 
                     subject_plot_r = normalize_series(subject_plot_r, subject_slope_points)
 
                     i_result = calc_i_ratio(query_series_r, subject_plot_r)
-
                     i = i_result.best_values['i']
                     i_err = np.sqrt(i_result.covar[0][0])
-
                     i_shift = i_result.best_values['cont_shift']
 
                     # Calculate EW
@@ -789,11 +777,9 @@ class SpectralAligner:
                                        'match_dist': match_dist,
                                        'match_wave': peak_wave,
                                        'sigma_s': sub_sigma,
-                                       'sigma_s_err': sub_sigma_error,
                                        'mean_s': sub_mean,
                                        'ew_s': sub_ew,
                                        'sigma_q': query_sigma,
-                                       'sigma_q_err': query_sigma_error,
                                        'mean_q': query_mean,
                                        'center_q': q_cen,
                                        'fwhm_q': fit_fwhm,
@@ -931,7 +917,10 @@ def rest_frame_crop(spec_in: np.array, query_rv: float, grid_lims, padding_facto
     """
 
     # apply doppler shift to transform to cloud rest frame
-    wave = asu.transformations.doppler_shift_wl(spec_in[0], -query_rv)
+    wave = asu.transformations.doppler_shift_wn(spec_in[0], -query_rv)
+
+    print(wave)
+    print(spec_in[1])
 
     spec = np.array([wave, spec_in[1]])
 
@@ -939,9 +928,6 @@ def rest_frame_crop(spec_in: np.array, query_rv: float, grid_lims, padding_facto
     spec = asu.spectrum_reduction.filter_spikes_normalized(spec)
 
     # resampling
-    spec[0] = asu.transformations.angstrom_air_to_vac(spec[0])  # Air to vacuum
-    spec[0] = asu.transformations.angstrom_to_wavenumber(spec[0], air_to_vac=False)  # Angstrom to wavenumber
-
     lim_range = (grid_lims[1] - grid_lims[0]) * padding_factor
     if crop:
         crop_lims = [grid_lims[0] - lim_range, grid_lims[1] + lim_range]
@@ -989,6 +975,7 @@ def spec_plot(m_df: pd.DataFrame, ax, plot_offset=5, padding_factor=.5, dark_sty
         s_color = 'k'
         face_color = 'w'
     to = (len(m_df) - 1) * plot_offset  # Total offset, so y-axis starts with 0
+    grid_res = 40
     for i, (_, m_s) in enumerate(m_df.iterrows()):
         spec_q = io_function(spec_dir / m_s.spec_path_q)
         spec_s = io_function(spec_dir / m_s.spec_path_s)
@@ -1004,7 +991,6 @@ def spec_plot(m_df: pd.DataFrame, ax, plot_offset=5, padding_factor=.5, dark_sty
                            sigma_s, m_s.mean_s, m_s, padding_factor=padding_factor)
 
         # smoothed spectra
-        grid_res = 40
         grid_lims = [np.nanmin(spec_q[0]), np.nanmax(spec_q[0])]
         new_grid = np.linspace(*grid_lims, int((grid_lims[1] - grid_lims[0]) * grid_res))
 
@@ -1207,7 +1193,7 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     ax_spec_1.set_ylabel('Standardised Flux + Offset')
 
     if dark_style:
-        ax_res = f.add_subplot(gs[0:2, 2])
+        ax_res = f.add_subplot(gs[-2:, 0])
     else:
         ax_res = f.add_subplot(gs[-2, 0])
     res_plot(plot_m.iloc[:sample_number * 2, :], ax_res, io_function=io_function, spec_dir=spec_dir)
@@ -1261,8 +1247,8 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
         plt.scatter(ew_q, ew_s, c=m_df.match_dist * 100)
         ew_pearson_r = stats.pearsonr(ew_q, ew_s).statistic
         ax_ew.set_title(f'r = {ew_pearson_r: .2f}')
-        ax_ew.set_xlabel(r'$EW$' + f'(DIB {query_key})')
-        ax_ew.set_ylabel(r'$EW$' + f'(DIB {int(np.round(mean_ang))})')
+        ax_ew.set_xlabel(r'$EW$' + f'(DIB {query_key})' + r'(m$\AA$)')
+        ax_ew.set_ylabel(r'$EW$' + f'(DIB {int(np.round(mean_ang))})' + r'(m$\AA$)')
         ax_ew.set_xlim(0, ax_ew.get_xlim()[1])
         ax_ew.set_ylim(0.0001, ax_ew.get_ylim()[1])
 
@@ -1270,7 +1256,7 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
 
     mpl.rcParams['xtick.top'] = False
     if dark_style:
-        ax_rv = f.add_subplot(gs[-2:, 2:])
+        ax_rv = f.add_subplot(gs[-2:, -1])
         rv_style = 'orange'
     else:
         ax_rv = f.add_subplot(gs[-2, 2])
@@ -1363,12 +1349,12 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         Returns: np.array([wave(wavenumber), flux])
     spec_dir : Path
         Path of spectra directory. All paths of data_index have to be relative to spec_dir
-
-
+    single_cloud_sightlines : list
+        List of star names for single cloud sight lines.
 
     Returns
     -------
-
+    None
     """
     if not result_file.is_file():
         return
@@ -1414,6 +1400,8 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
             sc_df = None
         else:
             sc_df = m_df.loc[m_df.star_name.isin(single_cloud_sightlines)]
+
+        print(m_df)
         plot_path = plot_dir / f'profiles_{query_key}_{int(np.round(mean_ang))}'
         asu.alignment.plot_matches(m_df, query_key, mean_ang, plot_path, sample_number=sample_number,
                                    dark_style=dark_style,
