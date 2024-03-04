@@ -1397,6 +1397,8 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
             sc_df = None
         else:
             sc_df = m_df.loc[m_df.star_name.isin(single_cloud_sightlines)]
+
+        print(m_df)
         plot_path = plot_dir / f'profiles_{query_key}_{int(np.round(mean_ang))}'
         asu.alignment.plot_matches(m_df, query_key, mean_ang, plot_path, sample_number=sample_number,
                                    dark_style=dark_style,

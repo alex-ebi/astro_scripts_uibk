@@ -1,6 +1,7 @@
 # astro_scripts_uibk
 
-[![CircleCI](https://circleci.com/gh/alex-ebi/astro_scripts_uibk.svg?style=svg)](https://app.circleci.com/pipelines/github/alex-ebi/astro_scripts_uibk)
+Pipeline
+status: [![CircleCI](https://circleci.com/gh/alex-ebi/astro_scripts_uibk.svg?style=svg)](https://app.circleci.com/pipelines/github/alex-ebi/astro_scripts_uibk)
 
 ## Installation
 

@@ -108,39 +108,62 @@ def io_function(spec_path):
     return spec
 
 
+# if __name__ == '__main__':
+#     for query_key in query_keys:
+#         spec_aligner = asu.alignment.SpectralAligner(lit_dibs, query_key, data_index,
+#                                                      io_function=io_function, spec_dir=my_spec_dir,
+#                                                      test_run=test_run, max_dist=max_dist,
+#                                                      plot_query=plot_query)
+#
+#         iter_vars = spec_aligner.iter_vars
+#         node_count = 10
+#
+#         print('Iter_var length:', len(iter_vars))
+#         if not test_run:
+#             random.shuffle(iter_vars)
+#
+#         if plot_query or test_run:
+#             # Use loop for troubleshooting - better error traceback
+#             for iter_var in iter_vars:
+#                 spec_aligner.one_query_analysis(*iter_var)
+#
+#         else:
+#             # Step 1: Init multiprocessing.Pool()
+#             pool = mp.Pool(node_count)
+#
+#             # Step 2: `pool.apply` the `howmany_within_range()`
+#             results = pool.starmap(spec_aligner.one_query_analysis, iter_vars)
+#
+#             # Step 3: Don't forget to close
+#             pool.close()
+#
+#             print('Results:', results)
+#             if len(results) > 0:
+#                 result_df = pd.concat(results, ignore_index=True)
+#                 print('Result DataFrame:', result_df)
+#
+#                 # List of "peaks" of the lowest distances between Query and Subject
+#                 result_df.to_pickle(cluster_output_path / f'peaks_{query_key}.p')
+
+# Plot some of the results
+ang_range = [6088, 6092]
 if __name__ == '__main__':
-    for query_key in query_keys:
-        spec_aligner = asu.alignment.SpectralAligner(lit_dibs, query_key, data_index,
-                                                     io_function=io_function, spec_dir=my_spec_dir,
-                                                     test_run=test_run, max_dist=max_dist,
-                                                     plot_query=plot_query)
-
-        iter_vars = spec_aligner.iter_vars
-        node_count = 10
-
-        print('Iter_var length:', len(iter_vars))
-        if not test_run:
-            random.shuffle(iter_vars)
-
-        if plot_query or test_run:
-            # Use loop for troubleshooting - better error traceback
-            for iter_var in iter_vars:
-                spec_aligner.one_query_analysis(*iter_var)
-
-        else:
-            # Step 1: Init multiprocessing.Pool()
-            pool = mp.Pool(node_count)
-
-            # Step 2: `pool.apply` the `howmany_within_range()`
-            results = pool.starmap(spec_aligner.one_query_analysis, iter_vars)
-
-            # Step 3: Don't forget to close
-            pool.close()
-
-            print('Results:', results)
-            if len(results) > 0:
-                result_df = pd.concat(results, ignore_index=True)
-                print('Result DataFrame:', result_df)
-
-                # List of "peaks" of the lowest distances between Query and Subject
-                result_df.to_pickle(cluster_output_path / f'peaks_{query_key}.p')
+    for query in query_keys:
+        asu.alignment.auto_plot_clusters(io_function=read_spec, spec_dir=my_spec_dir,
+                                         result_file=cluster_output_path / f'peaks_{query}.p',
+                                         query_key=query,
+                                         match_dist_cut=0.5,
+                                         pearson_r_cut=0.90,
+                                         sort_by='pearson_r',
+                                         ascending=False,
+                                         padding_factor=0.4,
+                                         plot_dir=my_plot_dir,
+                                         mem_range=0.5,
+                                         eps=0.2,
+                                         show=False,
+                                         min_cluster_size=50,
+                                         sm_ratio=sm_ratio,
+                                         smooth=True,
+                                         single_cloud_sightlines=single_cloud_sightlines,
+                                         ang_range=ang_range
+                                         )
