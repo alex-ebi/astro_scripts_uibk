@@ -26,10 +26,24 @@ my_index_path = files('astro_scripts_uibk') / 'example_data/spec_index.xlsx'
 
 
 def read_spec(spec_file):
+    """
+    Read UVES spectra from ESO Science Archive.
+
+    Parameters
+    ----------
+    spec_file :str
+        Path to spectrum.
+
+    Returns
+    -------
+    np.array, hdr
+        Spectrum with wavelength in Angstrom and flux and header.
+    """
     hdul = fits.open(spec_file)
     hdr = hdul[0].header
     wave = hdul[1].data['WAVE'][0]
     flux = hdul[1].data['FLUX_REDUCED'][0]
+    hdul.close()
     spec = np.array([wave, flux])
     return spec, hdr
 
@@ -47,10 +61,6 @@ def index_orders(spec_dir, index_path):
         obs_time_str = hdr['DATE-OBS']
 
         star_name = hdr['OBJECT']
-
-        # simbad_star_name = star_name_dict.get(star_name)
-        # if simbad_star_name is not None:
-        #     star_name = simbad_star_name
 
         set_list = [star_name, obs_time_str, str(path), x_limits[0], x_limits[1]]
         row = pd.Series(set_list)
@@ -107,7 +117,7 @@ def io_function(spec_path):
     Returns
     -------
     np.array
-        Numpy array of spectrum.
+        Numpy array of spectrum ([wavenumber, flux]).
     """
     spec, _ = read_spec(spec_path)
     spec[0] = asu.transformations.angstrom_to_wavenumber(spec[0])
