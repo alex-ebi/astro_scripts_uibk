@@ -7,14 +7,20 @@ from astropy.io import fits
 import random
 import multiprocessing as mp
 
+# Booleans for major working steps
+download_spectra = True
+perform_alignment = True
+plot_results = True
+
 # define path to spectra directory
 my_spec_dir = files('astro_scripts_uibk') / 'example_data/spectra'
 
 # Downloading the standard reduced EDIBLES sample from the ESO Science Archive
-download_script_path = files('astro_scripts_uibk') / 'example_data/spectra/download_script_uves_edibles_targets.sh'
-os.system(f'chmod +x {download_script_path}')  # chmod it
-os.chdir(download_script_path.parent)  # change working directory for os
-# os.system(f'{download_script_path}')  # execute; already downloaded files are omitted by the bash script
+if download_spectra:
+    download_script_path = files('astro_scripts_uibk') / 'example_data/spectra/download_script_uves_edibles_targets.sh'
+    os.system(f'chmod +x {download_script_path}')  # chmod it
+    os.chdir(download_script_path.parent)  # change working directory for os
+    os.system(f'{download_script_path}')  # execute; already downloaded files are omitted by the bash script
 
 my_index_path = files('astro_scripts_uibk') / 'example_data/spec_index.xlsx'
 
@@ -85,7 +91,7 @@ single_cloud_sightlines = ['HD23180', 'HD24398', 'HD144470', 'HD147165', 'HD1476
 
 query_keys = [6379]  # run DIB alignment only for this DIB
 
-sm_ratio = 0.1
+sm_ratio = 0.1  # Define the width of the smoothing kernel relative to the DIB width
 
 
 def io_function(spec_path):
@@ -108,48 +114,49 @@ def io_function(spec_path):
     return spec
 
 
-# if __name__ == '__main__':
-#     for query_key in query_keys:
-#         spec_aligner = asu.alignment.SpectralAligner(lit_dibs, query_key, data_index,
-#                                                      io_function=io_function, spec_dir=my_spec_dir,
-#                                                      test_run=test_run, max_dist=max_dist,
-#                                                      plot_query=plot_query)
-#
-#         iter_vars = spec_aligner.iter_vars
-#         node_count = 10
-#
-#         print('Iter_var length:', len(iter_vars))
-#         if not test_run:
-#             random.shuffle(iter_vars)
-#
-#         if plot_query or test_run:
-#             # Use loop for troubleshooting - better error traceback
-#             for iter_var in iter_vars:
-#                 spec_aligner.one_query_analysis(*iter_var)
-#
-#         else:
-#             # Step 1: Init multiprocessing.Pool()
-#             pool = mp.Pool(node_count)
-#
-#             # Step 2: `pool.apply` the `howmany_within_range()`
-#             results = pool.starmap(spec_aligner.one_query_analysis, iter_vars)
-#
-#             # Step 3: Don't forget to close
-#             pool.close()
-#
-#             print('Results:', results)
-#             if len(results) > 0:
-#                 result_df = pd.concat(results, ignore_index=True)
-#                 print('Result DataFrame:', result_df)
-#
-#                 # List of "peaks" of the lowest distances between Query and Subject
-#                 result_df.to_pickle(cluster_output_path / f'peaks_{query_key}.p')
+if __name__ == '__main__' and perform_alignment:
+    for query_key in query_keys:
+        spec_aligner = asu.alignment.SpectralAligner(lit_dibs, query_key, data_index,
+                                                     io_function=io_function, spec_dir=my_spec_dir,
+                                                     test_run=test_run, max_dist=max_dist,
+                                                     plot_query=plot_query, smoothing_range_ratio=sm_ratio)
+
+        iter_vars = spec_aligner.iter_vars
+        node_count = 10
+
+        print('Iter_var length:', len(iter_vars))
+        if not test_run:
+            random.shuffle(iter_vars)
+
+        if plot_query or test_run:
+            # Use loop for troubleshooting - better error traceback
+            for iter_var in iter_vars:
+                spec_aligner.one_query_analysis(*iter_var)
+
+        else:
+            # Step 1: Init multiprocessing.Pool()
+            pool = mp.Pool(node_count)
+
+            # Step 2: `pool.apply` the `howmany_within_range()`
+            results = pool.starmap(spec_aligner.one_query_analysis, iter_vars)
+
+            # Step 3: Don't forget to close
+            pool.close()
+
+            print('Results:', results)
+            if len(results) > 0:
+                result_df = pd.concat(results, ignore_index=True)
+                print('Result DataFrame:', result_df)
+
+                # List of "peaks" of the lowest distances between Query and Subject
+                result_df.to_pickle(cluster_output_path / f'peaks_{query_key}.p')
 
 # Plot some of the results
-ang_range = [6088, 6092]
-if __name__ == '__main__':
+ang_range = [6088, 6092]  # Only plot the clusters in this Angstrom range; can be set to None
+
+if __name__ == '__main__' and plot_results:
     for query in query_keys:
-        asu.alignment.auto_plot_clusters(io_function=read_spec, spec_dir=my_spec_dir,
+        asu.alignment.auto_plot_clusters(io_function=io_function, spec_dir=my_spec_dir,
                                          result_file=cluster_output_path / f'peaks_{query}.p',
                                          query_key=query,
                                          match_dist_cut=0.5,

@@ -919,6 +919,9 @@ def rest_frame_crop(spec_in: np.array, query_rv: float, grid_lims, padding_facto
     # apply doppler shift to transform to cloud rest frame
     wave = asu.transformations.doppler_shift_wn(spec_in[0], -query_rv)
 
+    print(wave)
+    print(spec_in[1])
+
     spec = np.array([wave, spec_in[1]])
 
     # remove spikes
