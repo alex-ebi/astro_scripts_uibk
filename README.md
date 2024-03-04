@@ -43,3 +43,12 @@ A use example with real data is given in [alignment_full_example](examples/align
 For this example to run properly, it is important to install the repository with the flag '-e'.
 If you use this code for a publication, please cite our
 paper [The EDIBLES Survey. VIII. Band profile alignment of diffuse interstellar bands](https://arxiv.org/abs/2403.00547).
+
+## Bugs
+
+I prepared the DIB alignment algorithm to be reusable. But if you find any bug, please create an issue!
+Especially in the [alignment_full_example](examples/alignment_full_example.py).
+
+## Development
+
+I want to improve this algorithm and if you want to contribute, you are welcome to contact me.
