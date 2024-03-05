@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>astro_scripts_uibk.alignment &mdash; astro_scripts_uibk 0.post54+gaf0a0c2 documentation</title>
+  <title>astro_scripts_uibk.alignment &mdash; astro_scripts_uibk 0.post56+g3fca5cd documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
@@ -14,7 +14,7 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/documentation_options.js?v=745c3625"></script>
+        <script src="../../_static/documentation_options.js?v=ee008a28"></script>
         <script src="../../_static/doctools.js?v=888ff710"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -36,7 +36,7 @@
             astro_scripts_uibk
           </a>
               <div class="version">
-                0.post54+gaf0a0c2
+                0.post56+g3fca5cd
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1031,10 +1031,6 @@
 
     <span class="c1"># apply doppler shift to transform to cloud rest frame</span>
     <span class="n">wave</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">doppler_shift_wn</span><span class="p">(</span><span class="n">spec_in</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">query_rv</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">spec_in</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
     <span class="n">spec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave</span><span class="p">,</span> <span class="n">spec_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
     <span class="c1"># remove spikes</span>
@@ -1048,24 +1044,6 @@
 
     <span class="k">return</span> <span class="n">spec</span></div>
 
-
-
-<span class="k">def</span> <span class="nf">prep_spec_center</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">cont_points</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">m_df</span><span class="p">,</span> <span class="n">center_wn_rest</span><span class="p">,</span> <span class="n">padding_factor</span><span class="o">=</span><span class="mf">.5</span><span class="p">):</span>
-    <span class="c1"># Transform</span>
-    <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">angstrom_to_wavenumber</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">air_to_vac</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Angstrom to wavenumber</span>
-    <span class="c1"># apply doppler shift to transform to cloud rest frame</span>
-    <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">doppler_shift_wn</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">m_df</span><span class="o">.</span><span class="n">query_rv</span><span class="p">)</span>
-    <span class="c1"># remove spikes</span>
-    <span class="n">spec</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">filter_spikes_normalized</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
-
-    <span class="n">lim_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">cont_points</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">cont_points</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">padding_factor</span>
-    <span class="n">crop_lims</span> <span class="o">=</span> <span class="p">[</span><span class="n">cont_points</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">lim_range</span><span class="p">,</span> <span class="n">cont_points</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">lim_range</span><span class="p">]</span>
-    <span class="n">out_spec</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">crop_spectrum</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="o">*</span><span class="n">crop_lims</span><span class="p">)</span>
-    <span class="n">out_spec</span> <span class="o">=</span> <span class="n">asu</span><span class="o">.</span><span class="n">spectrum_reduction</span><span class="o">.</span><span class="n">normalize_spectrum_linear</span><span class="p">(</span><span class="n">out_spec</span><span class="p">,</span> <span class="n">cont_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cont_points</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">out_spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma</span>
-    <span class="n">out_spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">center_wn_rest</span>
-
-    <span class="k">return</span> <span class="n">out_spec</span>
 
 
 <span class="k">def</span> <span class="nf">prep_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">cont_points</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">m_df</span><span class="p">,</span> <span class="n">padding_factor</span><span class="o">=</span><span class="mf">.5</span><span class="p">):</span>
@@ -1342,7 +1320,7 @@
     <span class="n">ax_sz</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;I(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mean_ang</span><span class="p">))</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">query_key</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sigma_zeta_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">df_sz</span> <span class="o">=</span> <span class="n">plot_m</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">plot_m</span><span class="o">.</span><span class="n">star_name</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">sigma_zeta_df</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
-        <span class="n">df_sz</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;I&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sz</span><span class="o">.</span><span class="n">sigma_s</span> <span class="o">/</span> <span class="n">df_sz</span><span class="o">.</span><span class="n">sigma_q</span>
+        <span class="n">df_sz</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;I&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sz</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;sigma_s&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_sz</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;sigma_q&#39;</span><span class="p">]</span>
 
         <span class="n">sigma_zeta_col</span> <span class="o">=</span> <span class="n">sigma_zeta_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_sz</span><span class="o">.</span><span class="n">star_name</span><span class="p">,</span> <span class="s1">&#39;EW5797/EW5780&#39;</span><span class="p">]</span>
 
@@ -1414,7 +1392,7 @@
                        <span class="n">padding_factor</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
                        <span class="n">match_dist_cut</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ang_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dark_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">excluded_stars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">sample_number</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_cluster_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sm_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                       <span class="n">single_cloud_sightlines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                       <span class="n">single_cloud_sightlines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma_zeta_df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Automatically plotting some matches for a query DIB.</span>
 <span class="sd">    Several parameters can be changed to change the output.</span>
@@ -1470,6 +1448,8 @@
 <span class="sd">        Path of spectra directory. All paths of data_index have to be relative to spec_dir</span>
 <span class="sd">    single_cloud_sightlines : list</span>
 <span class="sd">        List of star names for single cloud sight lines.</span>
+<span class="sd">    sigma_zeta_df : pd.DataFrame</span>
+<span class="sd">        DataFrame with EW5797/EW5780 values for the sight lines.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1520,13 +1500,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sc_df</span> <span class="o">=</span> <span class="n">m_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">m_df</span><span class="o">.</span><span class="n">star_name</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">single_cloud_sightlines</span><span class="p">)]</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="n">m_df</span><span class="p">)</span>
         <span class="n">plot_path</span> <span class="o">=</span> <span class="n">plot_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;profiles_</span><span class="si">{</span><span class="n">query_key</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mean_ang</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">asu</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">plot_matches</span><span class="p">(</span><span class="n">m_df</span><span class="p">,</span> <span class="n">query_key</span><span class="p">,</span> <span class="n">mean_ang</span><span class="p">,</span> <span class="n">plot_path</span><span class="p">,</span> <span class="n">sample_number</span><span class="o">=</span><span class="n">sample_number</span><span class="p">,</span>
                                    <span class="n">dark_style</span><span class="o">=</span><span class="n">dark_style</span><span class="p">,</span>
                                    <span class="n">padding_factor</span><span class="o">=</span><span class="n">padding_factor</span><span class="p">,</span> <span class="n">annotate</span><span class="o">=</span><span class="n">annotate</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">sm_ratio</span><span class="o">=</span><span class="n">sm_ratio</span><span class="p">,</span>
                                    <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
-                                   <span class="n">io_function</span><span class="o">=</span><span class="n">io_function</span><span class="p">,</span> <span class="n">spec_dir</span><span class="o">=</span><span class="n">spec_dir</span><span class="p">,</span> <span class="n">sc_df</span><span class="o">=</span><span class="n">sc_df</span><span class="p">)</span></div>
+                                   <span class="n">io_function</span><span class="o">=</span><span class="n">io_function</span><span class="p">,</span> <span class="n">spec_dir</span><span class="o">=</span><span class="n">spec_dir</span><span class="p">,</span> <span class="n">sc_df</span><span class="o">=</span><span class="n">sc_df</span><span class="p">,</span> <span class="n">sigma_zeta_df</span><span class="o">=</span><span class="n">sigma_zeta_df</span><span class="p">)</span></div>
 
 
 
