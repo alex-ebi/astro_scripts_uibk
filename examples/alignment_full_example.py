@@ -8,8 +8,8 @@ import random
 import multiprocessing as mp
 
 # Booleans for major working steps
-download_spectra = True
-perform_alignment = True
+download_spectra = False
+perform_alignment = False
 plot_results = True
 
 # define path to spectra directory
@@ -49,18 +49,35 @@ def read_spec(spec_file):
 
 
 def index_orders(spec_dir, index_path):
+    """
+    Creates an index of all spectra in the given directory spec_dir.
+    The index file is an Excel file with the path index_path.
+
+    Parameters
+    ----------
+    spec_dir : Path
+        Path to the directory.
+    index_path :
+        Path to the index file.
+
+    Returns
+    -------
+    pd.DataFrame
+        Index as DataFrame.
+    """
     setting_paths = spec_dir.glob('*.fits')
 
     df = pd.DataFrame()
 
     for path in setting_paths:
+        path = path.relative_to(spec_dir)
         spec, hdr = read_spec(spec_dir / path)
 
         x_limits = [min(spec[0]), max(spec[0])]
 
         obs_time_str = hdr['DATE-OBS']
 
-        star_name = hdr['OBJECT']
+        star_name = hdr['OBJECT'].replace('HD ', 'HD')
 
         set_list = [star_name, obs_time_str, str(path), x_limits[0], x_limits[1]]
         row = pd.Series(set_list)
@@ -69,8 +86,6 @@ def index_orders(spec_dir, index_path):
     df = df.T
 
     df.rename(columns={0: 'star_name', 1: 'obs_date', 2: 'spec_path', 3: 'x_min', 4: 'x_max'}, inplace=True)
-
-    # df = drop_spectra(df, exclude_ref_sight_lines)
 
     df.to_excel(index_path)
 
@@ -103,6 +118,8 @@ query_keys = [6379]  # run DIB alignment only for this DIB
 
 sm_ratio = 0.1  # Define the width of the smoothing kernel relative to the DIB width
 
+node_count = 10  # Number of nodes which will be used for the parallelized DIB alignment algorithm.
+
 
 def io_function(spec_path):
     """
@@ -132,8 +149,8 @@ if __name__ == '__main__' and perform_alignment:
                                                      plot_query=plot_query, smoothing_range_ratio=sm_ratio)
 
         iter_vars = spec_aligner.iter_vars
-        node_count = 10
 
+        print('DIB alignment starting.')
         print('Iter_var length:', len(iter_vars))
         if not test_run:
             random.shuffle(iter_vars)
@@ -164,6 +181,9 @@ if __name__ == '__main__' and perform_alignment:
 # Plot some of the results
 ang_range = [6088, 6092]  # Only plot the clusters in this Angstrom range; can be set to None
 
+sigma_zeta_path = files('astro_scripts_uibk') / 'example_data/sigma_zeta.xlsx'
+sigma_zeta_df = pd.read_excel(sigma_zeta_path, index_col=[0])
+
 if __name__ == '__main__' and plot_results:
     for query in query_keys:
         asu.alignment.auto_plot_clusters(io_function=io_function, spec_dir=my_spec_dir,
@@ -182,5 +202,6 @@ if __name__ == '__main__' and plot_results:
                                          sm_ratio=sm_ratio,
                                          smooth=True,
                                          single_cloud_sightlines=single_cloud_sightlines,
-                                         ang_range=ang_range
+                                         ang_range=ang_range,
+                                         sigma_zeta_df=sigma_zeta_df
                                          )

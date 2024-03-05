@@ -918,10 +918,6 @@ def rest_frame_crop(spec_in: np.array, query_rv: float, grid_lims, padding_facto
 
     # apply doppler shift to transform to cloud rest frame
     wave = asu.transformations.doppler_shift_wn(spec_in[0], -query_rv)
-
-    print(wave)
-    print(spec_in[1])
-
     spec = np.array([wave, spec_in[1]])
 
     # remove spikes
@@ -934,24 +930,6 @@ def rest_frame_crop(spec_in: np.array, query_rv: float, grid_lims, padding_facto
         spec = asu.spectrum_reduction.crop_spectrum(spec, *crop_lims)
 
     return spec
-
-
-def prep_spec_center(spec, cont_points, sigma, mean, m_df, center_wn_rest, padding_factor=.5):
-    # Transform
-    spec[0] = asu.transformations.angstrom_to_wavenumber(spec[0], air_to_vac=True)  # Angstrom to wavenumber
-    # apply doppler shift to transform to cloud rest frame
-    spec[0] = asu.transformations.doppler_shift_wn(spec[0], -m_df.query_rv)
-    # remove spikes
-    spec = asu.spectrum_reduction.filter_spikes_normalized(spec)
-
-    lim_range = (cont_points.T[0][1] - cont_points.T[0][0]) * padding_factor
-    crop_lims = [cont_points.T[0][0] - lim_range, cont_points.T[0][1] + lim_range]
-    out_spec = asu.spectrum_reduction.crop_spectrum(spec, *crop_lims)
-    out_spec = asu.spectrum_reduction.normalize_spectrum_linear(out_spec, cont_points[0], cont_points[1])
-    out_spec[1] = (out_spec[1] - mean) / sigma
-    out_spec[0] -= center_wn_rest
-
-    return out_spec
 
 
 def prep_spec(spec, cont_points, sigma, mean, m_df, padding_factor=.5):
@@ -1226,7 +1204,7 @@ def plot_matches(m_df: pd.DataFrame, query_key, mean_ang, plot_path, sample_numb
     ax_sz.set_ylabel(f'I({int(np.round(mean_ang))}/{query_key})')
     if sigma_zeta_df is not None:
         df_sz = plot_m.loc[plot_m.star_name.isin(sigma_zeta_df.index)]
-        df_sz.loc[:, 'I'] = df_sz.sigma_s / df_sz.sigma_q
+        df_sz.loc[:, 'I'] = df_sz.loc[:, 'sigma_s'] / df_sz.loc[:, 'sigma_q']
 
         sigma_zeta_col = sigma_zeta_df.loc[df_sz.star_name, 'EW5797/EW5780']
 
@@ -1295,7 +1273,7 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
                        padding_factor=.5,
                        match_dist_cut=None, ang_range=None, dark_style=False, show=False, excluded_stars=None,
                        sample_number=7, annotate=False, min_cluster_size=5, sm_ratio=0.1, smooth=True,
-                       single_cloud_sightlines=None):
+                       single_cloud_sightlines=None, sigma_zeta_df=None):
     """
     Automatically plotting some matches for a query DIB.
     Several parameters can be changed to change the output.
@@ -1351,6 +1329,8 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         Path of spectra directory. All paths of data_index have to be relative to spec_dir
     single_cloud_sightlines : list
         List of star names for single cloud sight lines.
+    sigma_zeta_df : pd.DataFrame
+        DataFrame with EW5797/EW5780 values for the sight lines.
 
     Returns
     -------
@@ -1401,13 +1381,12 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         else:
             sc_df = m_df.loc[m_df.star_name.isin(single_cloud_sightlines)]
 
-        print(m_df)
         plot_path = plot_dir / f'profiles_{query_key}_{int(np.round(mean_ang))}'
         asu.alignment.plot_matches(m_df, query_key, mean_ang, plot_path, sample_number=sample_number,
                                    dark_style=dark_style,
                                    padding_factor=padding_factor, annotate=annotate, show=show, sm_ratio=sm_ratio,
                                    smooth=smooth,
-                                   io_function=io_function, spec_dir=spec_dir, sc_df=sc_df)
+                                   io_function=io_function, spec_dir=spec_dir, sc_df=sc_df, sigma_zeta_df=sigma_zeta_df)
 
 
 def transform_normalized_dib(spectrum: np.array, strength_factor: float, wn_shift: float):
