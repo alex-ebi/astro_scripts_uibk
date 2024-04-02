@@ -1273,7 +1273,7 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
                        padding_factor=.5,
                        match_dist_cut=None, ang_range=None, dark_style=False, show=False, excluded_stars=None,
                        sample_number=7, annotate=False, min_cluster_size=5, sm_ratio=0.1, smooth=True,
-                       single_cloud_sightlines=None, sigma_zeta_df=None):
+                       single_cloud_sightlines=None, sigma_zeta_df=None, cluster_df_path=None):
     """
     Automatically plotting some matches for a query DIB.
     Several parameters can be changed to change the output.
@@ -1331,6 +1331,8 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         List of star names for single cloud sight lines.
     sigma_zeta_df : pd.DataFrame
         DataFrame with EW5797/EW5780 values for the sight lines.
+    cluster_df_path : str
+        Path of the file containing the found clusters of profile matches.
 
     Returns
     -------
@@ -1367,6 +1369,9 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         cluster_df = cluster_df.loc[cluster_df['pearson_r'] > pearson_r_cut, :]
     if number_cut is not None:
         cluster_df = cluster_df.iloc[:number_cut, :]
+
+    if cluster_df_path is not None:
+        cluster_df.to_excel(cluster_df_path)
 
     for _, cluster_s in cluster_df.iterrows():
         mean_wave = cluster_s.mean_wavenumber
