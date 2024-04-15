@@ -244,6 +244,10 @@ def coadd(spectra: list, wave_new: np.array, weights=None):
         Coadded spectrum.
     """
     res_fluxes, weight_list = [], []
+
+    if weights is None:
+        weights = np.ones(len(spectra))
+
     for spec, weight in zip(spectra, weights):
         f = interp1d(spec[0], spec[1], bounds_error=False)
         res_flux = f(wave_new)
