@@ -238,7 +238,8 @@ def fit_plotting(dark_style, spec_path, query_fit_spec, result, max_peak, query_
 
 
 def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_width, dib_fwhm, grid_res, plot_fit=False,
-                      smoothing=True, dark_style=False, sm_ratio=0.1, center_limits=None, width_limits=None):
+                      smoothing=True, dark_style=False, sm_ratio=0.1, center_limits=None, width_limits=None,
+                      cont_lim=0.02):
     """
     Prepares a query spectrum and extracts the query used for DIB alignment.
 
@@ -269,6 +270,9 @@ def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_wi
         Limits of central absorption for Query. Default: [-4, 4]
     width_limits : list
         Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]
+    cont_lim : float
+        Defines where the DIB ends. It ends when the fitted function absorbs less than the central depth times cont_lim.
+        Default: 0.02
 
     Returns
     -------
@@ -290,7 +294,8 @@ def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_wi
     result, query_points, q_cen, max_peak, fit_fwhm, success = fit_gauss_skew(dib_fwhm, query_wavenumber,
                                                                               query_fit_spec,
                                                                               center_limits=center_limits,
-                                                                              width_limits=width_limits)
+                                                                              width_limits=width_limits,
+                                                                              cont_lim=cont_lim)
 
     # q_cen = np.mean(query_points)  # center of query is not the central peak, but the middle of the query
     print('q wn', query_wavenumber)
@@ -884,7 +889,7 @@ def extract_clusters_1d(r_df: pd.DataFrame, eps=0.1, mem_range=None, show=False,
                            'wn_range': wn_range,
                            'median_dist': np.nanmedian(c_mem.match_dist),
                            'std_wn': c_mem.match_wave.std()},
-                          name=str(int(np.round(mean_ang))))
+                          name=int(np.round(mean_ang)))
 
             out_df = pd.concat((out_df, s), axis=1)
 
