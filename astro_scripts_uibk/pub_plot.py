@@ -15,11 +15,13 @@ def pub_style_fig():
     Setup for one x axis - unit and one y axis unit.
     E.g. if you want to use a second x axis on top, use:
 
+    import astro_scripts_uibk as asu
+    import matplotlib as mpl
+
     mpl.rcParams['xtick.top'] = False
-
     f, ax = plt.subplots()
-
-    sec_ax = ax.secondary_xaxis('top', functions=(rv_to_wavenumber, wavenumber_to_rv))
+    sec_ax = ax.secondary_xaxis('top', functions=(asu.transformations.wavenumber_to_angstrom,
+                                                  asu.transformations.angstrom_to_wavenumber))
 
     Returns
     -------
