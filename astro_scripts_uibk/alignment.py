@@ -433,7 +433,8 @@ class SpectralAligner:
                  wavenumber_grid_resolution=40,
                  query_fit_range_factor=3,
                  query_width_limits=None,
-                 query_center_limits=None):
+                 query_center_limits=None,
+                 cont_lim=0.02):
         """
         Class for spectral alignment.
 
@@ -472,6 +473,10 @@ class SpectralAligner:
             Limits of central absorption for Query. Default: [-4, 4]
         query_width_limits : list
             Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]
+        cont_lim : float
+            Defines where the DIB ends. It ends when the fitted function absorbs less than the central depth times cont_lim.
+            Default: 0.02
+
         """
         if query_center_limits is None:
             query_center_limits = [-4, 4]
@@ -495,6 +500,7 @@ class SpectralAligner:
         self.query_wavenumber = query_list.loc[self.query_key, 'wn']
         self.query_fwhm = query_list.loc[self.query_key, 'fwhm_wn']
         self.qfhw = self.query_fwhm * query_fit_range_factor
+        self.cont_lim = cont_lim
 
         if star_names is None:
             self.star_names = self.data_index.loc[:, 'star_name'].unique()
@@ -664,7 +670,8 @@ class SpectralAligner:
             query_preparation(query_spec, spec_path, self.query_wavenumber, self.qfhw,
                               self.query_fwhm, self.grid_res,
                               plot_fit=self.plot_query, dark_style=self.dark_style,
-                              sm_ratio=self.sm_r, center_limits=self.qcl, width_limits=self.fwhm_l)
+                              sm_ratio=self.sm_r, center_limits=self.qcl, width_limits=self.fwhm_l,
+                              cont_lim=self.cont_lim)
 
         if len(query_spec_sm[0]) < 2 or q_cen == self.query_wavenumber or not success:
             return None

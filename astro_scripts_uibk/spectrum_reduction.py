@@ -302,7 +302,7 @@ def profile_comp_trafo(spectrum: np.array, cont_points: np.array, center: np.arr
     return spectrum
 
 
-def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10):
+def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10, normalize_error = False):
     """
     Normalizes a list of spectra. Useful for fast spectrum comparison.
     Each spectrum is normalized by one divisor, which is the median flux around the normalization wavelength
@@ -324,6 +324,8 @@ def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10):
     for spec in spec_list:
         norm_flux = np.nanmedian(crop_spectrum(spec, norm_wl - norm_half_range, norm_wl + norm_half_range)[1])
         spec[1] /= norm_flux
+        if normalize_error:
+            spec[2] /= norm_flux
 
 
 def smooth_spec(spectrum: np.array, kernel_size: int):
