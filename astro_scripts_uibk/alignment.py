@@ -239,12 +239,14 @@ def fit_plotting(dark_style, spec_path, query_fit_spec, result, max_peak, query_
 
 def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_width, dib_fwhm, grid_res, plot_fit=False,
                       smoothing=True, dark_style=False, sm_ratio=0.1, center_limits=None, width_limits=None,
-                      cont_lim=0.02):
+                      cont_lim=0.02, snr_limit=3):
     """
     Prepares a query spectrum and extracts the query used for DIB alignment.
 
     Parameters
     ----------
+    snr_limit : float
+        Minimum S/N ratio of the detected query and the noise level. (Default: 3)
     query_spec : np.array
         Spectrum with query in wavenumbers.
     spec_path : Path
@@ -309,8 +311,8 @@ def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_wi
     nsr = np.std(sn_spec[1]) / np.mean(sn_spec[1])  # Noise over signal
 
     # Set fit success to False if query strength is below 3 sigma of noise
-    if max_peak < nsr * 3:
-        print('Query below 3 sigma noise level.')
+    if max_peak < nsr * snr_limit:
+        print(f'Query below {snr_limit} sigma noise level.')
         print('peak', max_peak, 'N/S', nsr)
         success = False
 
@@ -434,7 +436,8 @@ class SpectralAligner:
                  query_fit_range_factor=3,
                  query_width_limits=None,
                  query_center_limits=None,
-                 cont_lim=0.02):
+                 cont_lim=0.02,
+                 snr_limit=3):
         """
         Class for spectral alignment.
 
@@ -476,6 +479,8 @@ class SpectralAligner:
         cont_lim : float
             Defines where the DIB ends. It ends when the fitted function absorbs less than the central depth times cont_lim.
             Default: 0.02
+        snr_limit : float
+            Minimum S/N ratio of the detected query and the noise level. (Default: 3)
 
         """
         if query_center_limits is None:
@@ -501,6 +506,7 @@ class SpectralAligner:
         self.query_fwhm = query_list.loc[self.query_key, 'fwhm_wn']
         self.qfhw = self.query_fwhm * query_fit_range_factor
         self.cont_lim = cont_lim
+        self.snr_limit = snr_limit
 
         if star_names is None:
             self.star_names = self.data_index.loc[:, 'star_name'].unique()
@@ -671,7 +677,7 @@ class SpectralAligner:
                               self.query_fwhm, self.grid_res,
                               plot_fit=self.plot_query, dark_style=self.dark_style,
                               sm_ratio=self.sm_r, center_limits=self.qcl, width_limits=self.fwhm_l,
-                              cont_lim=self.cont_lim)
+                              cont_lim=self.cont_lim, snr_limit=self.snr_limit)
 
         if len(query_spec_sm[0]) < 2 or q_cen == self.query_wavenumber or not success:
             return None
