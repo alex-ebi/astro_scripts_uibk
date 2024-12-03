@@ -961,6 +961,26 @@ def prep_spec(spec, cont_points, sigma, mean, m_df, padding_factor=.5):
 
 def spec_plot(m_df: pd.DataFrame, ax, plot_offset=5, padding_factor=.5, dark_style=False, smooth=True, mean_i=None,
               sm_ratio=0.1, io_function=None, spec_dir=None):
+    """
+    Plots several spectra with a vertical offset.
+
+    Parameters
+    ----------
+    m_df
+    ax
+    plot_offset
+    padding_factor
+    dark_style
+    smooth
+    mean_i
+    sm_ratio
+    io_function
+    spec_dir
+
+    Returns
+    -------
+
+    """
     s_names, x_lim_list = [], []
     if dark_style:
         q_color = 'dodgerblue'
