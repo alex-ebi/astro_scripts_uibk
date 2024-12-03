@@ -4,6 +4,7 @@ from scipy.interpolate import interp1d
 from pandas import DataFrame
 from astro_scripts_uibk import transformations, convolve
 from warnings import warn
+import scipy as sp
 
 
 def slice_spectrum(array_in: np.array, x_min: float, x_max: float) -> np.array:
@@ -302,7 +303,7 @@ def profile_comp_trafo(spectrum: np.array, cont_points: np.array, center: np.arr
     return spectrum
 
 
-def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10, normalize_error = False):
+def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10, normalize_error=False):
     """
     Normalizes a list of spectra. Useful for fast spectrum comparison.
     Each spectrum is normalized by one divisor, which is the median flux around the normalization wavelength
@@ -399,3 +400,15 @@ def divide_spec(spectrum: np.array, div_spec: np.array):
     divided_flux = spec_crop[1] / res_spec[1]
 
     return np.array([spec_crop[0], divided_flux])
+
+
+def baseline_als(y, lam=1e7, p=0.005, niter=10):
+    l = len(y)
+    d = sp.sparse.csc_matrix(np.diff(np.eye(l), 2))
+    w = np.ones(l)
+    for i in range(niter):
+        w = sp.sparse.spdiags(w, 0, l, l)
+        z1 = w + lam * d.dot(d.transpose())
+        z = sp.sparse.linalg.spsolve(z1, w * y)
+        w = p * (-y > z) + (1 - p) * (-y < z)
+    return -z
