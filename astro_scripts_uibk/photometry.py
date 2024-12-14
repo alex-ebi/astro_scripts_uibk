@@ -76,7 +76,7 @@ def my_integral(x: np.array, y: np.array) -> float:
     Integrate y(x) by x
     is defined here to change the integral method for all uses at once
     """
-    return integrate.trapz(y, x)
+    return integrate.trapezoid(y, x)
 
 
 def load_filter(filter_filename: str) -> 'tuple(np.array,np.array)':
