@@ -20,6 +20,50 @@ from sklearn.cluster import DBSCAN
 import astro_scripts_uibk as asu
 
 
+def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_function, file_ending=None):
+    """
+    Creates an index of all spectra in the given directory spec_dir.
+    The index file is an Excel file with the path index_path.
+
+    Parameters
+    ----------
+    spec_dir : Path
+        Path to the directory.
+    index_path :
+        Path to the index file.
+
+    Returns
+    -------
+    pd.DataFrame
+        Index as DataFrame.
+    """
+    if file_ending is not None:
+        setting_paths = spec_dir.rglob(f'*{file_ending}')
+    else:
+        setting_paths = spec_dir.rglob('*')
+
+    df = pd.DataFrame()
+
+    for path in setting_paths:
+        path = path.relative_to(spec_dir)
+        spec  = io_function(spec_dir / path)
+        star_name, obs_time_str = star_obs_time_function(spec_dir / path)
+
+        x_limits = [min(spec[0]), max(spec[0])]
+
+        set_list = [star_name, obs_time_str, str(path), x_limits[0], x_limits[1]]
+        row = pd.Series(set_list)
+        df = pd.concat((df, row), axis=1, ignore_index=True)
+
+    df = df.T
+
+    df.rename(columns={0: 'star_name', 1: 'obs_date', 2: 'spec_path', 3: 'x_min', 4: 'x_max'}, inplace=True)
+
+    df.to_excel(index_path)
+
+    return df
+
+
 def rest_frame_resample(spec: np.array, query_rv: float, grid_res: float):
     """
     Transform into DIB rest frame and resample to equidistant wavenumber grid.
