@@ -20,7 +20,7 @@ from sklearn.cluster import DBSCAN
 import astro_scripts_uibk as asu
 
 
-def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_function, file_ending=None):
+def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_function, file_ending=None) -> pd.DataFrame:
     """
     Creates an index of all spectra in the given directory spec_dir.
     The index file is an Excel file with the path index_path.
@@ -42,12 +42,19 @@ def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_f
     else:
         setting_paths = spec_dir.rglob('*')
 
+    setting_paths = [item for item in setting_paths if not item.is_dir()]
+
     df = pd.DataFrame()
 
     for path in setting_paths:
+        print(path)
         path = path.relative_to(spec_dir)
-        spec  = io_function(spec_dir / path)
-        star_name, obs_time_str = star_obs_time_function(spec_dir / path)
+        try:
+            spec  = io_function(spec_dir / path)
+            star_name, obs_time_str = star_obs_time_function(spec_dir / path)
+
+        except KeyError:
+            continue
 
         x_limits = [min(spec[0]), max(spec[0])]
 
