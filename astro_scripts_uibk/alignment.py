@@ -777,7 +777,15 @@ class SpectralAligner:
                 subject_spec_sm = asu.spectrum_reduction.smooth_spec(subject_spec, sm_len)
 
                 # resample unsmoothed subject spectrum to smoothed binning
-                subject_spec_r = asu.convolve.resample(subject_spec, subject_spec_sm[0], assume_sorted=False)
+                try:
+                    subject_spec_r = asu.convolve.resample(subject_spec, subject_spec_sm[0], assume_sorted=False)
+                except ValueError as err:
+                    print('subject:', subject_obs)
+                    print('sm len:', sm_len)
+                    print('subject_spec_sm:', subject_spec_sm)
+                    print('subject_spec:',subject_spec)
+                    raise err
+                
 
                 # Transform flux column of np.array to pd.Series for rolling window comparison
                 subject_series = pd.Series(subject_spec_sm[1], name='subject')
