@@ -401,3 +401,45 @@ def doppler_shift_wn(wavenumber: np.array, rv: float) -> np.array:
     beta = rv / c_light  # relativistic velocity divided by speed of light
     gamma = np.sqrt((1 - beta) / (1 + beta))  # relativistic Lorentz factor
     return np.array(wavenumber * gamma)
+
+
+def micron_to_wavenumber(micron: np.array, air_to_vac=False) -> np.array:
+    """
+    Transforms np.array of wave lengths in Ångströms to array of wavenumbers.
+
+    Parameters
+    ----------
+    angstrom : np.array
+        Wavelength array in Ångströms
+    air_to_vac : bool
+        If True, wavelengths are assumed in air and get transform into vacuum before wavenumber transformation.
+        Default: True
+
+    Returns
+    -------
+    np.array
+        Wavenumber array
+    """
+    angstrom = micron * 1e4
+
+    return angstrom_to_wavenumber(angstrom, air_to_vac=air_to_vac)
+
+
+def wavenumber_to_micron(wavenumber: np.array, vac_to_air=False) -> np.array:
+    """
+    Transforms np.array of wavenumbers to array of wave lengths in angstrom.
+
+    Parameters
+    ----------
+    wavenumber : np.array
+        Wavenumber array
+    vac_to_air : bool
+        If True, wavelengths are transformed to air.
+        Default: True
+
+    Returns
+    -------
+    np.array
+        Ångströms array
+    """
+    return wavenumber_to_angstrom(wavenumber, vac_to_air=vac_to_air) * 1e-4
