@@ -6,6 +6,7 @@ from matplotlib import font_manager
 # Some strings for axis labels
 wn_str = r'$\tilde \nu$(cm$^{-1}$)'
 ang_str = r'$\lambda(\AA)$'
+micron_str = r'$\lambda(\mu m)$'
 
 
 def pub_style_fig():
