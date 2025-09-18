@@ -430,3 +430,44 @@ def sort_spec(spec):
     """
     return np.array(sorted(spec.T, key=lambda x: x[0])).T
 
+
+def remove_nan_spec(spec: np.array, col: int) -> np.array:
+    """
+    Removes spectrum bin with nan values in column **col**.
+
+    Parameters
+    ----------
+    spec : np.array([wave, flux, additional columns])
+        Spectrum with nan values.
+    col : int
+        Index of column to be searched for nan values.
+
+    Returns
+    -------
+    np.array([wave, flux, additional columns])
+        Spectrum without nan values.
+    """
+    not_nan_ind = ~np.isnan(spec[col])
+    return spec.T[not_nan_ind].T
+
+
+def delete_duplicates_spec(spec: np.array) -> np.array:
+    """
+    Deletes parts of spectrum with duplicate wavelength entries.
+    Keeps the first occurence
+
+    Parameters
+    ----------
+    spec : np.array
+        Input spectrum.
+
+    Returns
+    -------
+    np.array
+        Spectrum without duplicates.
+    """
+    df = pd.DataFrame(spec.T)
+    df = df.drop_duplicates(subset=0)
+    spec = df.to_numpy().T
+    
+    return spec
