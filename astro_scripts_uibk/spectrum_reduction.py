@@ -412,3 +412,21 @@ def baseline_als(y, lam=1e7, p=0.005, niter=10):
         z = sp.sparse.linalg.spsolve(z1, w * y)
         w = p * (-y > z) + (1 - p) * (-y < z)
     return -z
+
+
+def sort_spec(spec):
+    """
+    Sorts a spectrum by its wavelength coordinate.
+
+    Parameters
+    ----------
+    spec : np.array
+        Input spectrum.
+
+    Returns
+    -------
+    np.array
+        Sorted output spectrum.
+    """
+    return np.array(sorted(spec.T, key=lambda x: x[0])).T
+
