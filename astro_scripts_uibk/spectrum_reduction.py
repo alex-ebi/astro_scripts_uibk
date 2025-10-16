@@ -64,6 +64,34 @@ def crop_spectrum(array_in: np.array, x_min: float, x_max: float) -> np.array:
     return array_in[:, bool_array]
 
 
+def remove_region(array_in: np.array, x_min: float, x_max: float) -> np.array:
+    """
+    Returns a spectrum after removing an interval of x_min < wave < x_max.
+
+    Parameters
+    ----------
+    array_in : np.array([wave, flux, additional_columns])
+        Input spectrum.
+    x_min : float
+        Minimum wave coordinate of removed region.
+    x_max : float
+        Maximum wave coordinate of removed region.
+
+    Returns
+    -------
+    np.array([wave, flux, additional_columns])
+        Spectrum without removed region.
+    """
+    if x_min > x_max:
+        raise ValueError('Slice_spectrum error: x_min is larger than x_max!')
+
+    b1 = array_in[0] < x_max  # boolean array of wave values smaller than x_max
+    b2 = x_min < array_in[0]  # boolean array of wave values larger than x_min
+    bool_array = np.logical_and(b1, b2)  # boolean array of wave values larger than x_min and smaller than x_max
+
+    return array_in[:, ~bool_array]
+
+
 def exclude_spikes_limits(spectrum: np.array, flux_min=None, flux_max=None) -> np.array:
     """
     Excludes parts of a spectrum which exceed specified flux thresholds (flux_min and/or flux_max).
