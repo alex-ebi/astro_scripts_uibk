@@ -135,7 +135,7 @@ def normalize(spectrum: np.array, cont_range=1, return_weight=False):
         return out_spec.spectrum
 
 
-def mark_molecfit_ranges(ax, include_list: list=None):
+def mark_molecfit_ranges(ax, include_list: list = None):
     if include_list is None:
         include_list = []
 
@@ -153,10 +153,10 @@ def mark_molecfit_ranges(ax, include_list: list=None):
     for row in include_list:
         plt.axvspan(row[0], row[1], alpha=.5, color='orange')
 
-    rs = SpanSelector(ax, onselect, 'horizontal', props=dict(alpha=0.5, facecolor="tab:blue"), button=MouseButton(1))
-    rs_del = SpanSelector(ax, onselect_del, 'horizontal', props=dict(alpha=0.5, facecolor="tab:green"), button=MouseButton(3))
+    _ = SpanSelector(ax, onselect, 'horizontal', props=dict(alpha=0.5, facecolor="tab:blue"), button=MouseButton(1))
+    _ = SpanSelector(ax, onselect_del, 'horizontal', props=dict(alpha=0.5, facecolor="tab:green"),
+                     button=MouseButton(3))
 
     plt.show()
 
     return include_list
-

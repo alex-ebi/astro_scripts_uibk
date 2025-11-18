@@ -31,7 +31,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install -r requirements.txt && pip install -r requirements-dev.txt
+          command: pip install .[dev]
       - run:
           name: Run tests
           command: coverage run -m pytest && coverage report -m
@@ -46,7 +46,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install . && pip install -r requirements-dev.txt
+          command: pip install .[dev]
       - run:
           name: Build docs
           command: cd docs/ && make html

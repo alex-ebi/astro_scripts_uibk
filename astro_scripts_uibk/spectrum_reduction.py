@@ -4,7 +4,6 @@ from scipy.interpolate import interp1d
 from pandas import DataFrame
 from astro_scripts_uibk import transformations, convolve
 from warnings import warn
-import scipy as sp
 
 
 def slice_spectrum(array_in: np.array, x_min: float, x_max: float) -> np.array:
@@ -430,18 +429,6 @@ def divide_spec(spectrum: np.array, div_spec: np.array):
     return np.array([spec_crop[0], divided_flux])
 
 
-def baseline_als(y, lam=1e7, p=0.005, niter=10):
-    l = len(y)
-    d = sp.sparse.csc_matrix(np.diff(np.eye(l), 2))
-    w = np.ones(l)
-    for i in range(niter):
-        w = sp.sparse.spdiags(w, 0, l, l)
-        z1 = w + lam * d.dot(d.transpose())
-        z = sp.sparse.linalg.spsolve(z1, w * y)
-        w = p * (-y > z) + (1 - p) * (-y < z)
-    return -z
-
-
 def sort_spec(spec):
     """
     Sorts a spectrum by its wavelength coordinate.
@@ -497,5 +484,5 @@ def delete_duplicates_spec(spec: np.array) -> np.array:
     df = pd.DataFrame(spec.T)
     df = df.drop_duplicates(subset=0)
     spec = df.to_numpy().T
-    
+
     return spec

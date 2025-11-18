@@ -20,7 +20,8 @@ from sklearn.cluster import DBSCAN
 import astro_scripts_uibk as asu
 
 
-def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_function, file_ending=None) -> pd.DataFrame:
+def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_function,
+                  file_ending=None) -> pd.DataFrame:
     """
     Creates an index of all spectra in the given directory spec_dir.
     The index file is an Excel file with the path index_path.
@@ -50,7 +51,7 @@ def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_f
         print(path)
         path = path.relative_to(spec_dir)
         try:
-            spec  = io_function(spec_dir / path)
+            spec = io_function(spec_dir / path)
             star_name, obs_time_str = star_obs_time_function(spec_dir / path)
 
         except KeyError:
@@ -528,7 +529,8 @@ class SpectralAligner:
         query_width_limits : list
             Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]
         cont_lim : float
-            Defines where the DIB ends. It ends when the fitted function absorbs less than the central depth times cont_lim.
+            Defines where the DIB ends. It ends when the fitted function absorbs less than the central
+            depth times cont_lim.
             Default: 0.02
         snr_limit : float
             Minimum S/N ratio of the detected query and the noise level. (Default: 3)
@@ -783,9 +785,8 @@ class SpectralAligner:
                     print('subject:', subject_obs)
                     print('sm len:', sm_len)
                     print('subject_spec_sm:', subject_spec_sm)
-                    print('subject_spec:',subject_spec)
+                    print('subject_spec:', subject_spec)
                     raise err
-                
 
                 # Transform flux column of np.array to pd.Series for rolling window comparison
                 subject_series = pd.Series(subject_spec_sm[1], name='subject')

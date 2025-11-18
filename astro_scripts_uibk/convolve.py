@@ -158,7 +158,7 @@ def resample(spectrum: np.array, wave_new: np.array, assume_sorted=True) -> np.a
         resampled spectrum
     """
     new_cols = []
-    for col in spectrum[1:]:                           
+    for col in spectrum[1:]:
         f = interp1d(spectrum[0], col, assume_sorted=assume_sorted, bounds_error=False)
         col_new = f(wave_new)
         new_cols.append(col_new)
