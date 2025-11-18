@@ -45,7 +45,13 @@ dev = [
     "sphinx_rtd_theme",
     "sphinx_markdown_builder",
     "openpyxl",
-    "coverage"
+    "coverage",
+    "codecov",
+    "flake8",
+    "pytest",
+    "sphinx",
+    "twine",
+    "setuptools",
 ]
 [project.scripts]
 
