@@ -11,5 +11,7 @@ from . import stellar_modelling
 from . import transformations
 from . import widgets
 
+__version__ = '0.1'
+
 __all__ = ['alignment', 'convolve', 'data_handling', 'io_asu', 'photometry', 'pub_plot', 'query', 'spas',
            'spectrum_reduction', 'stellar_modelling', 'transformations', 'widgets']
