@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "astro-scripts-uibk"
+version = "0.2.0"
+description = "Python package for doing science."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    { name = "Astrophysics UIBK", email = "alexander@ebenbichler.net" },
+]
+classifiers = [
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "astropy",
+    "astroquery",
+    "corner",
+    "emcee",
+    "future",
+    "lmfit",
+    "matplotlib",
+    "numpy",
+    "openpyxl",
+    "pandas",
+    "pathlib",
+    "PyAstronomy",
+    "python-dateutil",
+    "scikit-learn",
+    "scipy >= 1.9",
+    "setuptools",
+    "tqdm",
+    "wheel",
+]
+
+[project.scripts]
+
+[project.urls]
+Homepage = "https://github.com/alex-ebi/astro_scripts_uibk"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/astro_scripts_uibk",
+]
