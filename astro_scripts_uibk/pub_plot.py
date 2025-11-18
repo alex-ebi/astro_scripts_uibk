@@ -22,7 +22,7 @@ def pub_style_fig():
     mpl.rcParams['xtick.top'] = False
     f, ax = plt.subplots()
     sec_ax = ax.secondary_xaxis('top', functions=(asu.transformations.wavenumber_to_angstrom,
-                                                  asu.transformations.angstrom_to_wavenumber))
+    asu.transformations.angstrom_to_wavenumber))
 
     Returns
     -------
