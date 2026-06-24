@@ -105,7 +105,8 @@ def rv_to_wavelength(rv: np.array, ref_wavelength: float) -> np.array:
     return np.array(ref_wavelength / gamma)
 
 
-def bary_corr(wavelength: np.array, star_name: str = None, header = None, obs_name: str = 'paranal', obs_location: list = None,
+def bary_corr(wavelength: np.array, star_name: str = None, header=None,
+              obs_name: str = 'paranal', obs_location: list = None,
               obs_time=None,
               time_format: str = None, return_bc_rv: bool = False, silent=False) -> np.array:
     """
@@ -121,7 +122,8 @@ def bary_corr(wavelength: np.array, star_name: str = None, header = None, obs_na
         Simbad name of the target.
 
     header : dict
-        Fits header. If this header is present, the function gets the star name, time_format and obs_time from the header.
+        Fits header. If this header is present, the function gets the star name, time_format and
+        obs_time from the header.
 
     obs_name : str
         Name of the observatory.

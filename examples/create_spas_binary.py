@@ -1,7 +1,7 @@
 """
 Example for creating a spas binary file from a spectrum.
 """
-from pkg_resources import resource_filename
+from importlib.resources import files
 from astro_scripts_uibk import io_asu, spas
 import numpy as np
 
@@ -11,7 +11,7 @@ def main():
     # If you only want to fit the abundance and you allready know the stellar parameters,
     # create a microgrid for each abundance in your grid.
     # Do this for every abundance.
-    filename = resource_filename("astro_scripts_uibk", "test_data/T9000G1.50X7.0M02HE.100C8.41_flux")
+    filename = files("astro_scripts_uibk") / "test_data/T9000G1.50X7.0M02HE.100C8.41_flux"
     surface_spec = io_asu.read_surface_spectrum(filename)
 
     xmin = 3.653555e+03
@@ -25,7 +25,7 @@ def main():
     wave, flux = spas.crop_spectrum(surface_spec[0], surface_spec[1], xmin, xmax)
     spec = np.array([wave, flux])
 
-    spas.microgrid(t_eff, log_g, c, spec, filename + '1.bin.tmp')  # in the real application use the file ending '.bin'
+    spas.microgrid(t_eff, log_g, c, spec, str(filename) + '1.bin.tmp')  # in the real application use the file ending '.bin'
 
     # Create binary
     # If you want to make a spas binary grid with different stellar parameters, use 'spas.create_binary'.
@@ -47,7 +47,7 @@ def main():
     t_eff_array = [9000, 9000, 10000, 10000]
     log_g_array = [1.5, 1.8, 1.5, 1.8]
 
-    spas.create_binary(wave, flux_array, t_eff_array, log_g_array, c, filename+'2.bin.tmp')
+    spas.create_binary(wave, flux_array, t_eff_array, log_g_array, c, str(filename) + '2.bin.tmp')
 
 
 if __name__ == '__main__':

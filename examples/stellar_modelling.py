@@ -2,7 +2,7 @@
 Example for modifying ATLAS, DETAIL and SURFACE command files.
 Not all parameters can be edited this way, but the calculation of a grid, everything relevant is editable.
 """
-from pkg_resources import resource_filename
+from importlib.resources import files
 from astro_scripts_uibk import stellar_modelling
 
 
@@ -29,9 +29,9 @@ def main():
 
     # ATLAS
     # define paths of command files
-    a_com_path = resource_filename("astro_scripts_uibk", "test_data/asu_test.acom")
-    d_com_path = resource_filename("astro_scripts_uibk", "test_data/asu_test.dcom")
-    s_com_path = resource_filename("astro_scripts_uibk", "test_data/asu_test.scom")
+    a_com_path = files("astro_scripts_uibk") / "test_data/asu_test.acom"
+    d_com_path = files("astro_scripts_uibk") / "test_data/asu_test.dcom"
+    s_com_path = files("astro_scripts_uibk") / "test_data/asu_test.scom"
 
     # load the atlas command file
     with open(a_com_path) as f:
@@ -42,7 +42,7 @@ def main():
                                                out_control_path=atlas_control, out_struct_path=atlas_struct)
 
     # save the modified atlas command file
-    with open(a_com_path + '.tmp', 'w') as f:
+    with open(str(a_com_path) + '.tmp', 'w') as f:
         f.writelines(lines)
 
     # DETAIL
@@ -56,7 +56,7 @@ def main():
                                                 out_pops_path=detail_pops)
 
     # save the modified detail command file
-    with open(d_com_path + '.tmp', 'w') as f:
+    with open(str(d_com_path) + '.tmp', 'w') as f:
         f.writelines(lines)
 
     # SURFACE
@@ -70,7 +70,7 @@ def main():
                                                  out_control_path=surface_out, out_flux_path=surface_flux)
 
     # save the modified detail command file
-    with open(s_com_path + '.tmp', 'w') as f:
+    with open(str(s_com_path) + '.tmp', 'w') as f:
         f.writelines(lines)
 
 

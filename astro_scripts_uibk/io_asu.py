@@ -18,7 +18,7 @@ def wave_from_dispersion(flux, start_wave=None, dispersion=None, crpix=0, hdr=No
     crpix : int
         Index of reference pixel.
     hdr : dict
-        
+        Fits header. If None, the wave array is built form the other kwargs.
 
     Returns
     -------
@@ -195,7 +195,7 @@ def read_molecfit_crires_spec(file_path: str, chip: int = None) -> np.array:
     spec = hdu[chip].data  # get spectrum data of specified chip
 
     # construct output array for spectrum
-    r = np.core.records.fromrecords(spec).tolist()
+    r = np._core.records.fromrecords(spec).tolist()
     out_spec = np.array(r)  # spectrum array in our standard format
 
     return out_spec
