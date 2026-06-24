@@ -2,7 +2,7 @@ import numpy as np
 from astropy.io import fits
 
 
-def wave_from_dispersion(flux, start_wave, dispersion, crpix=0):
+def wave_from_dispersion(flux, start_wave=None, dispersion=None, crpix=0, hdr=None):
     """
     Calculates a wavelength array as a equidistant grid.
     Starts from 'star_wave' and makes further points with a constant separation 'dispersion'.
@@ -17,12 +17,19 @@ def wave_from_dispersion(flux, start_wave, dispersion, crpix=0):
         Wavelength step.
     crpix : int
         Index of reference pixel.
+    hdr : dict
+        Fits header. If None, the wave array is built form the other kwargs.
 
     Returns
     -------
     np.array
         Wavelength array matching to flux array in length.
     """
+    if hdr is not None:
+        start_wave = hdr['CRVAL1']
+        dispersion = hdr['CDELT1']
+        crpix = hdr['CRPIX1']
+
     index_col = np.array(range(len(flux)))
     index_col = index_col - crpix
     wave = index_col * dispersion + start_wave
@@ -188,7 +195,7 @@ def read_molecfit_crires_spec(file_path: str, chip: int = None) -> np.array:
     spec = hdu[chip].data  # get spectrum data of specified chip
 
     # construct output array for spectrum
-    r = np.core.records.fromrecords(spec).tolist()
+    r = np._core.records.fromrecords(spec).tolist()
     out_spec = np.array(r)  # spectrum array in our standard format
 
     return out_spec

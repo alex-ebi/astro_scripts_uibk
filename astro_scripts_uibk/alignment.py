@@ -20,6 +20,58 @@ from sklearn.cluster import DBSCAN
 import astro_scripts_uibk as asu
 
 
+def index_spectra(spec_dir: Path, index_path: Path, io_function, star_obs_time_function,
+                  file_ending=None) -> pd.DataFrame:
+    """
+    Creates an index of all spectra in the given directory spec_dir.
+    The index file is an Excel file with the path index_path.
+
+    Parameters
+    ----------
+    spec_dir : Path
+        Path to the directory.
+    index_path :
+        Path to the index file.
+
+    Returns
+    -------
+    pd.DataFrame
+        Index as DataFrame.
+    """
+    if file_ending is not None:
+        setting_paths = spec_dir.rglob(f'*{file_ending}')
+    else:
+        setting_paths = spec_dir.rglob('*')
+
+    setting_paths = [item for item in setting_paths if not item.is_dir()]
+
+    df = pd.DataFrame()
+
+    for path in setting_paths:
+        print(path)
+        path = path.relative_to(spec_dir)
+        try:
+            spec = io_function(spec_dir / path)
+            star_name, obs_time_str = star_obs_time_function(spec_dir / path)
+
+        except KeyError:
+            continue
+
+        x_limits = [min(spec[0]), max(spec[0])]
+
+        set_list = [star_name, obs_time_str, str(path), x_limits[0], x_limits[1]]
+        row = pd.Series(set_list)
+        df = pd.concat((df, row), axis=1, ignore_index=True)
+
+    df = df.T
+
+    df.rename(columns={0: 'star_name', 1: 'obs_date', 2: 'spec_path', 3: 'x_min', 4: 'x_max'}, inplace=True)
+
+    df.to_excel(index_path)
+
+    return df
+
+
 def rest_frame_resample(spec: np.array, query_rv: float, grid_res: float):
     """
     Transform into DIB rest frame and resample to equidistant wavenumber grid.
@@ -238,12 +290,15 @@ def fit_plotting(dark_style, spec_path, query_fit_spec, result, max_peak, query_
 
 
 def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_width, dib_fwhm, grid_res, plot_fit=False,
-                      smoothing=True, dark_style=False, sm_ratio=0.1, center_limits=None, width_limits=None):
+                      smoothing=True, dark_style=False, sm_ratio=0.1, center_limits=None, width_limits=None,
+                      cont_lim=0.02, snr_limit=3):
     """
     Prepares a query spectrum and extracts the query used for DIB alignment.
 
     Parameters
     ----------
+    snr_limit : float
+        Minimum S/N ratio of the detected query and the noise level. (Default: 3)
     query_spec : np.array
         Spectrum with query in wavenumbers.
     spec_path : Path
@@ -269,6 +324,9 @@ def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_wi
         Limits of central absorption for Query. Default: [-4, 4]
     width_limits : list
         Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]
+    cont_lim : float
+        Defines where the DIB ends. It ends when the fitted function absorbs less than the central depth times cont_lim.
+        Default: 0.02
 
     Returns
     -------
@@ -290,7 +348,8 @@ def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_wi
     result, query_points, q_cen, max_peak, fit_fwhm, success = fit_gauss_skew(dib_fwhm, query_wavenumber,
                                                                               query_fit_spec,
                                                                               center_limits=center_limits,
-                                                                              width_limits=width_limits)
+                                                                              width_limits=width_limits,
+                                                                              cont_lim=cont_lim)
 
     # q_cen = np.mean(query_points)  # center of query is not the central peak, but the middle of the query
     print('q wn', query_wavenumber)
@@ -304,8 +363,8 @@ def query_preparation(query_spec, spec_path, query_wavenumber, query_fit_half_wi
     nsr = np.std(sn_spec[1]) / np.mean(sn_spec[1])  # Noise over signal
 
     # Set fit success to False if query strength is below 3 sigma of noise
-    if max_peak < nsr * 3:
-        print('Query below 3 sigma noise level.')
+    if max_peak < nsr * snr_limit:
+        print(f'Query below {snr_limit} sigma noise level.')
         print('peak', max_peak, 'N/S', nsr)
         success = False
 
@@ -428,7 +487,9 @@ class SpectralAligner:
                  wavenumber_grid_resolution=40,
                  query_fit_range_factor=3,
                  query_width_limits=None,
-                 query_center_limits=None):
+                 query_center_limits=None,
+                 cont_lim=0.02,
+                 snr_limit=3):
         """
         Class for spectral alignment.
 
@@ -467,6 +528,13 @@ class SpectralAligner:
             Limits of central absorption for Query. Default: [-4, 4]
         query_width_limits : list
             Relative limits of fwhm for query, compared to literature FWHM. Default: [0.5, 2]
+        cont_lim : float
+            Defines where the DIB ends. It ends when the fitted function absorbs less than the central
+            depth times cont_lim.
+            Default: 0.02
+        snr_limit : float
+            Minimum S/N ratio of the detected query and the noise level. (Default: 3)
+
         """
         if query_center_limits is None:
             query_center_limits = [-4, 4]
@@ -490,6 +558,8 @@ class SpectralAligner:
         self.query_wavenumber = query_list.loc[self.query_key, 'wn']
         self.query_fwhm = query_list.loc[self.query_key, 'fwhm_wn']
         self.qfhw = self.query_fwhm * query_fit_range_factor
+        self.cont_lim = cont_lim
+        self.snr_limit = snr_limit
 
         if star_names is None:
             self.star_names = self.data_index.loc[:, 'star_name'].unique()
@@ -659,7 +729,8 @@ class SpectralAligner:
             query_preparation(query_spec, spec_path, self.query_wavenumber, self.qfhw,
                               self.query_fwhm, self.grid_res,
                               plot_fit=self.plot_query, dark_style=self.dark_style,
-                              sm_ratio=self.sm_r, center_limits=self.qcl, width_limits=self.fwhm_l)
+                              sm_ratio=self.sm_r, center_limits=self.qcl, width_limits=self.fwhm_l,
+                              cont_lim=self.cont_lim, snr_limit=self.snr_limit)
 
         if len(query_spec_sm[0]) < 2 or q_cen == self.query_wavenumber or not success:
             return None
@@ -708,7 +779,14 @@ class SpectralAligner:
                 subject_spec_sm = asu.spectrum_reduction.smooth_spec(subject_spec, sm_len)
 
                 # resample unsmoothed subject spectrum to smoothed binning
-                subject_spec_r = asu.convolve.resample(subject_spec, subject_spec_sm[0], assume_sorted=False)
+                try:
+                    subject_spec_r = asu.convolve.resample(subject_spec, subject_spec_sm[0], assume_sorted=False)
+                except ValueError as err:
+                    print('subject:', subject_obs)
+                    print('sm len:', sm_len)
+                    print('subject_spec_sm:', subject_spec_sm)
+                    print('subject_spec:', subject_spec)
+                    raise err
 
                 # Transform flux column of np.array to pd.Series for rolling window comparison
                 subject_series = pd.Series(subject_spec_sm[1], name='subject')
@@ -884,7 +962,7 @@ def extract_clusters_1d(r_df: pd.DataFrame, eps=0.1, mem_range=None, show=False,
                            'wn_range': wn_range,
                            'median_dist': np.nanmedian(c_mem.match_dist),
                            'std_wn': c_mem.match_wave.std()},
-                          name=str(int(np.round(mean_ang))))
+                          name=int(np.round(mean_ang)))
 
             out_df = pd.concat((out_df, s), axis=1)
 
@@ -943,6 +1021,26 @@ def prep_spec(spec, cont_points, sigma, mean, m_df, padding_factor=.5):
 
 def spec_plot(m_df: pd.DataFrame, ax, plot_offset=5, padding_factor=.5, dark_style=False, smooth=True, mean_i=None,
               sm_ratio=0.1, io_function=None, spec_dir=None):
+    """
+    Plots several spectra with a vertical offset.
+
+    Parameters
+    ----------
+    m_df
+    ax
+    plot_offset
+    padding_factor
+    dark_style
+    smooth
+    mean_i
+    sm_ratio
+    io_function
+    spec_dir
+
+    Returns
+    -------
+
+    """
     s_names, x_lim_list = [], []
     if dark_style:
         q_color = 'dodgerblue'
@@ -1273,7 +1371,7 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
                        padding_factor=.5,
                        match_dist_cut=None, ang_range=None, dark_style=False, show=False, excluded_stars=None,
                        sample_number=7, annotate=False, min_cluster_size=5, sm_ratio=0.1, smooth=True,
-                       single_cloud_sightlines=None, sigma_zeta_df=None):
+                       single_cloud_sightlines=None, sigma_zeta_df=None, cluster_df_path=None):
     """
     Automatically plotting some matches for a query DIB.
     Several parameters can be changed to change the output.
@@ -1331,6 +1429,8 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         List of star names for single cloud sight lines.
     sigma_zeta_df : pd.DataFrame
         DataFrame with EW5797/EW5780 values for the sight lines.
+    cluster_df_path : str
+        Path of the file containing the found clusters of profile matches.
 
     Returns
     -------
@@ -1367,6 +1467,9 @@ def auto_plot_clusters(io_function=None, spec_dir=None,
         cluster_df = cluster_df.loc[cluster_df['pearson_r'] > pearson_r_cut, :]
     if number_cut is not None:
         cluster_df = cluster_df.iloc[:number_cut, :]
+
+    if cluster_df_path is not None:
+        cluster_df.to_excel(cluster_df_path)
 
     for _, cluster_s in cluster_df.iterrows():
         mean_wave = cluster_s.mean_wavenumber

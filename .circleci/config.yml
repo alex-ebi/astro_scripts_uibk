@@ -21,7 +21,7 @@ jobs:
     # The executor is the environment in which the steps below will be executed - below will use a python 3.10.2 container
     # Change the version below to your required version of python
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/python:3.11
     # Checkout the code as the first step. This is a dedicated CircleCI step.
     # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
     # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
@@ -31,7 +31,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install -r requirements.txt && pip install -r requirements-dev.txt
+          command: pip install .[dev]
       - run:
           name: Run tests
           command: coverage run -m pytest && coverage report -m
@@ -41,12 +41,12 @@ jobs:
 
   docs-build: # Building the documentation
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/python:3.11
     steps:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install . && pip install -r requirements-dev.txt
+          command: pip install .[dev]
       - run:
           name: Build docs
           command: cd docs/ && make html

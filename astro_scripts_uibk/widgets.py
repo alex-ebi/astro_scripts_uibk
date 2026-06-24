@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.widgets import SpanSelector
 from astro_scripts_uibk import spectrum_reduction
+from matplotlib.backend_bases import MouseButton
 
 
 @dataclasses.dataclass
@@ -132,3 +133,30 @@ def normalize(spectrum: np.array, cont_range=1, return_weight=False):
         return out_spec.spectrum, out_spec.weight
     else:
         return out_spec.spectrum
+
+
+def mark_molecfit_ranges(ax, include_list: list = None):
+    if include_list is None:
+        include_list = []
+
+    def onselect(x, y):
+        print(x, y)
+        plt.axvspan(x, y, alpha=.5, color='orange')
+        include_list.append([x, y])
+
+    def onselect_del(x, y):
+        for i, row in enumerate(include_list):
+            if row[0] < x < row[1]:
+                plt.axvspan(row[0], row[1], alpha=.5, color='blue')
+                include_list.pop(i)
+
+    for row in include_list:
+        plt.axvspan(row[0], row[1], alpha=.5, color='orange')
+
+    _ = SpanSelector(ax, onselect, 'horizontal', props=dict(alpha=0.5, facecolor="tab:blue"), button=MouseButton(1))
+    _ = SpanSelector(ax, onselect_del, 'horizontal', props=dict(alpha=0.5, facecolor="tab:green"),
+                     button=MouseButton(3))
+
+    plt.show()
+
+    return include_list

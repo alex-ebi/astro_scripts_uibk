@@ -6,6 +6,7 @@ from matplotlib import font_manager
 # Some strings for axis labels
 wn_str = r'$\tilde \nu$(cm$^{-1}$)'
 ang_str = r'$\lambda(\AA)$'
+micron_str = r'$\lambda(\mu m)$'
 
 
 def pub_style_fig():
@@ -15,11 +16,13 @@ def pub_style_fig():
     Setup for one x axis - unit and one y axis unit.
     E.g. if you want to use a second x axis on top, use:
 
+    import astro_scripts_uibk as asu
+    import matplotlib as mpl
+
     mpl.rcParams['xtick.top'] = False
-
     f, ax = plt.subplots()
-
-    sec_ax = ax.secondary_xaxis('top', functions=(rv_to_wavenumber, wavenumber_to_rv))
+    sec_ax = ax.secondary_xaxis('top', functions=(asu.transformations.wavenumber_to_angstrom,
+    asu.transformations.angstrom_to_wavenumber))
 
     Returns
     -------

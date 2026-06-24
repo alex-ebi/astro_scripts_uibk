@@ -105,7 +105,8 @@ def rv_to_wavelength(rv: np.array, ref_wavelength: float) -> np.array:
     return np.array(ref_wavelength / gamma)
 
 
-def bary_corr(wavelength: np.array, star_name: str = None, obs_name: str = None, obs_location: list = None,
+def bary_corr(wavelength: np.array, star_name: str = None, header=None,
+              obs_name: str = 'paranal', obs_location: list = None,
               obs_time=None,
               time_format: str = None, return_bc_rv: bool = False, silent=False) -> np.array:
     """
@@ -119,6 +120,10 @@ def bary_corr(wavelength: np.array, star_name: str = None, obs_name: str = None,
 
     star_name : str
         Simbad name of the target.
+
+    header : dict
+        Fits header. If this header is present, the function gets the star name, time_format and
+        obs_time from the header.
 
     obs_name : str
         Name of the observatory.
@@ -146,6 +151,11 @@ def bary_corr(wavelength: np.array, star_name: str = None, obs_name: str = None,
         1D-Wavelength array in barycentric rest frame.
     """
     wavelength = np.array(wavelength)
+
+    if header is not None:
+        time_format = 'mjd'
+        obs_time = header['MJD-OBS']
+        star_name = header['OBJECT']
     # check if kwargs are missing, i.e. still None
     if star_name is None:
         raise ValueError('Missing star_name.')
@@ -401,3 +411,45 @@ def doppler_shift_wn(wavenumber: np.array, rv: float) -> np.array:
     beta = rv / c_light  # relativistic velocity divided by speed of light
     gamma = np.sqrt((1 - beta) / (1 + beta))  # relativistic Lorentz factor
     return np.array(wavenumber * gamma)
+
+
+def micron_to_wavenumber(micron: np.array, air_to_vac=False) -> np.array:
+    """
+    Transforms np.array of wave lengths in Ångströms to array of wavenumbers.
+
+    Parameters
+    ----------
+    angstrom : np.array
+        Wavelength array in Ångströms
+    air_to_vac : bool
+        If True, wavelengths are assumed in air and get transform into vacuum before wavenumber transformation.
+        Default: True
+
+    Returns
+    -------
+    np.array
+        Wavenumber array
+    """
+    angstrom = micron * 1e4
+
+    return angstrom_to_wavenumber(angstrom, air_to_vac=air_to_vac)
+
+
+def wavenumber_to_micron(wavenumber: np.array, vac_to_air=False) -> np.array:
+    """
+    Transforms np.array of wavenumbers to array of wave lengths in angstrom.
+
+    Parameters
+    ----------
+    wavenumber : np.array
+        Wavenumber array
+    vac_to_air : bool
+        If True, wavelengths are transformed to air.
+        Default: True
+
+    Returns
+    -------
+    np.array
+        Ångströms array
+    """
+    return wavenumber_to_angstrom(wavenumber, vac_to_air=vac_to_air) * 1e-4

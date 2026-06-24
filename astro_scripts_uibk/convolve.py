@@ -157,9 +157,12 @@ def resample(spectrum: np.array, wave_new: np.array, assume_sorted=True) -> np.a
     np_array:
         resampled spectrum
     """
-    f = interp1d(spectrum[0], spectrum[1], assume_sorted=assume_sorted)
-    flux_new = f(wave_new)
-    return np.array([wave_new, flux_new])
+    new_cols = []
+    for col in spectrum[1:]:
+        f = interp1d(spectrum[0], col, assume_sorted=assume_sorted, bounds_error=False)
+        col_new = f(wave_new)
+        new_cols.append(col_new)
+    return np.array([wave_new, *new_cols])
 
 
 def macro_broadening(sx, sy, macroturbulence):

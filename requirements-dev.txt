@@ -15,4 +15,3 @@ sphinx-copybutton
 sphinx_rtd_theme
 sphinx_markdown_builder
 openpyxl
-versioneer

@@ -63,6 +63,34 @@ def crop_spectrum(array_in: np.array, x_min: float, x_max: float) -> np.array:
     return array_in[:, bool_array]
 
 
+def remove_region(array_in: np.array, x_min: float, x_max: float) -> np.array:
+    """
+    Returns a spectrum after removing an interval of x_min < wave < x_max.
+
+    Parameters
+    ----------
+    array_in : np.array([wave, flux, additional_columns])
+        Input spectrum.
+    x_min : float
+        Minimum wave coordinate of removed region.
+    x_max : float
+        Maximum wave coordinate of removed region.
+
+    Returns
+    -------
+    np.array([wave, flux, additional_columns])
+        Spectrum without removed region.
+    """
+    if x_min > x_max:
+        raise ValueError('Slice_spectrum error: x_min is larger than x_max!')
+
+    b1 = array_in[0] < x_max  # boolean array of wave values smaller than x_max
+    b2 = x_min < array_in[0]  # boolean array of wave values larger than x_min
+    bool_array = np.logical_and(b1, b2)  # boolean array of wave values larger than x_min and smaller than x_max
+
+    return array_in[:, ~bool_array]
+
+
 def exclude_spikes_limits(spectrum: np.array, flux_min=None, flux_max=None) -> np.array:
     """
     Excludes parts of a spectrum which exceed specified flux thresholds (flux_min and/or flux_max).
@@ -244,6 +272,10 @@ def coadd(spectra: list, wave_new: np.array, weights=None):
         Coadded spectrum.
     """
     res_fluxes, weight_list = [], []
+
+    if weights is None:
+        weights = np.ones(len(spectra))
+
     for spec, weight in zip(spectra, weights):
         f = interp1d(spec[0], spec[1], bounds_error=False)
         res_flux = f(wave_new)
@@ -298,7 +330,7 @@ def profile_comp_trafo(spectrum: np.array, cont_points: np.array, center: np.arr
     return spectrum
 
 
-def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10):
+def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10, normalize_error=False):
     """
     Normalizes a list of spectra. Useful for fast spectrum comparison.
     Each spectrum is normalized by one divisor, which is the median flux around the normalization wavelength
@@ -320,6 +352,8 @@ def normalize_one_point(spec_list, norm_wl: float, norm_half_range=10):
     for spec in spec_list:
         norm_flux = np.nanmedian(crop_spectrum(spec, norm_wl - norm_half_range, norm_wl + norm_half_range)[1])
         spec[1] /= norm_flux
+        if normalize_error:
+            spec[2] /= norm_flux
 
 
 def smooth_spec(spectrum: np.array, kernel_size: int):
@@ -393,3 +427,62 @@ def divide_spec(spectrum: np.array, div_spec: np.array):
     divided_flux = spec_crop[1] / res_spec[1]
 
     return np.array([spec_crop[0], divided_flux])
+
+
+def sort_spec(spec):
+    """
+    Sorts a spectrum by its wavelength coordinate.
+
+    Parameters
+    ----------
+    spec : np.array
+        Input spectrum.
+
+    Returns
+    -------
+    np.array
+        Sorted output spectrum.
+    """
+    return np.array(sorted(spec.T, key=lambda x: x[0])).T
+
+
+def remove_nan_spec(spec: np.array, col: int) -> np.array:
+    """
+    Removes spectrum bin with nan values in column **col**.
+
+    Parameters
+    ----------
+    spec : np.array([wave, flux, additional columns])
+        Spectrum with nan values.
+    col : int
+        Index of column to be searched for nan values.
+
+    Returns
+    -------
+    np.array([wave, flux, additional columns])
+        Spectrum without nan values.
+    """
+    not_nan_ind = ~np.isnan(spec[col])
+    return spec.T[not_nan_ind].T
+
+
+def delete_duplicates_spec(spec: np.array) -> np.array:
+    """
+    Deletes parts of spectrum with duplicate wavelength entries.
+    Keeps the first occurence
+
+    Parameters
+    ----------
+    spec : np.array
+        Input spectrum.
+
+    Returns
+    -------
+    np.array
+        Spectrum without duplicates.
+    """
+    df = pd.DataFrame(spec.T)
+    df = df.drop_duplicates(subset=0)
+    spec = df.to_numpy().T
+
+    return spec
