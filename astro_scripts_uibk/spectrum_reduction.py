@@ -4,6 +4,7 @@ from scipy.interpolate import interp1d
 from pandas import DataFrame
 from astro_scripts_uibk import transformations, convolve
 from warnings import warn
+from PyAstronomy import pyasl
 
 
 def slice_spectrum(array_in: np.array, x_min: float, x_max: float) -> np.array:
@@ -486,3 +487,48 @@ def delete_duplicates_spec(spec: np.array) -> np.array:
     spec = df.to_numpy().T
 
     return spec
+
+
+def coadd_spectra(spectra: list, ref_spec_num=0, return_error=True) -> np.array:
+    """
+    Coadds a list of spectra.
+    Before coadding, the spectra get resampled to the same wavelength points using the spectrum with index ref_spec_num as reference.
+
+    Parameters
+    ----------
+    spectra : list
+        List of spectra to coadd.
+    ref_spec_num : int, optional
+        Index of the reference spectrum, by default 0
+
+    Returns
+    -------
+    np.array
+        Coadded spectrum
+    """
+    ref_spec = spectra[ref_spec_num]
+    x, _ = pyasl.equidistantInterpolation(ref_spec[0], ref_spec[1], '2x')
+
+    flux_list = []
+    weight_list = []
+    for spec in spectra:
+        res_spec = convolve.resample(spec, x)
+        flux_list.append(res_spec[1])
+        weight_list.append(1/res_spec[2])
+
+    
+    flux_list = np.array(flux_list)
+    weight_list = np.array(weight_list)
+
+    masked_flux_list = np.ma.masked_array(flux_list, mask=np.isnan(flux_list))
+    masked_weight_list = np.ma.masked_array(weight_list, mask=np.isnan(weight_list))
+    masked_error_list = 1/masked_weight_list
+
+    coadd_flux = np.ma.sum(masked_flux_list, axis=0)
+
+    coadd_error = np.sqrt(np.ma.sum(masked_error_list**2, axis=0))
+
+    if return_error:
+        return np.array([x, coadd_flux, coadd_error])
+    else:
+        return np.array([x, coadd_flux])
