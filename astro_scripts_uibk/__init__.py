@@ -1,6 +1,7 @@
 from . import alignment
 from . import convolve
 from . import data_handling
+from . import diagnostics
 from . import io_asu
 from . import photometry
 from . import pub_plot
@@ -13,5 +14,5 @@ from . import widgets
 
 __version__ = '0.1'
 
-__all__ = ['alignment', 'convolve', 'data_handling', 'io_asu', 'photometry', 'pub_plot', 'query', 'spas',
+__all__ = ['alignment', 'convolve', 'data_handling', 'diagnostics', 'io_asu', 'photometry', 'pub_plot', 'query', 'spas',
            'spectrum_reduction', 'stellar_modelling', 'transformations', 'widgets']
