@@ -2,8 +2,9 @@ import dataclasses
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.widgets import SpanSelector
-from astro_scripts_uibk import spectrum_reduction
+from astro_scripts_uibk import spectrum_reduction, pub_plot
 from matplotlib.backend_bases import MouseButton
+from scipy.interpolate import CubicSpline
 
 
 @dataclasses.dataclass
@@ -160,3 +161,83 @@ def mark_molecfit_ranges(ax, include_list: list = None):
     plt.show()
 
     return include_list
+
+def continuum_fit_func(spectrum: np.array):
+    """
+    The continuum is fitted using a cubic spline, with manually-selected
+    anchor points.
+    
+    A seperate popup window opens for interactive continuum fitting.
+
+    Clicking adds an anchor point at the position of the cursor. Right click
+    to remove the last anchor point added.
+
+    After closing the fitting window, the continuum is applied unless anchor points > 2:
+    then no changes made.
+
+    The GUI plots are updated automatically after each window is processed.
+    """
+
+
+    wave = spectrum[0]
+    flux = spectrum[1]
+
+    cont_anchors = []
+    cont_artists = []
+    preview = [None]
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(wave, flux, 'k-')
+    ax.set_title(f'Continuum normalizer - Left-click will add an anchor; right-click will remove last anchor.')
+    ax.set_xlabel('Wavelength')
+    ax.set_ylabel('Flux')
+
+    def onclick(event, wave=wave, ax=ax, fig=fig, cont_anchors=cont_anchors, preview=preview, cont_artists=cont_artists):
+        if event.xdata is None or event.ydata is None:
+            return
+        if event.button == 1:
+            lam, flx = event.xdata, event.ydata
+            cont_anchors.append((lam, flx))
+            dot, = ax.plot(lam, flx, 'o', color='orange', ms=6)
+            cont_artists.append(dot)
+            if len(cont_anchors) >= 2:
+                anc = sorted(cont_anchors)
+                cs = CubicSpline([p[0] for p in anc], [p[1] for p in anc], extrapolate=True)
+                if preview[0]:
+                    try: preview[0].remove()
+                    except: pass
+                preview[0], = ax.plot(wave, cs(wave), 'orange', alpha=0.7)
+            ax.set_title(f'{len(cont_anchors)} anchors. Close when done')
+            fig.canvas.draw()
+
+        elif event.button == 3 and cont_anchors:
+            cont_anchors.pop()
+            cont_artists.pop().remove()
+            if len(cont_anchors) >= 2:
+                anc = sorted(cont_anchors)
+                cs = CubicSpline([p[0] for p in anc], [p[1] for p in anc], extrapolate=True)
+                if preview[0]:
+                    preview[0].remove()
+                preview[0], = ax.plot(wave, cs(wave), 'orange', alpha=0.7)
+            else:
+                if preview[0]:
+                    preview[0].remove()
+                    preview[0] = None
+            ax.set_title(f'{len(cont_anchors)} anchors. Close when done')
+            fig.canvas.draw()
+
+    fig.canvas.mpl_connect('button_press_event', onclick)
+    plt.tight_layout()
+    plt.show(block=True)
+        # plt.close(fig)
+
+    if len(cont_anchors) >= 2:
+        anc = sorted(cont_anchors)
+        spline = CubicSpline([p[0] for p in anc], [p[1] for p in anc], extrapolate=True)
+        continuum = spline(wave)
+        spectrum[1] /= continuum
+
+        if len(spectrum) > 2:
+            spectrum[2] /= continuum
+
+    return spectrum, continuum
